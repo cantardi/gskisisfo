@@ -3,12 +3,12 @@ import { Table, Form, Col, Button } from "react-bootstrap";
 
 class SongSchedulerMstr extends Component {
 
-  render(){
+  render() {
     return (
       <div>
         Schedule a song
       </div>
-    )
+    );
   }
 }
  
