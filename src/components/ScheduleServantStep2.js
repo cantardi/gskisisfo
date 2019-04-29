@@ -27,13 +27,13 @@ class ScheduleServantStep2 extends Component {
                 {servantRole.map((role, j) => {                      
                       let previousSelectedServant= this.props.selectedServant
                                                     .filter(servantList => servantList.serviceDateId===dateList.id)
-                                                    .filter(servantList => servantList.role==role)       
+                                                    .filter(servantList => servantList.role===role)       
                       return(
                         <tr>
                           <th>{ role }</th>
                           <td key={ j }>
 
-                            <Form.Control as="select" defaultValue={(this.props.selectedServant.length!=21)? 'Choose...': previousSelectedServant[0].personName} onChange={(event)=>this.props.handlePersonChange(dateList, role, event)}>
+                            <Form.Control as="select" required defaultValue={(this.props.selectedServant.length!=21)? 'Choose...': previousSelectedServant[0].personName} onChange={(event)=>this.props.handlePersonChange(dateList, role, event)}>
                               <option>Choose...</option>
                               {
                                 personNames.map((personName) => (<option>{ personName }</option>))

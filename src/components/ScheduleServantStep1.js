@@ -22,6 +22,7 @@ class ScheduleServantStep1 extends Component {
                 <th scope="col"></th>
               </tr>
             </thead>
+            hello
             <tbody>
               {this.props.displayedDates.map((dateList, i) => {
                   return(
@@ -29,8 +30,8 @@ class ScheduleServantStep1 extends Component {
                       <th scope="row">{ dateList.id }</th>
                       <td key={ i }>{ dateList.date }</td>
                       <td>
-                        <button class="btn btn-primary ml2 tc2">Add</button>
-                        <button class="btn btn-primary ml2 tc2">Remove</button>
+                        <button className="btn btn-primary ml2 tc2">Add</button>
+                        <button className="btn btn-primary ml2 tc2">Remove</button>
                       </td>
                     </tr>
                   )
