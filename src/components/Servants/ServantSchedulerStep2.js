@@ -1,10 +1,10 @@
 import React, { Component } from "react";
-import {Table, Form, Col} from "react-bootstrap";
+import {Table, Form} from "react-bootstrap";
 
 var servantRole = ['Worship Leader', 'Singer 1', 'Singer 2', 'Drummer', 'Bassist', 'Guitarist', 'Keyboardist'];
 var personNames = ['Ardiansyah', 'Eveline Natasya', 'Ryan Antonius', 'Monica Christin'];
 
-class ScheduleServantStep2 extends Component {
+class ServantSchedulerStep2 extends Component {
 
   render() {
 
@@ -33,7 +33,7 @@ class ScheduleServantStep2 extends Component {
                           <th>{ role }</th>
                           <td key={ j }>
 
-                            <Form.Control as="select" required defaultValue={(this.props.selectedServant.length!=21)? 'Choose...': previousSelectedServant[0].personName} onChange={(event)=>this.props.handlePersonChange(dateList, role, event)}>
+                            <Form.Control as="select" required defaultValue={(this.props.selectedServant.length!==21)? 'Choose...': previousSelectedServant[0].personName} onChange={(event)=>this.props.handlePersonChange(dateList, role, event)}>
                               <option>Choose...</option>
                               {
                                 personNames.map((personName) => (<option>{ personName }</option>))
@@ -54,5 +54,5 @@ class ScheduleServantStep2 extends Component {
   }
 }
  
-export default ScheduleServantStep2;
+export default ServantSchedulerStep2;
 

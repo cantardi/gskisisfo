@@ -1,14 +1,12 @@
 import React, { Component } from "react";
-import { Table, Form, Col, Button } from "react-bootstrap";
-import ScheduleServantStep1 from './ScheduleServantStep1';
-import ScheduleServantStep2 from './ScheduleServantStep2';
-import ScheduleServantStep3 from './ScheduleServantStep3';
-import 'bootstrap/dist/css/bootstrap.css';
+import ServantSchedulerStep1 from './ServantSchedulerStep1';
+import ServantSchedulerStep2 from './ServantSchedulerStep2';
+import ServantSchedulerStep3 from './ServantSchedulerStep3';
 
-class ScheduleServantMstr extends Component {
+class ServantSchedulerMstr extends Component {
 
-  constructor(props) {
-    super(props)
+  constructor() {
+    super()
     // Set the initial input values
     this.state = {
       currentStep: 1, // Default is Step 1
@@ -123,10 +121,10 @@ class ScheduleServantMstr extends Component {
     this.setState({ selectedPeriod: event.target.value });
 
     const selectedDate = this.state.alldate.filter(onedate => {
-      return onedate.id==event.target.value;
+      return (onedate.id===parseInt(event.target.value));      
     });
     this.setState({ displayedDate: selectedDate[0].predefinedDate })
-    this.state.selectedServant.length=0;
+    //this.setState({ selectedServant: [] })
   }
   
   // Use the submitted data to set the state
@@ -161,21 +159,21 @@ class ScheduleServantMstr extends Component {
           <p>Step {this.state.currentStep} </p> 
             
           <form onSubmit={this.handleSubmit}>
-          
-            <ScheduleServantStep1
+
+            <ServantSchedulerStep1
               currentStep={this.state.currentStep} 
               handlePeriodChange={this.handlePeriodChange}
               selectedPeriod={this.state.selectedPeriod}
               allperiod={this.state.allperiod}
               displayedDates={this.state.displayedDate}
             />
-            <ScheduleServantStep2
+            <ServantSchedulerStep2
               currentStep={this.state.currentStep} 
               displayedDates={this.state.displayedDate}
               handlePersonChange={this.handlePersonChange}
               selectedServant={this.state.selectedServant}
             />
-            <ScheduleServantStep3
+            <ServantSchedulerStep3
               currentStep={this.state.currentStep} 
               displayedDates={this.state.displayedDate}
               selectedServant={this.state.selectedServant}
@@ -183,6 +181,7 @@ class ScheduleServantMstr extends Component {
 
             {this.previousButton}
             {this.nextButton}
+
           </form>
         </React.Fragment>
       </div>
@@ -190,5 +189,4 @@ class ScheduleServantMstr extends Component {
   }
 }
  
-export default ScheduleServantMstr;
-
+export default ServantSchedulerMstr;

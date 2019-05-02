@@ -1,23 +1,46 @@
 import React, { Component } from "react";
-import { Form, Col, Button } from "react-bootstrap";
+import { Form, Col, Button, Container } from "react-bootstrap";
 
 class SongDtl extends Component {
+
+  constructor(props){
+    super(props);
+    this.state = {
+      name: '',
+      type: '',
+      composer: '',
+      musicby: ''
+    }
+  }
+
+  handleChange = (e) => {
+    this.setState({ [e.target.name]: e.target.value });
+  }
+  
+  saveSong = () => {
+    let newSong = {
+      name: this.state.name,
+      type: this.state.type,
+      composer: this.state.composer,
+      musicby: this.state.musicby
+    }
+    this.setState({ newSong })
+    alert('Name: ' + newSong.name + '\nType: ' + newSong.type + "\nComposer: " + newSong.composer + "\nMusicby: " + newSong.musicby);
+    this.props.history.push('/SongLP');
+  }
+
   render() {
       return (
+        
+        <Container className="pa2">
+          
+          <h1>New Song</h1>
 
-        <div className='container'>
-
-          <link
-          rel="stylesheet"
-          href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
-          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
-          crossorigin="anonymous"/>
-
-          <Form>
+          <Form className="pa2">
             
             <Form.Group controlId="formSongName">
               <Form.Label>Song Name</Form.Label>
-              <Form.Control placeholder="Enter song name" />
+              <Form.Control placeholder="Enter song name" name='name' value={this.state.name} onChange={this.handleChange}/>
               </Form.Group>
 
             <Form.Row>
@@ -55,7 +78,7 @@ class SongDtl extends Component {
 
               <Form.Group as={Col} controlId="formSongType">
                 <Form.Label>Type</Form.Label>
-                <Form.Control as="select">
+                <Form.Control as="select" name='type' value={this.state.type} onChange={this.handleChange}>
                   <option>Choose...</option>
                   <option>Worship</option>
                   <option>Praise</option>
@@ -69,12 +92,12 @@ class SongDtl extends Component {
             <Form.Row>
               <Form.Group as={Col} controlId="formComposer">
                 <Form.Label>Composer</Form.Label>
-                <Form.Control />
+                <Form.Control name='composer' value={this.state.composer} onChange={this.handleChange} />
               </Form.Group>
 
               <Form.Group as={Col} controlId="formMusicBy">
                 <Form.Label>Music By</Form.Label>
-                <Form.Control />
+                <Form.Control name='musicby' value={this.state.musicby} onChange={this.handleChange}/>
               </Form.Group>
 
               <Form.Group as={Col} controlId="formLyricBy">
@@ -102,12 +125,13 @@ class SongDtl extends Component {
               <Form.Control as="textarea" rows="10"/>
             </Form.Group>
 
-            <Button variant="primary" type="submit">  
-               Submit
+            <Button onClick={this.saveSong}>  
+              Save
             </Button> 
 
           </Form>
-        </div>
+
+        </Container>
     );
   }
 }

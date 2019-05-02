@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 
-class ScheduleServantStep1 extends Component {
+class ServantSchedulerStep1 extends Component {
   render() {
 
     if (this.props.currentStep !== 1) { // Prop: The current step
@@ -14,7 +14,7 @@ class ScheduleServantStep1 extends Component {
         </select>
         <div>&nbsp;</div>
         <label>Pre-defined Date</label>
-          <table class="table table-sm">
+          <table className="table table-sm">
             <thead>
               <tr>
                 <th scope="col">#</th>
@@ -22,13 +22,12 @@ class ScheduleServantStep1 extends Component {
                 <th scope="col"></th>
               </tr>
             </thead>
-            hello
             <tbody>
               {this.props.displayedDates.map((dateList, i) => {
                   return(
-                    <tr>
+                    <tr key={ i }>
                       <th scope="row">{ dateList.id }</th>
-                      <td key={ i }>{ dateList.date }</td>
+                      <td>{ dateList.date }</td>
                       <td>
                         <button className="btn btn-primary ml2 tc2">Add</button>
                         <button className="btn btn-primary ml2 tc2">Remove</button>
@@ -44,5 +43,5 @@ class ScheduleServantStep1 extends Component {
   }
 }
  
-export default ScheduleServantStep1;
+export default ServantSchedulerStep1;
 

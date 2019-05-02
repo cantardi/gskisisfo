@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { Table } from "react-bootstrap";
 
-class ScheduleServantStep3 extends Component {
+class SongSchedulerStep3 extends Component {
   
   render() {
 
@@ -17,19 +17,17 @@ class ScheduleServantStep3 extends Component {
             <Table responsive>            
               <thead>
                 <tr>
-                  <th></th>
                   <th key={ dateList.id }>{ dateList.date }</th>
                 </tr>
               </thead>
               <tbody>
                 {
-                  this.props.selectedServant
-                    .filter(servantList => servantList.serviceDateId===dateList.id)
-                    .map((servantList, j) => {
+                  this.props.selectedSong
+                    .filter(songList => songList.serviceDateId===dateList.id)
+                    .map((songList, j) => {
                       return(
                         <tr key={ j }>
-                          <th>{ servantList.role }</th>
-                          <td>{ servantList.personName }</td>
+                          <td>{ songList.songName }</td>
                         </tr>
                       )
                     })
@@ -45,5 +43,5 @@ class ScheduleServantStep3 extends Component {
   }
 }
  
-export default ScheduleServantStep3;
+export default SongSchedulerStep3;
 

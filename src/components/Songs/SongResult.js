@@ -1,45 +1,41 @@
-import React from 'react';
+import React, { Component } from 'react';
 import { Container, Table } from 'react-bootstrap';
 
-const SongResult = () => {
+class SongResult extends Component {
+
+  render(){
     return (
-        <Container className="ma2">
-            <Table responsive="md">
-            <thead>
+      <Container className="ma2">
+        <Table responsive="md">
+          <thead>
             <tr>
-                <th>#</th>
-                <th>Table heading</th>
-                <th>Table heading</th>
-                <th>Table heading</th>
-                <th>Table heading</th>
+              <th>#</th>
+              <th>Song Name</th>
+              <th>Song Type</th>
+              <th>Composer</th>
+              <th>Music By</th>
             </tr>
-            </thead>
-            <tbody>
-            <tr>
-                <td>1</td>
-                <td>Table cell</td>
-                <td>Table cell</td>
-                <td>Table cell</td>
-                <td>Table cell</td>
-            </tr>
-            <tr>
-                <td>2</td>
-                <td>Table cell</td>
-                <td>Table cell</td>
-                <td>Table cell</td>
-                <td>Table cell</td>
-            </tr>
-            <tr>
-                <td>3</td>
-                <td>Table cell</td>
-                <td>Table cell</td>
-                <td>Table cell</td>
-                <td>Table cell</td>
-            </tr>
-            </tbody>
+          </thead>
+          <tbody>
+          {
+            this.props.songList !== null &&
+              this.props.songList.map((song, i) => {
+                return(
+                  <tr key= {i}>
+                    <td>{ i+1 }</td>
+                    <td style={{cursor: 'pointer'}} className="fw6 db blue no-underline underline-hover" onClick={this.props.openEditMode}>{ song.name }</td>
+                    <td>{ song.type }</td>
+                    <td>{ song.composer }</td>
+                    <td>{ song.musicby }</td>
+                  </tr>
+                )
+              })
+          }
+          </tbody>
         </Table>
-        </Container>
-    );
+      </Container>
+    )
+  }
 }
 
 export default SongResult;
