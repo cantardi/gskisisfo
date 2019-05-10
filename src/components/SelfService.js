@@ -14,6 +14,14 @@ class SelfService extends Component {
 					</div>
 				</Button>
 
+				<Button onClick={()=> this.props.history.push('/PeriodLP')} 
+								className='tc v-top dib br3 pa3 ma2 grow bw2 w5 h5 shadow-3'>
+					<div>
+						<h4>Select Songs</h4>
+            <p>Feature to select songs from the list for the service related to the schedule.</p>
+					</div>
+				</Button>
+
 				<Button onClick={()=> this.props.history.push('/SongLP')} 
 								className='tc v-top dib br3 pa3 ma2 grow bw2 w5 h5 shadow-3'>
 					<div>

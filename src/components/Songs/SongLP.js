@@ -2,30 +2,80 @@ import React, { Component } from 'react';
 import { Container, Dropdown, DropdownButton } from 'react-bootstrap';
 import SongSearch from "./SongSearch";
 import SongResult from "./SongResult";
+import MessageModal from "../MessageModal";
 
 class SongLP extends Component {
+  
   constructor(props){
     super(props);
     this.state = {
-      songList: [{
-        name: 'Ajarku Setia',
-        type: 'Worship',
-        composer: 'Erastus Sabdono',
-        musicby: 'Stephen Erastus'
-      }],
-      searchClicked: false,
+      songList: [],
+      searchSongName: '',
+      searchSongType: '',
+      searchComposer: '',
+      modalShow: false, 
+      modalMsg: '',
+      modalHdr: '',
     }
   }
   
-  searchSong = () => {
-    this.setState({ searchClicked: true})
+  nameChange = (e) => {
+    this.setState({ searchSongName: e.target.value });
   }
 
-  openEditMode = () => {
-    this.props.history.push('/SongDtl')
+  typeChange = (e) => {
+    this.setState({ searchSongType: e.target.value });
+  }
+
+  composerChange = (e) => {
+    this.setState({ searchComposer: e.target.value });
+  }
+
+  searchSong = () => {
+    this.setState({ songList: [] });
+    
+    fetch('http://localhost:3001/searchSong', {
+      method: 'post',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        songname: this.state.searchSongName,
+        songtype: this.state.searchSongType,
+        composer: this.state.searchComposer,
+      })
+    })
+      .then (response => {
+        if (response.status === 200){
+          return response.json()
+          .then(data => this.setState(Object.assign(this.state.songList, data)))
+        }
+        else { 
+          return response.json()
+          .then(data => this.setState({ modalShow: true , modalHdr: 'Error', modalMsg: data }))
+        }
+      }) 
+      .catch(err => console.log)   
+  }
+
+  clearSearch = () => {
+    this.setState({
+      searchSongName: '',
+      searchSongType: '',
+      searchComposer: ''
+    })
+  }
+
+  openEditMode = (song) => {
+    this.props.history.push('/SongDtl', song);
   }
   
+  modalClose = () => this.setState({ modalShow: false })
+
+  routeToPage = (pagename) => {
+    this.props.history.push(pagename);
+  }
+
   render() {
+
     return (
       <Container className="pa2">
         <DropdownButton className="ma2"
@@ -33,16 +83,32 @@ class SongLP extends Component {
                           id="dropdown-secondary-button"
                           key="songAction"
                           align="right">               
-          <Dropdown.Item onClick={()=> this.props.history.push('/SongDtl')}>Add New Song</Dropdown.Item>
-          <Dropdown.Item onClick={()=> this.props.history.push('/SongSchedulerMstr')}>Schedule Song</Dropdown.Item>
+          <Dropdown.Item onClick={ () => this.routeToPage('/SongDtl') }>Add New Song</Dropdown.Item>
+          <Dropdown.Item onClick={ () => this.routeToPage('/SongSchedulerMstr')}>Schedule Song</Dropdown.Item>
         </DropdownButton>
 
-        <SongSearch searchSong={ this.searchSong } />
+        <SongSearch songName={ this.state.searchSongName }
+                    songType={ this.state.searchSongType }
+                    songComposer={ this.state.searchComposer }
+                    searchSong={ this.searchSong } 
+                    clearSearch={ this.clearSearch } 
+                    onNameChange={ this.nameChange }
+                    onTypeChange={ this.typeChange }
+                    onComposerChange={ this.composerChange }/>
+        
         {
-          this.state.searchClicked === true &&
-          <SongResult songList={ this.state.songList } openEditMode={ this.openEditMode } />
+          this.state.songList !== null &&
+          <SongResult songList={ this.state.songList } 
+                      openEditMode={ this.openEditMode }/>
         }
         
+        <MessageModal
+          show={this.state.modalShow}
+          onHide={this.modalClose}
+          header={this.state.modalHdr}
+          errmsg={this.state.modalMsg}
+        />
+
       </Container>
     );
   }
