@@ -23,10 +23,11 @@ class SongResult extends Component {
               return(
                 <tr key= {i}>
                   <td>{ i+1 }</td>
-                  <td style={{cursor: 'pointer'}} 
-                      className="fw6 blue no-underline underline-hover" 
-                      onClick={()=>this.props.openEditMode(song)}>
-                      { song.songname }</td>
+                  <td 
+                    style={ {cursor: 'pointer'} } 
+                    className="fw6 blue no-underline underline-hover" 
+                    onClick={ ()=>this.props.openEditMode(song) }>
+                    { song.songname }</td>
                   <td>{ song.songtype }</td>
                   <td>{ song.songkey }</td>
                   <td>{ song.composer }</td>

@@ -53,7 +53,7 @@ class SongLP extends Component {
           .then(data => this.setState({ modalShow: true , modalHdr: 'Error', modalMsg: data }))
         }
       }) 
-      .catch(err => console.log)   
+      .catch(err => console.log)  
   }
 
   clearSearch = () => {
@@ -78,35 +78,44 @@ class SongLP extends Component {
 
     return (
       <Container className="pa2">
-        <DropdownButton className="ma2"
-                          title="Action"
-                          id="dropdown-secondary-button"
-                          key="songAction"
-                          align="right">               
-          <Dropdown.Item onClick={ () => this.routeToPage('/SongDtl') }>Add New Song</Dropdown.Item>
-          <Dropdown.Item onClick={ () => this.routeToPage('/SongSchedulerMstr')}>Schedule Song</Dropdown.Item>
+        <DropdownButton 
+          className="ma2"
+          title="Action"
+          id="dropdown-secondary-button"
+          key="songAction"
+          align="right">               
+          <Dropdown.Item onClick={ ()=>this.routeToPage('/SongDtl') }>
+            Add New Song
+          </Dropdown.Item>
+          <Dropdown.Item onClick={ ()=>this.routeToPage('/SongSchedulerMstr') }>
+            Schedule Song
+          </Dropdown.Item>
         </DropdownButton>
 
-        <SongSearch songName={ this.state.searchSongName }
-                    songType={ this.state.searchSongType }
-                    songComposer={ this.state.searchComposer }
-                    searchSong={ this.searchSong } 
-                    clearSearch={ this.clearSearch } 
-                    onNameChange={ this.nameChange }
-                    onTypeChange={ this.typeChange }
-                    onComposerChange={ this.composerChange }/>
+        <SongSearch 
+          songName={ this.state.searchSongName }
+          songType={ this.state.searchSongType }
+          songComposer={ this.state.searchComposer }
+          searchSong={ this.searchSong }
+          clearSearch={ this.clearSearch } 
+          onNameChange={ this.nameChange }
+          onTypeChange={ this.typeChange }
+          onComposerChange={ this.composerChange }
+        />
         
         {
           this.state.songList !== null &&
-          <SongResult songList={ this.state.songList } 
-                      openEditMode={ this.openEditMode }/>
+          <SongResult 
+            songList={ this.state.songList } 
+            openEditMode={ this.openEditMode }
+          />
         }
         
         <MessageModal
-          show={this.state.modalShow}
-          onHide={this.modalClose}
-          header={this.state.modalHdr}
-          errmsg={this.state.modalMsg}
+          show={ this.state.modalShow }
+          onHide={ this.modalClose }
+          header={ this.state.modalHdr }
+          errmsg={ this.state.modalMsg }
         />
 
       </Container>

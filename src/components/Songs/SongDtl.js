@@ -20,7 +20,7 @@ class SongDtl extends Component {
         lyricby: '',
         url1: '',
         url2: '',
-        schedulingflag: '',
+        schedulingflag: false,
         lyric: '',
         modalShow: false, 
         modalMsg: '',
@@ -52,13 +52,21 @@ class SongDtl extends Component {
     this.setState({ [e.target.name]: e.target.value });
   }
   
+  handleChecked = (e) => {
+    this.setState({ [e.target.name]: e.target.checked });
+  }
+
+  formatInput = (e) => {
+    this.setState({ [e.target.name]: e.target.value.trim() })
+  }
+
   modalClose = () => this.props.history.push('/SongLP')
 
   saveSong = () => {
     
     if (this.state.songid === ''){
       
-      fetch('http://localhost:3001/addSong', {
+      fetch('http://localhost:3001/addsong', {
       method: 'post',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({
@@ -127,25 +135,43 @@ class SongDtl extends Component {
         
         <Container className="pa2">
           
-          <h1>New Song</h1>
-
+          <h1>Maintain Song</h1>
+          
           <Form className="pa2">
-            
+          
+            <Form.Row>
+              <Col className="tr">
+                <Button className="ma1" onClick={ this.saveSong }>  
+                  Save
+                </Button> 
+                <Button className="ma1" onClick={ ()=>this.props.history.push('/SongLP') }>  
+                  Cancel
+                </Button> 
+              </Col>
+            </Form.Row>
+
             <Form.Group controlId="formSongName">
-              <Form.Label>Song Name</Form.Label>
-              <Form.Control placeholder="Enter song name" 
-                            name='songname' 
-                            value={this.state.songname} 
-                            onChange={this.handleChange}/>
-              </Form.Group>
+              <Form.Label>Song Name *</Form.Label>
+              <Form.Control 
+                type="text"
+                placeholder="Enter song name" 
+                name="songname"
+                value={ this.state.songname } 
+                onChange={ this.handleChange }
+                onBlur={ this.formatInput }
+              />
+            </Form.Group>
 
             <Form.Row>
               <Form.Group as={Col} controlId="formLanguage">
-                <Form.Label>Language</Form.Label>
-                <Form.Control as="select" 
-                              name='songlanguage' 
-                              value={this.state.songlanguage} 
-                              onChange={this.handleChange}>
+                <Form.Label>Language *</Form.Label>
+                <Form.Control 
+                  required
+                  as="select" 
+                  name="songlanguage" 
+                  value={ this.state.songlanguage } 
+                  onChange={ this.handleChange }
+                >
                   <option value="">Choose...</option>
                   <option value="BIND">Bahasa Indonesia</option>
                   <option value="BJAW">Bahasa Jawa</option>
@@ -156,34 +182,15 @@ class SongDtl extends Component {
                 </Form.Control>
               </Form.Group>
 
-              <Form.Group as={Col} controlId="formKeySignature">
-                <Form.Label>Key</Form.Label>
-                <Form.Control as="select" 
-                              name='songkey' 
-                              value={this.state.songkey} 
-                              onChange={this.handleChange}>
-                  <option>Choose...</option>
-                  <option>C</option>
-                  <option>C#</option>
-                  <option>D</option>
-                  <option>Eb</option>
-                  <option>E</option>
-                  <option>F</option>
-                  <option>F#</option>
-                  <option>G</option>
-                  <option>G#</option>
-                  <option>A</option>
-                  <option>Bb</option>
-                  <option>B</option>
-                </Form.Control>
-              </Form.Group>
-
               <Form.Group as={Col} controlId="formSongType">
-                <Form.Label>Type</Form.Label>
-                <Form.Control as="select" 
-                              name='songtype' 
-                              value={this.state.songtype} 
-                              onChange={this.handleChange}>
+                <Form.Label>Type *</Form.Label>
+                <Form.Control 
+                  required
+                  as="select" 
+                  name="songtype"
+                  value={ this.state.songtype } 
+                  onChange={ this.handleChange }
+                >
                   <option value="">Choose...</option>
                   <option value="Worship">Worship</option>
                   <option value="Praise">Praise</option>
@@ -192,69 +199,114 @@ class SongDtl extends Component {
                 </Form.Control>
               </Form.Group>
 
+              <Form.Group as={Col} controlId="formKeySignature">
+                <Form.Label>Key</Form.Label>
+                <Form.Control 
+                  as="select" 
+                  name="songkey"
+                  value={ this.state.songkey } 
+                  onChange={ this.handleChange }
+                >
+                  <option value="">Choose...</option>
+                  <option value="C">C</option>
+                  <option value="C#">C#</option>
+                  <option value="D">D</option>
+                  <option value="Eb">Eb</option>
+                  <option value="E">E</option>
+                  <option value="F">F</option>
+                  <option value="F#">F#</option>
+                  <option value="G">G</option>
+                  <option value="Ab">Ab</option>
+                  <option value="A">A</option>
+                  <option value="Bb">Bb</option>
+                  <option value="B">B</option>
+                </Form.Control>
+              </Form.Group>
+
             </Form.Row>
 
             <Form.Row>
               <Form.Group as={Col} controlId="formComposer">
                 <Form.Label>Composer</Form.Label>
-                <Form.Control name='composer' 
-                              value={this.state.composer} 
-                              onChange={this.handleChange} />
+                <Form.Control 
+                  name="composer"
+                  value={ this.state.composer } 
+                  onChange={ this.handleChange }
+                  onBlur={ this.formatInput }
+                />
               </Form.Group>
 
               <Form.Group as={Col} controlId="formMusicBy">
                 <Form.Label>Music By</Form.Label>
-                <Form.Control name='musicby' 
-                              value={this.state.musicby} 
-                              onChange={this.handleChange} />
+                <Form.Control 
+                  name="musicby"
+                  value={ this.state.musicby } 
+                  onChange={ this.handleChange }
+                  onBlur={ this.formatInput }
+                />
               </Form.Group>
 
               <Form.Group as={Col} controlId="formLyricBy">
                 <Form.Label>Lyric By</Form.Label>
-                <Form.Control name='lyricby' 
-                              value={this.state.lyricby} 
-                              onChange={this.handleChange} />
+                <Form.Control 
+                  name="lyricby"
+                  value={ this.state.lyricby } 
+                  onChange={ this.handleChange }
+                  onBlur={ this.formatInput }
+                />
               </Form.Group>
             </Form.Row>
 
             <Form.Group controlId="formUrl1">
               <Form.Label>URL 1</Form.Label>
-              <Form.Control placeholder="https://youtube.com/xxx" 
-                            name='url1' 
-                            value={this.state.url1} 
-                            onChange={this.handleChange} />
+              <Form.Control 
+                name="url1"
+                placeholder="https://youtube.com/xxx" 
+                value={ this.state.url1 } 
+                onChange={ this.handleChange }
+                onBlur={ this.formatInput }
+              />
             </Form.Group>
 
             <Form.Group controlId="formUrl2">
               <Form.Label>URL 2</Form.Label>
-              <Form.Control placeholder="https://open.spotify.com/xxx" 
-                            name='url2' 
-                            value={this.state.url2} 
-                            onChange={this.handleChange} />
+              <Form.Control 
+                placeholder="https://open.spotify.com/xxx" 
+                name="url2"            
+                value={ this.state.url2 } 
+                onChange={ this.handleChange } 
+                onBlur={ this.formatInput }
+              />
             </Form.Group>
 
             <Form.Group id="formGridCheckbox">
-              <Form.Check type="checkbox" label="Available for Scheduling" />
+              <Form.Check 
+                label="Available for Scheduling"
+                name="schedulingflag"          
+                checked={ this.state.schedulingflag }
+                onChange={ this.handleChecked }
+              />
             </Form.Group>
 
             <Form.Group controlId="formLyrics">
               <Form.Label>Lyrics</Form.Label>
-              <Form.Control as="textarea" 
-                            rows="10" 
-                            name='lyric' 
-                            value={this.state.lyric} 
-                            onChange={this.handleChange} />
+              <Form.Control 
+                as="textarea" 
+                name="lyric"
+                rows="10"            
+                value={ this.state.lyric } 
+                onChange={ this.handleChange } 
+                onBlur={ this.formatInput }
+              />
             </Form.Group>
-
-            <Button onClick={this.saveSong}>Save</Button> 
 
           </Form>
 
           <MessageModal
-            show={this.state.modalShow}
-            onHide={this.modalClose}
-            header={this.state.modalHdr}
-            errmsg={this.state.modalMsg}
+            show={ this.state.modalShow }
+            onHide={ this.modalClose }
+            header={ this.state.modalHdr }
+            errmsg={ this.state.modalMsg }
           />
 
         </Container>
