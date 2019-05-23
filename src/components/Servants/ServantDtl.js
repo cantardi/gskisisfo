@@ -1,13 +1,10 @@
-import React, { Component } from "react";
-import { Form, Col, Button, Container } from "react-bootstrap";
-import MomentLocaleUtils, {
-  formatDate,
-  parseDate,
-} from 'react-day-picker/moment';
+import React, { Component } from 'react';
+import { Form, Col, Button, Container } from 'react-bootstrap';
+import { formatDate, parseDate } from 'react-day-picker/moment';
 import 'moment/locale/it';
 import DayPickerInput from 'react-day-picker/DayPickerInput';
 import 'react-day-picker/lib/style.css';
-import MessageModal from "../MessageModal";
+import MessageModal from '../MessageModal';
 
 class ServantDtl extends Component {
 
@@ -45,7 +42,6 @@ class ServantDtl extends Component {
         modalHdr: '',
       }
     }
-    
   }
 
   handleChange = (e) => {

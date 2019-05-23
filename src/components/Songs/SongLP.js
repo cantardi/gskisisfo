@@ -19,16 +19,8 @@ class SongLP extends Component {
     }
   }
   
-  nameChange = (e) => {
-    this.setState({ searchSongName: e.target.value });
-  }
-
-  typeChange = (e) => {
-    this.setState({ searchSongType: e.target.value });
-  }
-
-  composerChange = (e) => {
-    this.setState({ searchComposer: e.target.value });
+  handleChange = (e) => {
+    this.setState({ [e.target.name]: e.target.value });
   }
 
   searchSong = () => {
@@ -83,7 +75,8 @@ class SongLP extends Component {
           title="Action"
           id="dropdown-secondary-button"
           key="songAction"
-          align="right">               
+          align="right"
+        >               
           <Dropdown.Item onClick={ ()=>this.routeToPage('/SongDtl') }>
             Add New Song
           </Dropdown.Item>
@@ -98,9 +91,7 @@ class SongLP extends Component {
           songComposer={ this.state.searchComposer }
           searchSong={ this.searchSong }
           clearSearch={ this.clearSearch } 
-          onNameChange={ this.nameChange }
-          onTypeChange={ this.typeChange }
-          onComposerChange={ this.composerChange }
+          handleChange={ this.handleChange }
         />
         
         {

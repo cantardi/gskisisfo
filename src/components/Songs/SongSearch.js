@@ -18,8 +18,9 @@ class SongSearch extends Component {
 						<Col md={6}>
 							<Form.Control 
 								placeholder="Song Name" 
+								name="searchSongName"
 								value={ this.props.songName } 
-								onChange={ this.props.onNameChange } 
+								onChange={ this.props.handleChange } 
 								onKeyPress={ this.handleKeyPress }
 							/>
 						</Col>
@@ -30,8 +31,9 @@ class SongSearch extends Component {
 						<Col md={6}>
 							<Form.Control 
 								as="select" 
+								name="searchSongType"
 								value={ this.props.songType } 
-								onChange={ this.props.onTypeChange } 
+								onChange={ this.props.handleChange } 
 								onKeyPress={ this.handleKeyPress } 
 							>
 								<option value="">All</option>
@@ -48,8 +50,9 @@ class SongSearch extends Component {
 						<Col md={6}>
 							<Form.Control 
 								placeholder="Song Composer" 
+								name="searchComposer"
 								value={ this.props.songComposer } 
-								onChange={ this.props.onComposerChange } 
+								onChange={ this.props.handleChange } 
 								onKeyPress={ this.handleKeyPress }
 							/>
 						</Col>

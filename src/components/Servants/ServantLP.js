@@ -19,16 +19,8 @@ class ServantLP extends Component {
     }
   }
   
-  nameChange = (e) => {
-    this.setState({ searchServantName: e.target.value });
-  }
-
-  emailChange = (e) => {
-    this.setState({ searchServantEmail: e.target.value });
-  }
-
-  mobileChange = (e) => {
-    this.setState({ searchServantMobile: e.target.value });
+  handleChange = (e) => {
+    this.setState({ [e.target.name]: e.target.value });
   }
 
   searchServant = () => {
@@ -82,7 +74,8 @@ class ServantLP extends Component {
           title="Action"
           id="dropdown-secondary-button"
           key="servantAction"
-          align="right">               
+          align="right"
+        >          
           <Dropdown.Item onClick={ ()=> this.routeToPage('/ServantDtl') }>
             Add New Servant
           </Dropdown.Item>
@@ -97,9 +90,7 @@ class ServantLP extends Component {
           servantMobile={ this.state.searchServantMobile }
           searchServant={ this.searchServant }
           clearSearch={ this.clearSearch } 
-          onNameChange={ this.nameChange }
-          onEmailChange={ this.emailChange }
-          onMobileChange={ this.mobileChange }
+          handleChange={ this.handleChange }
         />
 
         {

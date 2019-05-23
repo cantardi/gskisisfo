@@ -18,8 +18,9 @@ class ServantSearch extends Component {
 						<Col md={6}>
 							<Form.Control 
 								placeholder="Servant Name" 
-								value={ this.props.name } 
-								onChange={ this.props.onNameChange } 
+								name="searchServantName"
+								value={ this.props.servantName } 
+								onChange={ this.props.handleChange } 
 								onKeyPress={ this.handleKeyPress } 
 							/>
 						</Col>
@@ -30,8 +31,9 @@ class ServantSearch extends Component {
 						<Col md={6}>
 							<Form.Control 
 								placeholder="Servant Email" 
-								value={ this.props.email } 
-								onChange={ this.props.onEmailChange } 
+								name="searchServantEmail"
+								value={ this.props.servantEmail } 
+								onChange={ this.props.handleChange } 
 								onKeyPress={ this.handleKeyPress } 
 							/>
 						</Col>
@@ -41,9 +43,10 @@ class ServantSearch extends Component {
 						<Form.Label column md={3}>Servant Mobile 1</Form.Label>
 						<Col md={6}>
 							<Form.Control 
-								placeholder="Servant Mobile 1" 
-								value={ this.props.mobile } 
-								onChange={ this.props.onMobileChange } 
+								placeholder="Servant Mobile 1"
+								name="searchServantMobile"
+								value={ this.props.servantMobile } 
+								onChange={ this.props.handleChange } 
 								onKeyPress={ this.handleKeyPress }
 							/>
 						</Col>

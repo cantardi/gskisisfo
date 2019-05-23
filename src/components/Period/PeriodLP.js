@@ -19,16 +19,9 @@ class PeriodLP extends Component {
     }
   }
   
-  periodChange = (e) => {
-    this.setState({ searchPeriodName: e.target.value });
-  }
-
-  periodChange = (e) => {
-    this.setState({ searchPeriodStatus: e.target.value });
-  }
-
-  descriptionChange = (e) => {
-    this.setState({ searchDescription: e.target.value });
+    
+  handleChange = (e) => {
+    this.setState({ [e.target.name]: e.target.value });
   }
 
   searchPeriod = () => {
@@ -77,34 +70,38 @@ class PeriodLP extends Component {
   render() {
     return (
       <Container className="pa2">
-        <DropdownButton className="ma2"
-                          title="Action"
-                          id="dropdown-secondary-button"
-                          key="PeriodAction"
-                          align="right">               
+        <DropdownButton 
+          className="ma2"
+          title="Action"
+          id="dropdown-secondary-button"
+          key="PeriodAction"
+          align="right"
+        >
           <Dropdown.Item onClick={ () => this.routeToPage('/PeriodDtl') }>Add New Period</Dropdown.Item>
         </DropdownButton>
 
-        <PeriodSearch periodName={ this.state.searchPeriodName }
-                      periodType={ this.state.searchPeriodType }
-                      periodComposer={ this.state.searchComposer }
-                      searchPeriod={ this.searchPeriod } 
-                      clearSearch={ this.clearSearch } 
-                      onNameChange={ this.nameChange }
-                      onStatusChange={ this.statusChange }
-                      onDescriptionChange={ this.descriptionChange }/>
+        <PeriodSearch 
+          periodName={ this.state.searchPeriodName }
+          periodStatus={ this.state.searchPeriodStatus }
+          description={ this.state.searchDescription }
+          searchPeriod={ this.searchPeriod } 
+          clearSearch={ this.clearSearch } 
+          handleChange={ this.handleChange }
+        />
 
         {
           this.state.periodList !== null &&
-          <PeriodResult periodList={ this.state.periodList } 
-                        openEditMode={ this.openEditMode }/>
+          <PeriodResult 
+            periodList={ this.state.periodList } 
+            openEditMode={ this.openEditMode }
+          />
         }
         
         <MessageModal
-          show={this.state.modalShow}
-          onHide={this.modalClose}
-          header={this.state.modalHdr}
-          errmsg={this.state.modalMsg}
+          show={ this.state.modalShow }
+          onHide={ this.modalClose }
+          header={ this.state.modalHdr }
+          errmsg={ this.state.modalMsg }
         />
         
       </Container>
