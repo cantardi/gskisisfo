@@ -5,12 +5,14 @@ import 'react-day-picker/lib/style.css';
 import MessageModal from '../MessageModal';
 
 class PeriodDtl extends Component {
-
+  
   constructor(props){
     super(props);
+    
     const period = this.props.location.state;
+    
     window.scrollTo(0, 0);
-    this.handleDayClick = this.handleDayClick.bind(this);
+
     if (typeof period === 'undefined') {
       this.state = {
         periodid: '',
@@ -18,10 +20,10 @@ class PeriodDtl extends Component {
         status: 'A',
         description: '',
         selectedDays: [],
-        modalShow: false, 
+        messageModalShow: false, 
+        messageModalMsg: '',
+        messageModalHdr: '',
         dateModalShow: false, 
-        modalMsg: '',
-        modalHdr: '',
       }
     }
     else {
@@ -31,48 +33,71 @@ class PeriodDtl extends Component {
         status: period.status,
         description: period.description,
         selectedDays: [],
-        modalShow: false, 
-        dateModalShow: false, 
-        modalMsg: '',
-        modalHdr: '',
+        messageModalShow: false, 
+        messageModalMsg: '',
+        messageModalHdr: '',
+        dateModalShow: false,
       }
     }
   }
   
-  handleDayClick(day, { selected }) {
+  handleDayClick = (day, { selected }) => {
     const { selectedDays } = this.state;
     
     if (selected) {
-      const selectedIndex = selectedDays.findIndex(selectedDay =>
-        DateUtils.isSameDay(selectedDay, day)
-      );
+      const selectedIndex = selectedDays.findIndex(selectedDay => DateUtils.isSameDay(selectedDay, day) )
       selectedDays.splice(selectedIndex, 1);
     } else {
       selectedDays.push(day);
     }
+    
     this.setState({ selectedDays });
   }
   
-  handleChange = (e) => {
+  handlePeriodDetailChange = (e) => {
     this.setState({ [e.target.name]: e.target.value });
   }
 
-  formatInput = (e) => {
+  trimInputValue = (e) => {
     this.setState({ [e.target.name]: e.target.value.trim() })
   }
 
-  modalClose = () => this.props.history.push('/PeriodLP')
+  messageModalClose = () => {
+    this.props.history.push('/PeriodLP')
+  }
   
-  dateModalClose = () => this.setState({ dateModalShow: false })
+  dateModalClose = () => {
+    this.setState({ dateModalShow: false })
+  }
   
-  savePeriod = () => {
+  getPeriodDates = () => {
+    
+    fetch('http://localhost:3001/getperioddate/'+this.state.periodid, {
+      method: 'get',
+      headers: {'Content-Type': 'application/json'}
+    })
+    .then (response => {
+      if (response.status === 200){
+        var result=[]
+        return response.json()
+        .then(data => {
+          for(var i in data){
+            result.push(new Date(data[i].predefineddate) );
+          }
+          this.setState({ selectedDays: result })
+        })
+      }
+    }) 
+    .catch(err => console.log)
+
+  }
+
+  insertNewPeriod = () => {
     
     const convertedDays =
       this.state.selectedDays.map(selectedDay => new Date(selectedDay).toLocaleDateString());
 
-    if (this.state.periodid === ''){
-      
-      fetch('http://localhost:3001/addperiod', {
+    fetch('http://localhost:3001/addperiod', {
       method: 'post',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({
@@ -82,20 +107,26 @@ class PeriodDtl extends Component {
         selectedDays: convertedDays
       })
     })
-      .then (response => {
-        if (response.status === 200){
-          return response.json()
-          .then(data => this.setState({ modalShow: true , modalHdr: 'Information', modalMsg: data }))
-        }
-        else { 
-          return response.json()
-          .then(data => this.setState({ modalShow: true , modalHdr: 'Error', modalMsg: data }))
-        }})
-      .catch(err => console.log)
-    }
-    else {
-      
-      fetch('http://localhost:3001/updateperiod', {
+    .then (response => {
+      if (response.status === 200){
+        return response.json()
+        .then(data => this.setState({ messageModalShow: true , messageModalHdr: 'Information', messageModalMsg: data }))
+      }
+      else { 
+        return response.json()
+        .then(data => this.setState({ messageModalShow: true , messageModalHdr: 'Error', modalMsg: data }))
+      }
+    })
+    .catch(err => console.log(err))
+
+  }
+
+  updateExistingPeriod = () => {
+    
+    const convertedDays =
+      this.state.selectedDays.map(selectedDay => new Date(selectedDay).toLocaleDateString());
+
+    fetch('http://localhost:3001/updateperiod', {
       method: 'put',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({
@@ -109,50 +140,45 @@ class PeriodDtl extends Component {
     .then (response => {
       if (response.status === 200){
         return response.json()
-        .then(data => this.setState({ modalShow: true , modalHdr: 'Information', modalMsg: data }))
+        .then(data => this.setState({ messageModalShow: true , messageModalHdr: 'Information', messageModalMsg: data }))
       }
       else { 
         return response.json()
-        .then(data => this.setState({ modalShow: true , modalHdr: 'Error', modalMsg: data }))
+        .then(data => this.setState({ messageModalShow: true , messageModalHdr: 'Error', messageModalMsg: data }))
       }
     }) 
-    .catch(err => console.log)
-    }  
+    .catch(err => console.log) 
+
+  }
+
+  savePeriod = () => {
+    
+    if (this.state.periodid === ''){
+      this.insertNewPeriod();
+    }
+    else {
+      this.updateExistingPeriod(); 
+    } 
 
   }
 
   componentDidMount(){
+
     if (this.state.periodid !== ''){
-      fetch('http://localhost:3001/getperioddate/'+this.state.periodid, {
-        method: 'get',
-        headers: {'Content-Type': 'application/json'}
-      })
-      .then (response => {
-        if (response.status === 200){
-          var result=[]
-          return response.json()
-          .then(data => {
-            for(var i in data){
-              result.push(new Date(data[i].predefineddate) );
-            }
-            this.setState({ selectedDays: result })
-          })
-        
-        }
-      }) 
-      .catch(err => console.log)
+      this.getPeriodDates();
     }
+
   }
 
   render() {
-      console.log(this.state.selectedDays)
+      
       return (
         
         <Container className="pa2">
         
           <h1>Maintain Period</h1>
 
-          <Row >
+          <Row>
             <Col className="tr">
               <Button className="ma1" onClick={ this.savePeriod }>
                 Save
@@ -174,8 +200,8 @@ class PeriodDtl extends Component {
                   placeholder="Enter Period name" 
                   name="periodname" 
                   value={ this.state.periodname } 
-                  onChange={ this.handleChange }
-                  onBlur={ this.formatInput }
+                  onChange={ this.handlePeriodDetailChange }
+                  onBlur={ this.trimInputValue }
                 />
               </Form.Group>
 
@@ -185,7 +211,7 @@ class PeriodDtl extends Component {
                   as="select" 
                   name="status"
                   value={ this.state.status } 
-                  onChange={ this.handleChange }
+                  onChange={ this.handlePeriodDetailChange }
                 >
                   <option value="A">Active</option>
                   <option value="I">Inactive</option>
@@ -201,8 +227,8 @@ class PeriodDtl extends Component {
                 placeholder="Enter Period Description" 
                 name="description"
                 value={ this.state.description } 
-                onChange={ this.handleChange }
-                onBlur={ this.formatInput }
+                onChange={ this.handlePeriodDetailChange }
+                onBlur={ this.trimInputValue }
               />
             </Form.Group>
 
@@ -233,7 +259,8 @@ class PeriodDtl extends Component {
               {this.state.selectedDays.length > 0 &&
                 this.state.selectedDays.map((day, i) => {
                   return (
-                    <ListGroup key={i}>
+                    <ListGroup key={ i }
+                    >
                       <ListGroup.Item 
                         className="ma1 link dim black mw5 dt hide-child ba b--black-20 pa4 br2 pointer"
                       >
@@ -248,10 +275,10 @@ class PeriodDtl extends Component {
           </Form>
 
           <MessageModal
-            show={ this.state.modalShow }
-            onHide={ this.modalClose }
-            header={ this.state.modalHdr }
-            errmsg={ this.state.modalMsg }
+            show={ this.state.messageModalShow }
+            onHide={ this.messageModalClose }
+            header={ this.state.messageModalHdr }
+            errmsg={ this.state.messageModalMsg }
           />
 
         </Container>
