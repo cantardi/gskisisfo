@@ -22,16 +22,17 @@ import SongSchedulerMstr from "./components/Songs/SongSchedulerMstr";
 import ServantLP from "./components/Servants/ServantLP";
 import ServantDtl from "./components/Servants/ServantDtl";
 import ServantSchedulerMstr from "./components/Servants/ServantSchedulerMstr";
-
+import RoleList from "./components/Template/RoleList";
+import ScheduleMstr from "./components/Schedule/ScheduleMstr";
+import ScheduleLP from "./components/Schedule/ScheduleLP";
+import SelectSong from "./components/SelfService/SelectSong";
 import './App.css';
 
 class App extends Component {
   render() {
     return (
       <BrowserRouter>
-        
-        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous" />
-
+      
         <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark">
           <Navbar.Brand>
             <NavLink className="nav-link" to="/">GSKI Rehuel</NavLink>
@@ -65,6 +66,10 @@ class App extends Component {
           <Route path="/ServantLP" component={ServantLP}/>
           <Route path="/ServantDtl" component={ServantDtl}/>
           <Route path="/ServantSchedulerMstr" component={ServantSchedulerMstr}/>
+          <Route path="/RoleList" component={RoleList}/>
+          <Route path="/ScheduleMstr" component={ScheduleMstr}/>
+          <Route path="/ScheduleLP" component={ScheduleLP}/>
+          <Route path="/SelectSong" component={SelectSong}/>
         </div>
 
       </BrowserRouter>

@@ -1,13 +1,15 @@
-import React, { Component } from "react";
-import { Form, Col, Button, Container } from "react-bootstrap";
-import MessageModal from "../MessageModal";
+import React, { Component } from 'react';
+import { Form, Col, Row, Button, Container } from 'react-bootstrap';
+import MessageModal from '../MessageModal';
 
 class SongDtl extends Component {
 
   constructor(props){
     super(props);
     const song = this.props.location.state;
+
     window.scrollTo(0, 0);
+    
     if (typeof song === 'undefined') {
       this.state = {
         songid: '',
@@ -22,9 +24,9 @@ class SongDtl extends Component {
         url2: '',
         schedulingflag: false,
         lyric: '',
-        modalShow: false, 
-        modalMsg: '',
-        modalHdr: '',
+        msgModalShow: false, 
+        msgModalContent: '',
+        msgModalHeader: '',
       }
     }
     else {
@@ -41,14 +43,14 @@ class SongDtl extends Component {
         url2: song.url2,
         schedulingflag: song.schedulingflag,
         lyric: song.lyric,
-        modalShow: false, 
-        modalMsg: '',
-        modalHdr: '',
+        msgModalShow: false, 
+        msgModalContent: '',
+        msgModalHeader: '',
       }
     }
   }
 
-  handleChange = (e) => {
+  handleSongDetailChange = (e) => {
     this.setState({ [e.target.name]: e.target.value });
   }
   
@@ -56,17 +58,18 @@ class SongDtl extends Component {
     this.setState({ [e.target.name]: e.target.checked });
   }
 
-  formatInput = (e) => {
+  trimInputValue = (e) => {
     this.setState({ [e.target.name]: e.target.value.trim() })
   }
 
-  modalClose = () => this.props.history.push('/SongLP')
+  msgModalClose = () => {
+    this.setState({ msgModalShow: false })
+    this.props.history.push('/SongLP')
+  }
 
-  saveSong = () => {
-    
-    if (this.state.songid === ''){
-      
-      fetch('http://localhost:3001/addsong', {
+  insertNewSong = () => {
+
+    fetch('http://localhost:3001/addsong', {
       method: 'post',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({
@@ -83,20 +86,15 @@ class SongDtl extends Component {
         lyric: this.state.lyric
       })
     })
-      .then (response => {
-        if (response.status === 200){
-          return response.json()
-          .then(data => this.setState({ modalShow: true , modalHdr: 'Information', modalMsg: data }))
-        }
-        else { 
-          return response.json()
-          .then(data => this.setState({ modalShow: true , modalHdr: 'Error', modalMsg: data }))
-        }})
-      .catch(console.log)
-    }
-    else {
-      
-      fetch('http://localhost:3001/updatesong', {
+    .then(response => response.json())
+    .then(data => this.setState({ msgModalShow: true , msgModalHeader: 'Information', msgModalContent: data }))     
+    .catch(err => console.log('Fail to call insertsong API: ' + err))
+
+  }
+
+  updateExistingSong = () => {
+
+    fetch('http://localhost:3001/updatesong', {
       method: 'put',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({
@@ -117,201 +115,208 @@ class SongDtl extends Component {
     .then (response => {
       if (response.status === 200){
         return response.json()
-        .then(data => this.setState({ modalShow: true , modalHdr: 'Information', modalMsg: data }))
+        .then(data => this.setState({ msgModalShow: true , msgModalHeader: 'Information', msgModalContent: data }))
       }
       else { 
         return response.json()
-        .then(data => this.setState({ modalShow: true , modalHdr: 'Error', modalMsg: data }))
+        .then(data => this.setState({ msgModalShow: true , msgModalHeader: 'Error', msgModalContent: data }))
       }
     }) 
-    .catch(console.log)
+    .catch(err => console.log('Fail to call updatesong API: ' + err))
+
+  }
+
+  saveSong = () => {
+    
+    if (this.state.songid === ''){
+      this.insertNewSong();
+    }
+    else {
+      this.updateExistingSong();
     }  
     
   }
 
   render() {
-      
-      return (
-        
-        <Container className="pa2">
+    
+    return (
+      <Container className="pa2">
           
-          <h1>Maintain Song</h1>
+        <h1>Maintain Song</h1>
+
+        <Row>
+          <Col className="tr">
+            <Button className="ma1" onClick={ this.saveSong }>
+              Save
+            </Button> 
+            <Button className="ma1" onClick={ ()=>this.props.history.push('/SongLP') }>  
+              Cancel
+            </Button> 
+          </Col>
+        </Row>
+
+        <Form className="pa2">
           
-          <Form className="pa2">
-          
-            <Form.Row>
-              <Col className="tr">
-                <Button className="ma1" onClick={ this.saveSong }>  
-                  Save
-                </Button> 
-                <Button className="ma1" onClick={ ()=>this.props.history.push('/SongLP') }>  
-                  Cancel
-                </Button> 
-              </Col>
-            </Form.Row>
+          <Form.Group controlId="formSongName">
+            <Form.Label>Song Name *</Form.Label>
+            <Form.Control 
+              type="text"
+              placeholder="Enter song name" 
+              name="songname"
+              value={ this.state.songname } 
+              onChange={ this.handleSongDetailChange }
+              onBlur={ this.trimInputValue }
+            />
+          </Form.Group>
 
-            <Form.Group controlId="formSongName">
-              <Form.Label>Song Name *</Form.Label>
+          <Form.Row>
+            <Form.Group as={Col} controlId="formLanguage">
+              <Form.Label>Language *</Form.Label>
               <Form.Control 
-                type="text"
-                placeholder="Enter song name" 
-                name="songname"
-                value={ this.state.songname } 
-                onChange={ this.handleChange }
-                onBlur={ this.formatInput }
-              />
+                required
+                as="select" 
+                name="songlanguage" 
+                value={ this.state.songlanguage } 
+                onChange={ this.handleSongDetailChange }
+              >
+                <option value="">Choose...</option>
+                <option value="BIND">Bahasa Indonesia</option>
+                <option value="BJAW">Bahasa Jawa</option>
+                <option value="BBAT">Bahasa Batak</option>
+                <option value="ENGL">English</option>
+                <option value="CHIN">Chinese</option>
+                <option value="JAPN">Japanese</option>
+              </Form.Control>
             </Form.Group>
 
-            <Form.Row>
-              <Form.Group as={Col} controlId="formLanguage">
-                <Form.Label>Language *</Form.Label>
-                <Form.Control 
-                  required
-                  as="select" 
-                  name="songlanguage" 
-                  value={ this.state.songlanguage } 
-                  onChange={ this.handleChange }
-                >
-                  <option value="">Choose...</option>
-                  <option value="BIND">Bahasa Indonesia</option>
-                  <option value="BJAW">Bahasa Jawa</option>
-                  <option value="BBAT">Bahasa Batak</option>
-                  <option value="ENGL">English</option>
-                  <option value="CHIN">Chinese</option>
-                  <option value="JAPN">Japanese</option>
-                </Form.Control>
-              </Form.Group>
-
-              <Form.Group as={Col} controlId="formSongType">
-                <Form.Label>Type *</Form.Label>
-                <Form.Control 
-                  required
-                  as="select" 
-                  name="songtype"
-                  value={ this.state.songtype } 
-                  onChange={ this.handleChange }
-                >
-                  <option value="">Choose...</option>
-                  <option value="Worship">Worship</option>
-                  <option value="Praise">Praise</option>
-                  <option value="Hymn">Hymn</option>
-                  <option value="Sermon Intro">Sermon Intro</option>
-                </Form.Control>
-              </Form.Group>
-
-              <Form.Group as={Col} controlId="formKeySignature">
-                <Form.Label>Key</Form.Label>
-                <Form.Control 
-                  as="select" 
-                  name="songkey"
-                  value={ this.state.songkey } 
-                  onChange={ this.handleChange }
-                >
-                  <option value="">Choose...</option>
-                  <option value="C">C</option>
-                  <option value="C#">C#</option>
-                  <option value="D">D</option>
-                  <option value="Eb">Eb</option>
-                  <option value="E">E</option>
-                  <option value="F">F</option>
-                  <option value="F#">F#</option>
-                  <option value="G">G</option>
-                  <option value="Ab">Ab</option>
-                  <option value="A">A</option>
-                  <option value="Bb">Bb</option>
-                  <option value="B">B</option>
-                </Form.Control>
-              </Form.Group>
-
-            </Form.Row>
-
-            <Form.Row>
-              <Form.Group as={Col} controlId="formComposer">
-                <Form.Label>Composer</Form.Label>
-                <Form.Control 
-                  name="composer"
-                  value={ this.state.composer } 
-                  onChange={ this.handleChange }
-                  onBlur={ this.formatInput }
-                />
-              </Form.Group>
-
-              <Form.Group as={Col} controlId="formMusicBy">
-                <Form.Label>Music By</Form.Label>
-                <Form.Control 
-                  name="musicby"
-                  value={ this.state.musicby } 
-                  onChange={ this.handleChange }
-                  onBlur={ this.formatInput }
-                />
-              </Form.Group>
-
-              <Form.Group as={Col} controlId="formLyricBy">
-                <Form.Label>Lyric By</Form.Label>
-                <Form.Control 
-                  name="lyricby"
-                  value={ this.state.lyricby } 
-                  onChange={ this.handleChange }
-                  onBlur={ this.formatInput }
-                />
-              </Form.Group>
-            </Form.Row>
-
-            <Form.Group controlId="formUrl1">
-              <Form.Label>URL 1</Form.Label>
+            <Form.Group as={Col} controlId="formSongType">
+              <Form.Label>Type *</Form.Label>
               <Form.Control 
-                name="url1"
-                placeholder="https://youtube.com/xxx" 
-                value={ this.state.url1 } 
-                onChange={ this.handleChange }
-                onBlur={ this.formatInput }
-              />
+                required
+                as="select" 
+                name="songtype"
+                value={ this.state.songtype } 
+                onChange={ this.handleSongDetailChange }
+              >
+                <option value="">Choose...</option>
+                <option value="Worship">Worship</option>
+                <option value="Praise">Praise</option>
+                <option value="Hymn">Hymn</option>
+                <option value="Sermon Intro">Sermon Intro</option>
+              </Form.Control>
             </Form.Group>
 
-            <Form.Group controlId="formUrl2">
-              <Form.Label>URL 2</Form.Label>
+            <Form.Group as={Col} controlId="formKeySignature">
+              <Form.Label>Key</Form.Label>
               <Form.Control 
-                placeholder="https://open.spotify.com/xxx" 
-                name="url2"            
-                value={ this.state.url2 } 
-                onChange={ this.handleChange } 
-                onBlur={ this.formatInput }
-              />
+                as="select" 
+                name="songkey"
+                value={ this.state.songkey } 
+                onChange={ this.handleSongDetailChange }
+              >
+                <option value="">Choose...</option>
+                <option value="C">C</option>
+                <option value="C#">C#</option>
+                <option value="D">D</option>
+                <option value="Eb">Eb</option>
+                <option value="E">E</option>
+                <option value="F">F</option>
+                <option value="F#">F#</option>
+                <option value="G">G</option>
+                <option value="Ab">Ab</option>
+                <option value="A">A</option>
+                <option value="Bb">Bb</option>
+                <option value="B">B</option>
+              </Form.Control>
             </Form.Group>
+          </Form.Row>
 
-            <Form.Group id="formGridCheckbox">
-              <Form.Check 
-                label="Available for Scheduling"
-                name="schedulingflag"          
-                checked={ this.state.schedulingflag }
-                onChange={ this.handleChecked }
-              />
-            </Form.Group>
-
-            <Form.Group controlId="formLyrics">
-              <Form.Label>Lyrics</Form.Label>
+          <Form.Row>
+            <Form.Group as={Col} controlId="formComposer">
+              <Form.Label>Composer</Form.Label>
               <Form.Control 
-                as="textarea" 
-                name="lyric"
-                rows="10"            
-                value={ this.state.lyric } 
-                onChange={ this.handleChange } 
-                onBlur={ this.formatInput }
+                name="composer"
+                value={ this.state.composer } 
+                onChange={ this.handleSongDetailChange }
+                onBlur={ this.trimInputValue }
               />
             </Form.Group>
 
-          </Form>
+            <Form.Group as={Col} controlId="formMusicBy">
+              <Form.Label>Music By</Form.Label>
+              <Form.Control 
+                name="musicby"
+                value={ this.state.musicby } 
+                onChange={ this.handleSongDetailChange }
+                onBlur={ this.trimInputValue }
+              />
+            </Form.Group>
 
-          <MessageModal
-            show={ this.state.modalShow }
-            onHide={ this.modalClose }
-            header={ this.state.modalHdr }
-            errmsg={ this.state.modalMsg }
-          />
+            <Form.Group as={Col} controlId="formLyricBy">
+              <Form.Label>Lyric By</Form.Label>
+              <Form.Control 
+                name="lyricby"
+                value={ this.state.lyricby } 
+                onChange={ this.handleSongDetailChange }
+                onBlur={ this.trimInputValue }
+              />
+            </Form.Group>
+          </Form.Row>
 
-        </Container>
+          <Form.Group controlId="formUrl1">
+            <Form.Label>URL 1</Form.Label>
+            <Form.Control 
+              name="url1"
+              placeholder="https://youtube.com/xxx" 
+              value={ this.state.url1 } 
+              onChange={ this.handleSongDetailChange }
+              onBlur={ this.trimInputValue }
+            />
+          </Form.Group>
+
+          <Form.Group controlId="formUrl2">
+            <Form.Label>URL 2</Form.Label>
+            <Form.Control 
+              placeholder="https://open.spotify.com/xxx" 
+              name="url2"            
+              value={ this.state.url2 } 
+              onChange={ this.handleSongDetailChange } 
+              onBlur={ this.trimInputValue }
+            />
+          </Form.Group>
+
+          <Form.Group id="formGridCheckbox">
+            <Form.Check 
+              label="Available for Scheduling"
+              name="schedulingflag"          
+              checked={ this.state.schedulingflag }
+              onChange={ this.handleChecked }
+            />
+          </Form.Group>
+
+          <Form.Group controlId="formLyrics">
+            <Form.Label>Lyrics</Form.Label>
+            <Form.Control 
+              as="textarea" 
+              name="lyric"
+              rows="10"            
+              value={ this.state.lyric } 
+              onChange={ this.handleSongDetailChange } 
+              onBlur={ this.trimInputValue }
+            />
+          </Form.Group>
+        </Form>
+
+        <MessageModal
+          show={ this.state.msgModalShow }
+          onHide={ this.msgModalClose }
+          headerText={ this.state.msgModalHeader }
+          contentText1={ this.state.msgModalContent }
+        />
+      </Container>
     );
   }
+
 }
  
 export default SongDtl;

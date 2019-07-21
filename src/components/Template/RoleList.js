@@ -15,9 +15,9 @@ class RoleList extends Component {
       newRoleName: '',
       addedRole: [],
       deletedRole: [],
-      messageModalShow: false, 
-      messageModalMsg: '',
-      messageModalHdr: '',
+      msgModalShow: false,
+      msgModalHeader: '', 
+      msgModalContent: '',
       roleModalShow: false,
       btnSaveDisabled: true,
     }
@@ -27,8 +27,8 @@ class RoleList extends Component {
     this.setState({ [e.target.name]: e.target.value });
   }
 
-  messageModalClose = () => {
-    this.setState({ messageModalShow: false })
+  msgModalClose = () => {
+    this.setState({ msgModalShow: false })
   }
 
   roleModalClose = () => {
@@ -105,11 +105,11 @@ class RoleList extends Component {
     .then(response => {
       if (response.status === 200){
         return response.json()
-        .then(data => this.setState({ messageModalShow: true , messageModalHdr: 'Information', messageModalMsg: data }))
+        .then(data => this.setState({ msgModalShow: true , msgModalHeader: 'Information', msgModalContent: data }))
       }
       else { 
         return response.json()
-        .then(data => this.setState({ messageModalShow: true , messageModalHdr: 'Error', messageModalMsg: data }))
+        .then(data => this.setState({ msgModalShow: true , msgModalHeader: 'Error', msgModalContent: data }))
       }
     })
     .catch(err => console.log("Fail to call add API: " + err))
@@ -127,17 +127,18 @@ class RoleList extends Component {
     .then(response => {
       if (response.status === 200){
         return response.json()
-        .then(data => this.setState({ messageModalShow: true , messageModalHdr: 'Information', messageModalMsg: data }))
+        .then(data => this.setState({ msgModalShow: true , msgModalHeader: 'Information', msgModalContent: data }))
       }
       else { 
         return response.json()
-        .then(data => this.setState({ messageModalShow: true , messageModalHdr: 'Error', messageModalMsg: data }))
+        .then(data => this.setState({ msgModalShow: true , msgModalHeader: 'Error', msgModalContent: data }))
       }
     })
     .catch(err => console.log("Fail to call delete API: " + err))
   }
 
   saveRole = () => {
+
     if (this.state.addedRole.length > 0){
       this.addRoleRequest();
       this.setState({ addedRole: [] })
@@ -157,13 +158,20 @@ class RoleList extends Component {
       method: 'get',
       headers: {'Content-Type': 'application/json'}
     })
-    .then (response => response.json())
-    .then(data => this.setState({roleList: data}))
-    .catch(err => console.log(err))
+    .then (response => {
+      if (response.status === 200){
+        return response.json()
+        .then(data => this.setState({ roleList: data }))
+      }
+      else { 
+        return response.json()
+        .then(data => this.setState({ msgModalShow: true , msgModalHeader: 'Information', msgModalContent: data }))
+      }
+    }) 
+    .catch(err => console.log('Fail to call getrole API: ' + err))
   }
 
-  render() {
-    
+  render() {   
     return (
       <Container className="pa2">
           
@@ -177,34 +185,36 @@ class RoleList extends Component {
             >  
               Save
             </Button> 
-            <Button className="ma1" onClick={ ()=>this.props.history.push('/TemplateLP') }>  
+            <Button className="ma1" onClick={ ()=>this.props.history.push('/Administration') }>  
               Cancel
             </Button> 
           </Col>
         </Row>
 
-        {this.state.roleList.length > 0 &&
-          this.state.roleList
-            .map((role, i) => {
-              return (
-                <div 
-                  key={ i }
-                  className="tc v-top dib br3 pa3 ma2 bw2 shadow-2"
-                >
-                { role.rolename }
+        {
+          this.state.roleList.length > 0 &&
+          this.state.roleList.map((role, i) => {
+            return (
+              <div 
+                key={ i }
+                className="tc v-top dib br3 pa3 ma2 bw2 shadow-2"
+              >
+              { role.rolename }
                 <MdClose 
-                  className="ml2 pointer"
+                  className="ml2 pointer dim"
                   onClick={ ()=>this.removeRole(role.id) }
                 />
-                </div>
-              )
+              </div>
+            )
           })
         }
 
-        <div
-          className="tc v-top dib br3 pa3 ma2 bw2 shadow-2"
-        >
-          <MdAddCircleOutline size={20} className="pointer" onClick={ ()=>this.setState({ roleModalShow: true }) } />
+        <div className="tc v-top dib br3 pa3 ma2 bw2 shadow-2">
+          <MdAddCircleOutline 
+            size={20} 
+            className="pointer dim" 
+            onClick={ ()=>this.setState({ roleModalShow: true }) }
+          />
         </div>
 
         <Modal show={this.state.roleModalShow} onHide={this.roleModalClose} size="lg">
@@ -227,10 +237,10 @@ class RoleList extends Component {
         </Modal>
 
         <MessageModal
-          show={ this.state.messageModalShow }
-          onHide={ this.messageModalClose }
-          header={ this.state.messageModalHdr }
-          errmsg={ this.state.messageModalMsg }
+          show={ this.state.msgModalShow }
+          onHide={ this.msgModalClose }
+          headerText={ this.state.msgModalHeader }
+          contentText1={ this.state.msgModalContent }
         />
 
       </Container>

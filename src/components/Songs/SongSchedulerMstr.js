@@ -1,4 +1,6 @@
-import React, { Component } from "react";
+import React, { Component } from 'react';
+import { Form, Container, Button } from 'react-bootstrap';
+import MessageModal from '../MessageModal';
 import SongSchedulerStep1 from './SongSchedulerStep1';
 import SongSchedulerStep2 from './SongSchedulerStep2';
 import SongSchedulerStep3 from './SongSchedulerStep3';
@@ -7,93 +9,62 @@ class SongSchedulerMstr extends Component {
 
   constructor() {
     super()
-    // Set the initial input values
+    
     this.state = {
-      currentStep: 1, // Default is Step 1
-      allperiod: [{
-            id: 1,
-            name: "JANUARI-2019-8AM"
-        }, {
-            id: 2,
-            name: "FEBRUARI-2019-8AM"
-        }, {
-            id: 3,
-            name: "MARET-2019-8AM"
-        }, {
-            id: 4,
-            name: "APRIL-2019-8AM"
-        }, {
-            id: 5,
-            name: "MEI-2019-8AM"
-        
-      }],
-      selectedPeriod: 'Choose...',
-      selectedSong: [],
-      alldate: [{
-            id: 1,
-            predefinedDate: [{
-              id: 1,
-              date: "01-JAN-2019",
-            }, {
-              id: 2,
-              date: "04-JAN-2019",
-            }, {
-              id: 3,
-              date: "11-JAN-2019",
-            }]
-          }, {
-            id: 2,
-            predefinedDate: [{
-              id: 1,
-              date: "05-FEB-2019",
-            }, {
-              id: 2,
-              date: "12-FEB-2019",
-            }, {
-              id: 3,
-              date: "19-FEB-2019",
-            }]
-      }],
-      displayedDate: [],
+      currentStep: 1,
+      allperiod: [],
+      selectedPeriod: '',
+      displayedDates: [],
+      selectedSongs: [],
+      msgModalShow: false, 
+      msgModalContent: '',
+      msgModalHeader: '',
+      isValidated: false,
     }
-    // Bind the submission to handleChange() 
-    this.handlePeriodChange = this.handlePeriodChange.bind(this)
-    this.handleSongChange = this.handleSongChange.bind(this)
+
     this._next = this._next.bind(this)
     this._prev = this._prev.bind(this)
+    this._submit = this._submit.bind(this)
   }
 
-   // Test current step with ternary
-  // _next and _previous functions will be called on button click
+  msgModalClose = () => {
+    this.setState({ msgModalShow: false });
+    this.props.history.push('/SongLP')
+  }
+
   _next() {
     let currentStep = this.state.currentStep
     // If the current step is 1 or 2, then add one on "next" button click
     currentStep = currentStep >= 2? 3: currentStep + 1
-    this.setState({
-      currentStep: currentStep
-    })
+    this.setState({ currentStep })
+    this.validateSongCompletion();
   }
     
   _prev() {
     let currentStep = this.state.currentStep
     // If the current step is 2 or 3, then subtract one on "previous" button click
     currentStep = currentStep <= 1? 1: currentStep - 1
-    this.setState({
-      currentStep: currentStep
-    })
+    this.setState({ currentStep })
   }
 
-  // The "next" and "previous" button functions
+  _submit() {
+
+    if (window.confirm('Are you sure you wish to submit this schedule?')) {
+      this.callScheduleSongAPI();
+    }
+
+  }
+
   get previousButton(){
     let currentStep = this.state.currentStep;
     // If the current step is not 1, then render the "previous" button
     if(currentStep !==1){
       return (
-        <button 
+        <Button 
           className="btn btn-secondary" 
-          type="button" onClick={this._prev}>
+          onClick={this._prev}>
         Previous
-        </button>
+        </Button>
       )
     }
     // ...else return nothing
@@ -103,90 +74,203 @@ class SongSchedulerMstr extends Component {
   get nextButton(){
     let currentStep = this.state.currentStep;
     // If the current step is not 3, then render the "next" button
-    if(currentStep <3){
+    if(currentStep < 3 && this.state.displayedDates.length > 0){
       return (
-        <button 
+        <Button 
           className="btn btn-primary float-right" 
-          type="button" onClick={this._next}>
+          onClick={this._next}>
         Next
-        </button>        
+        </Button>        
       )
     }
     // ...else render nothing
     return null;
   }
 
-  // Use the submitted data to set the state
-  handlePeriodChange(event) {
-    this.setState({ selectedPeriod: event.target.value });
+  get submitButton(){
+    let currentStep = this.state.currentStep;
+    // If the current step is not 3, then render the "next" button
+    if(currentStep === 3 && this.state.isValidated){
+      return (
+        <Button 
+          className="btn btn-primary float-right" 
+          onClick={this._submit}>
+        Submit
+        </Button>        
+      )
+    }
+    // ...else render nothing
+    return null;
+  }
 
-    const selectedDate = this.state.alldate.filter(onedate => {
-      return onedate.id===parseInt(event.target.value);
-    });
-    this.setState({ displayedDate: selectedDate[0].predefinedDate })
-    //this.setState({ selectedSong: [] })
+  callGetPeriodAPI = () => {
+    
+    fetch('http://localhost:3001/getschedulingperiod/song', {
+      method: 'get',
+      headers: {'Content-Type': 'application/json'}
+    })
+    .then (response => {
+      if (response.status === 200){
+        return response.json()
+        .then(data => this.setState({ allperiod: data }))
+      }
+      else { 
+        return response.json()
+        .then(data => this.setState({ msgModalShow: true , msgModalHeader: 'Information', msgModalContent: data }))
+      }
+    }) 
+    .catch(err => console.log('Fail to call getperiod API: ' + err))
+
   }
   
-  // Use the submitted data to set the state
-  handleSongChange(dateList, event) {
+  callGetPeriodDateAPI = (periodid) => {
     
-    let songObj = {serviceDateId: dateList.id, songName: event.target.value};
-    //newStateArray.push(PersonObj);
-    //this.setState({ selectedSong: newStateArray });
-    console.log(songObj);
- 
-    this.setState({ selectedSong: this.state.selectedSong.concat(songObj) });
-    
+    fetch('http://localhost:3001/getperioddate/' + periodid, {
+      method: 'get',
+      headers: {'Content-Type': 'application/json'}
+    })
+    .then (response => {
+      if (response.status === 200){
+        return response.json()
+        .then(data => this.setState({ displayedDates: data }))
+      }
+      else { 
+        return response.json()
+        .then(data => this.setState({ msgModalShow: true , msgModalHeader: 'Error', msgModalContent: data }))
+      }
+    }) 
+    .catch(err => console.log('Fail to call getperioddate API: ' + err))
+
   }
 
-  // Trigger an alert on form submission
-  handleSubmit = (event) => {
-    event.preventDefault()
-    const { email, username, password } = this.state
-    alert(`Your registration detail: \n 
-      Email: ${email} \n 
-      Username: ${username} \n
-      Password: ${password}`)
-  }
-    
+  callScheduleSongAPI = () => {
+    const songSchedule = this.state.selectedSongs.map(song =>
+      ({
+        periodid: this.state.selectedPeriod,
+        dateid: song.dateid,
+        songid: song.song.id
+      })
+    )
 
-  // Render UI will go here...
-  render() {    
+    fetch('http://localhost:3001/schedulesong', {
+      method: 'post',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        songSchedule: songSchedule
+      })
+    })
+    .then (response => {
+      if (response.status === 200){
+        return response.json()
+        .then(data => this.setState({ msgModalShow: true , msgModalHeader: 'Information', msgModalContent: data }))
+      }
+      else { 
+        return response.json()
+        .then(data => this.setState({ msgModalShow: true , msgModalHeader: 'Error', msgModalContent: data }))
+    }})
+    .catch(err => console.log('Fail to call schedulesong API: ' + err))
+
+  }
+  
+  handlePeriodChange = (e) => {
+    this.setState({ selectedPeriod: e.target.value });
+    this.setState({ displayedDates: [] });
+    this.setState({ selectedSongs: [] });
+    if (e.target.value !== '') this.callGetPeriodDateAPI(e.target.value);
+  }
+
+  addSong = (dateid, song) => {
+    const { selectedSongs } = this.state;
+    const reactobjid = 'div_' + dateid + '_' + song.id;
+
+    let addedSong = {dateid, song, reactobjid}
+    
+    if (this.validateSong(addedSong).length > 0){
+      alert('Song already exists')
+    }
+    else{
+      selectedSongs.push(addedSong);
+      this.setState({ selectedSongs }); 
+    }
+  }
+
+  removeSong = (reactobjid) => {
+    const { selectedSongs } = this.state;
+    
+    let newSelectedSongs = selectedSongs.filter(newArray => newArray.reactobjid !== reactobjid )
+    this.setState({ selectedSongs: newSelectedSongs });
+  }
+
+  validateSong(song) {
+    return this.state.selectedSongs
+      .filter(selectedSong => selectedSong.reactobjid===song.reactobjid)
+  }
+  
+  validateSongCompletion = () => {
+    let dateIdList = this.state.displayedDates.map(date => date.id)
+    let selectedIdList = this.state.selectedSongs.map(date => Number(date.dateid))
+    let isValidated = dateIdList.every(val => selectedIdList.includes(val))
+    this.setState({ isValidated })
+  }
+
+  componentDidMount() {
+    this.callGetPeriodAPI();
+  }
+
+  render() {
+    
     return (
-      <div className="container">
+      <Container className="pa2">
+        
+        <h1>Schedule Song Wizard</h1>
+        
         <React.Fragment>
-          <h1>Schedule Song Wizard</h1>
-          <p>Step {this.state.currentStep} </p> 
+          <h4 className="mt4 mb4">Step {this.state.currentStep} > </h4> 
             
-          <form onSubmit={this.handleSubmit}>
-
+          <Form>
             <SongSchedulerStep1
-              currentStep={this.state.currentStep} 
-              handlePeriodChange={this.handlePeriodChange}
-              selectedPeriod={this.state.selectedPeriod}
-              allperiod={this.state.allperiod}
-              displayedDates={this.state.displayedDate}
+              currentStep={ this.state.currentStep } 
+              selectedPeriod={ this.state.selectedPeriod }
+              handlePeriodChange={ this.handlePeriodChange }
+              allperiod={ this.state.allperiod }
+              displayedDates={ this.state.displayedDates }
             />
+
             <SongSchedulerStep2
-              currentStep={this.state.currentStep} 
-              displayedDates={this.state.displayedDate}
-              handleSongChange={this.handleSongChange}
-              selectedSong={this.state.selectedSong}
+              currentStep={ this.state.currentStep } 
+              displayedDates={ this.state.displayedDates }
+              selectedSongs={ this.state.selectedSongs }
+              addSong={ this.addSong }
+              removeSong={ this.removeSong }
             />
+
             <SongSchedulerStep3
-              currentStep={this.state.currentStep} 
-              displayedDates={this.state.displayedDate}
-              selectedSong={this.state.selectedSong}
-            />       
+              currentStep={ this.state.currentStep } 
+              displayedDates={ this.state.displayedDates }
+              selectedSongs={ this.state.selectedSongs }
+              isValidated={ this.state.isValidated }
+            />      
+
+            <div>&nbsp;</div>
 
             {this.previousButton}
             {this.nextButton}
+            {this.submitButton}
 
-          </form>
+          </Form>
         </React.Fragment>
-      </div>
+
+        <MessageModal
+          show={ this.state.msgModalShow }
+          onHide={ this.msgModalClose }
+          headerText={ this.state.msgModalHeader }
+          contentText1={ this.state.msgModalContent }
+        />
+        
+      </Container>
     )
   }
+
 }
  
 export default SongSchedulerMstr;

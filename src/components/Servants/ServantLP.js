@@ -1,8 +1,8 @@
 import React, { Component } from "react";
 import { Container, Dropdown, DropdownButton } from 'react-bootstrap';
-import ServantSearch from "./ServantSearch";
-import ServantResult from "./ServantResult";
-import MessageModal from "../MessageModal";
+import ServantSearch from './ServantSearch';
+import ServantResult from './ServantResult';
+import MessageModal from '../MessageModal';
 
 class ServantLP extends Component {
   
@@ -13,13 +13,13 @@ class ServantLP extends Component {
       searchServantName: '',
       searchServantEmail: '',
       searchServantMobile: '',
-      modalShow: false, 
-      modalMsg: '',
-      modalHdr: '',
+      msgModalShow: false, 
+      msgModalContent: '',
+      msgModalHeader: '',
     }
   }
   
-  handleChange = (e) => {
+  handleServantSearchChange = (e) => {
     this.setState({ [e.target.name]: e.target.value });
   }
 
@@ -32,41 +32,46 @@ class ServantLP extends Component {
       body: JSON.stringify({
         name: this.state.searchServantName,
         email: this.state.searchServantEmail,
-        mobile: this.state.searchServantMobile
+        mobile: this.state.searchServantMobile,
+        limit: 20
       })
     })
       .then (response => {
         if (response.status === 200){
           return response.json()
-          .then(data => this.setState(Object.assign(this.state.servantList, data)))
+          .then(data => this.setState({ servantList: data }))
         }
         else { 
           return response.json()
-          .then(data => this.setState({ modalShow: true , modalHdr: 'Error', modalMsg: data }))
+          .then(data => this.setState({ msgModalShow: true , msgModalHeader: 'Error', msgModalContent: data }))
         }
       }) 
-      .catch(err => console.log)
+      .catch(err => console.log("Fail to call searchservant API: " + err)) 
   }
 
   clearSearch = () => {
     this.setState({
       searchServantName: '',
       searchServantEmail: '',
-      searchServantMobile: ''
+      searchServantMobile: '',
+      servantList: []
     })
+  }
+
+  routeToPage = (pagename) => {
+    this.props.history.push(pagename);
   }
 
   openEditMode = (servant) => {
     this.props.history.push('/ServantDtl', servant);
   }
 
-  modalClose = () => this.setState({ modalShow: false })
-
-  routeToPage = (pagename) => {
-    this.props.history.push(pagename);
+   msgModalClose = () => {
+    this.setState({ msgModalShow: false }) 
   }
 
   render() {
+
     return(
       <Container className="pa2">
         <DropdownButton 
@@ -90,27 +95,34 @@ class ServantLP extends Component {
           servantMobile={ this.state.searchServantMobile }
           searchServant={ this.searchServant }
           clearSearch={ this.clearSearch } 
-          handleChange={ this.handleChange }
+          handleChange={ this.handleServantSearchChange }
         />
 
         {
-          this.state.servantList !== null &&
-          <ServantResult 
-            servantList={ this.state.servantList } 
-            openEditMode={ this.openEditMode }
-          />
+          this.state.servantList.length > 0 &&
+          <div>
+            <div className="alert alert-info" role="alert">
+              Search feature will display only the first 20 rows.
+              Please filter your search for optimum result.
+            </div>
+            <ServantResult 
+              servantList={ this.state.servantList } 
+              openEditMode={ this.openEditMode }
+            />
+          </div>
         }
 
         <MessageModal
-          show={ this.state.modalShow }
-          onHide={ this.modalClose }
-          header={ this.state.modalHdr }
-          errmsg={ this.state.modalMsg }
+          show={ this.state.msgModalShow }
+          onHide={ this.msgModalClose }
+          headerText={ this.state.msgModalHeader }
+          contentText1={ this.state.msgModalContent }
         />
 
       </Container>
     )
   }
+
 }
  
 export default ServantLP;

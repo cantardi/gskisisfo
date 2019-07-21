@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Container, Row, Form, Col, Button } from "react-bootstrap";
+import { Container, Row, Form, Col, Button } from 'react-bootstrap';
 
 class SongSearch extends Component {
 
@@ -65,6 +65,7 @@ class SongSearch extends Component {
 			</Container>					
 		);
 	}
+	
 }
 
 export default SongSearch;

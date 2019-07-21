@@ -20,8 +20,9 @@ class PeriodSearch extends Component {
 								placeholder="Period Name" 
 								name="searchPeriodName"
 								value={ this.props.periodName } 
-								onChange={this.props.handleChange} 
-								onKeyPress={this.handleKeyPress} />
+								onChange={ this.props.handleChange } 
+								onKeyPress={ this.handleKeyPress } 
+							/>
 						</Col>
 					</Form.Group>
 
@@ -32,8 +33,8 @@ class PeriodSearch extends Component {
 								as="select"  
 								name="searchPeriodStatus"
 								value={ this.props.periodStatus } 
-								onChange={this.props.handleChange} 
-								onKeyPress={this.handleKeyPress}
+								onChange={ this.props.handleChange }
+								onKeyPress={ this.handleKeyPress }
 							>
 								<option value="A">Active</option>
 								<option value="I">Inactive</option>
@@ -48,8 +49,8 @@ class PeriodSearch extends Component {
 								placeholder="Period Description" 
 								name="searchDescription"
 								value={ this.props.description } 
-								onChange={this.props.handleChange} 
-								onKeyPress={this.handleKeyPress}
+								onChange={ this.props.handleChange }
+								onKeyPress={ this.handleKeyPress }
 							/>
 						</Col>
 					</Form.Group>

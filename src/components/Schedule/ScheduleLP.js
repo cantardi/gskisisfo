@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
-import { Container, Dropdown, DropdownButton } from 'react-bootstrap';
-import PeriodSearch from './PeriodSearch';
-import PeriodResult from './PeriodResult';
+import { Container } from 'react-bootstrap';
+import PeriodSearch from '../Period/PeriodSearch';
+import PeriodResult from '../Period/PeriodResult';
 import MessageModal from '../MessageModal';
 
-class PeriodLP extends Component {
+class ScheduleLP extends Component {
   
   constructor(props){
     super(props);
@@ -65,7 +65,7 @@ class PeriodLP extends Component {
   }
 
   openEditMode = (period) => {
-    this.props.history.push('/PeriodDtl', period);
+    this.props.history.push('/ScheduleMstr', period);
   }
 
   msgModalClose = () => {
@@ -75,15 +75,6 @@ class PeriodLP extends Component {
   render() {
     return (
       <Container className="pa2">
-        <DropdownButton 
-          className="ma2"
-          title="Action"
-          id="dropdown-secondary-button"
-          key="PeriodAction"
-          align="right"
-        >
-          <Dropdown.Item onClick={ () => this.routeToPage('/PeriodDtl') }>Add New Period</Dropdown.Item>
-        </DropdownButton>
 
         <PeriodSearch 
           periodName={ this.state.searchPeriodName }
@@ -121,4 +112,4 @@ class PeriodLP extends Component {
   
 }
 
-export default PeriodLP;
+export default ScheduleLP;

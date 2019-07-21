@@ -1,4 +1,6 @@
-import React, { Component } from "react";
+import React, { Component } from 'react';
+import { Form, Container, Button } from 'react-bootstrap';
+import MessageModal from '../MessageModal';
 import ServantSchedulerStep1 from './ServantSchedulerStep1';
 import ServantSchedulerStep2 from './ServantSchedulerStep2';
 import ServantSchedulerStep3 from './ServantSchedulerStep3';
@@ -7,93 +9,64 @@ class ServantSchedulerMstr extends Component {
 
   constructor() {
     super()
-    // Set the initial input values
+    
     this.state = {
-      currentStep: 1, // Default is Step 1
-      allperiod: [{
-            id: 1,
-            name: "JANUARI-2019-8AM"
-        }, {
-            id: 2,
-            name: "FEBRUARI-2019-8AM"
-        }, {
-            id: 3,
-            name: "MARET-2019-8AM"
-        }, {
-            id: 4,
-            name: "APRIL-2019-8AM"
-        }, {
-            id: 5,
-            name: "MEI-2019-8AM"
-        
-      }],
-      selectedPeriod: 'Choose...',
-      selectedServant: [],
-      alldate: [{
-            id: 1,
-            predefinedDate: [{
-              id: 1,
-              date: "01-JAN-2019",
-            }, {
-              id: 2,
-              date: "04-JAN-2019",
-            }, {
-              id: 3,
-              date: "11-JAN-2019",
-            }]
-          }, {
-            id: 2,
-            predefinedDate: [{
-              id: 1,
-              date: "05-FEB-2019",
-            }, {
-              id: 2,
-              date: "12-FEB-2019",
-            }, {
-              id: 3,
-              date: "19-FEB-2019",
-            }]
-      }],
-      displayedDate: [],
+      currentStep: 1,
+      allperiod: [],
+      selectedPeriod: '',
+      displayedDates: [],
+      selectedServants: [],
+      churchRoles: [],
+      servantList: [], 
+      msgModalShow: false, 
+      msgModalContent: '',
+      msgModalHeader: '',
+      isValidated: false,
     }
-    // Bind the submission to handleChange() 
-    this.handlePeriodChange = this.handlePeriodChange.bind(this)
-    this.handlePersonChange = this.handlePersonChange.bind(this)
+    
     this._next = this._next.bind(this)
     this._prev = this._prev.bind(this)
+    this._submit = this._submit.bind(this)
   }
 
-   // Test current step with ternary
-  // _next and _previous functions will be called on button click
+  msgModalClose = () => {
+    this.setState({ msgModalShow: false });
+    this.props.history.push('/ServantLP')
+  }
+
   _next() {
     let currentStep = this.state.currentStep
     // If the current step is 1 or 2, then add one on "next" button click
     currentStep = currentStep >= 2? 3: currentStep + 1
-    this.setState({
-      currentStep: currentStep
-    })
+    this.setState({ currentStep })
+    this.validateServantCompletion();
   }
     
   _prev() {
     let currentStep = this.state.currentStep
     // If the current step is 2 or 3, then subtract one on "previous" button click
     currentStep = currentStep <= 1? 1: currentStep - 1
-    this.setState({
-      currentStep: currentStep
-    })
+    this.setState({ currentStep })
   }
 
-  // The "next" and "previous" button functions
+  _submit() {
+
+    if (window.confirm('Are you sure you wish to submit this schedule?')) {
+      this.callScheduleServantAPI();
+    }
+
+  }
+
   get previousButton(){
     let currentStep = this.state.currentStep;
     // If the current step is not 1, then render the "previous" button
     if(currentStep !==1){
       return (
-        <button 
+        <Button 
           className="btn btn-secondary" 
-          type="button" onClick={this._prev}>
+          onClick={this._prev}>
         Previous
-        </button>
+        </Button>
       )
     }
     // ...else return nothing
@@ -103,90 +76,265 @@ class ServantSchedulerMstr extends Component {
   get nextButton(){
     let currentStep = this.state.currentStep;
     // If the current step is not 3, then render the "next" button
-    if(currentStep <3){
+    if(currentStep <3 && this.state.displayedDates.length > 0){
       return (
-        <button 
+        <Button 
           className="btn btn-primary float-right" 
-          type="button" onClick={this._next}>
+          onClick={this._next}>
         Next
-        </button>        
+        </Button>        
       )
     }
     // ...else render nothing
     return null;
   }
 
-  // Use the submitted data to set the state
-  handlePeriodChange(event) {
-    this.setState({ selectedPeriod: event.target.value });
-
-    const selectedDate = this.state.alldate.filter(onedate => {
-      return (onedate.id===parseInt(event.target.value));      
-    });
-    this.setState({ displayedDate: selectedDate[0].predefinedDate })
-    //this.setState({ selectedServant: [] })
+  get submitButton(){
+    let currentStep = this.state.currentStep;
+    // If the current step is not 3, then render the "next" button
+    if(currentStep === 3 && this.state.isValidated){
+      return (
+        <Button 
+          className="btn btn-primary float-right" 
+          onClick={this._submit}>
+        Submit
+        </Button>        
+      )
+    }
+    // ...else render nothing
+    return null;
   }
   
-  // Use the submitted data to set the state
-  handlePersonChange(dateList, role, event) {
+  callGetPeriodAPI = () => {
     
-    let PersonObj = {serviceDateId: dateList.id, role: role, personName: event.target.value};
-    //newStateArray.push(PersonObj);
-    //this.setState({ selectedServant: newStateArray });
-    console.log(PersonObj);
- 
-    this.setState({ selectedServant: this.state.selectedServant.concat(PersonObj) });
-    
+    fetch('http://localhost:3001/getschedulingperiod/servant', {
+      method: 'get',
+      headers: {'Content-Type': 'application/json'}
+    })
+    .then (response => {
+      if (response.status === 200){
+        return response.json()
+        .then(data => this.setState({ allperiod: data }))
+      }
+      else { 
+        return response.json()
+        .then(data => this.setState({ msgModalShow: true , msgModalHeader: 'Information', msgModalContent: data }))
+      }
+    }) 
+    .catch(err => console.log('Fail to call getperiod API: ' + err))
+
   }
 
-  // Trigger an alert on form submission
-  handleSubmit = (event) => {
-    event.preventDefault()
-    const { email, username, password } = this.state
-    alert(`Your registration detail: \n 
-      Email: ${email} \n 
-      Username: ${username} \n
-      Password: ${password}`)
-  }
+  callGetPeriodDateAndGetRoleAPI = (periodid) => {
     
+    fetch('http://localhost:3001/getperioddate/'+periodid, {
+      method: 'get',
+      headers: {'Content-Type': 'application/json'}
+    })
+    .then (response => {
+      if (response.status === 200){
+        return response.json()
+        .then(data => {
+          let dateIdArray = [];
+          this.setState({ displayedDates: data })
+          data.map(dateId => dateIdArray.push(dateId.id))
+          return dateIdArray
+        })
+        .then(dateIdArray => {
+          fetch('http://localhost:3001/getchurchrole', {
+            method: 'get',
+            headers: {'Content-Type': 'application/json'}
+          })
+          .then (response => {
+            if (response.status === 200){
+              return response.json()
+              .then(data => {
+                this.setState({ churchRoles: data })
 
-  // Render UI will go here...
-  render() {    
+                let { selectedServants } = this.state
+                
+                dateIdArray.map(dateId => {
+                  return (
+                    data.map(data => {
+                      return (
+                        selectedServants.push({
+                          dateid: dateId,
+                          roleid: data.id,
+                          rolename: data.rolename,
+                          servantid: '',
+                          servantname: ''
+                        })
+                      )
+                    })
+                  )
+                })
+                
+                this.setState({ selectedServants })
+              })
+           }
+          })
+        }) 
+    .catch(err => console.log('Fail to call getperioddate/getchurchrole API: ' + err))
+      }
+    })
+  }
+
+  callGetServantAPI = () => {
+    fetch('http://localhost:3001/getservant', {
+      method: 'get',
+      headers: {'Content-Type': 'application/json'}
+    })
+    .then (response => {
+      if (response.status === 200){
+        return response.json()
+        .then(data => this.setState({ servantList: data }))
+      }
+      else { 
+        return response.json()
+        .then(data => this.setState({ msgModalShow: true , msgModalHeader: 'Error', msgModalContent: data }))
+      }
+    }) 
+    .catch(err => console.log('Fail to call getservant API: ' + err))
+
+  }
+
+  callScheduleServantAPI = () => {
+    const servantSchedule = this.state.selectedServants
+                            .filter(servant => servant.servantid !== '')
+                            .map(servant =>
+                              ({
+                                periodid: Number(this.state.selectedPeriod),
+                                dateid: servant.dateid,
+                                roleid: servant.roleid,
+                                servantid: Number(servant.servantid)
+                              })
+                            )
+
+    fetch('http://localhost:3001/scheduleservant', {
+      method: 'post',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        servantSchedule: servantSchedule
+      })
+    })
+    .then (response => {
+      if (response.status === 200){
+        return response.json()
+        .then(data => this.setState({ msgModalShow: true , msgModalHeader: 'Information', msgModalContent: data }))
+      }
+      else { 
+        return response.json()
+        .then(data => this.setState({ msgModalShow: true , msgModalHeader: 'Error', msgModalContent: data }))
+    }})
+    .catch(err => console.log('Fail to call scheduleservant API: ' + err))
+  }
+
+  handlePeriodChange = (e) => {
+    this.setState({ selectedPeriod: e.target.value });
+    this.setState({ displayedDates: [] });
+    this.setState({ selectedServants: [] });
+    if (e.target.value !== '') {
+      this.callGetPeriodDateAndGetRoleAPI(e.target.value);
+    }
+  }
+
+  validateServant(servant) {
+    return this.state.selectedServants
+      .filter(selectedServant => selectedServant.dateid === servant.dateid && selectedServant.servantid === servant.servantid)
+  }
+
+  validateServantCompletion = () => {
+    let dateIdList = this.state.displayedDates.map(date => date.id)
+    let selectedIdList = this.state.selectedServants
+                          .filter(servant => servant.servantid !== '')
+                          .map(date => Number(date.dateid))
+    let isValidated = dateIdList.every(val => selectedIdList.includes(val))
+    this.setState({ isValidated })
+  }
+
+  selectServant = (event, dateid, roleid, rolename) => {
+    
+    const { selectedServants } = this.state;
+
+    let updatedServant = {
+      dateid: dateid,
+      roleid: roleid,
+      rolename: rolename,
+      servantid: event.target.value,
+      servantname: event.target.value !== ''? this.state.servantList.filter(servant => servant.id === Number(event.target.value))[0].servantname: ''
+    }
+    
+    if (this.validateServant(updatedServant).length > 0 && event.target.value !== ''){
+      alert('Servant is already tagged to other role. Please select another person')
+    }
+    else {
+      let foundIndex = selectedServants.findIndex(updatedItem => updatedItem.dateid === dateid && updatedItem.roleid === roleid)
+      selectedServants.splice(foundIndex, 1, updatedServant)
+      
+      this.setState({ selectedServants });
+    }
+  }
+
+  componentDidMount(){
+    this.callGetPeriodAPI();
+    this.callGetServantAPI();
+  }
+
+  render() { 
+    
     return (
-      <div className="container">
-        <React.Fragment>
-          <h1>Schedule Servant Wizard</h1>
-          <p>Step {this.state.currentStep} </p> 
+      <Container className="pa2">
+        
+        <h1>Schedule Servant Wizard</h1>
+        
+        <React.Fragment>     
+          <h4 className="mt4 mb4">Step {this.state.currentStep} > </h4> 
             
-          <form onSubmit={this.handleSubmit}>
-
+          <Form>
             <ServantSchedulerStep1
-              currentStep={this.state.currentStep} 
-              handlePeriodChange={this.handlePeriodChange}
-              selectedPeriod={this.state.selectedPeriod}
-              allperiod={this.state.allperiod}
-              displayedDates={this.state.displayedDate}
+              currentStep={ this.state.currentStep } 
+              selectedPeriod={ this.state.selectedPeriod }
+              handlePeriodChange={ this.handlePeriodChange }
+              allperiod={ this.state.allperiod }
+              displayedDates={ this.state.displayedDates }
             />
+
             <ServantSchedulerStep2
-              currentStep={this.state.currentStep} 
-              displayedDates={this.state.displayedDate}
-              handlePersonChange={this.handlePersonChange}
-              selectedServant={this.state.selectedServant}
+              currentStep={ this.state.currentStep } 
+              displayedDates={ this.state.displayedDates }
+              selectedServants={ this.state.selectedServants }
+              servantList={ this.state.servantList }
+              selectServant={ this.selectServant }
             />
+
             <ServantSchedulerStep3
-              currentStep={this.state.currentStep} 
-              displayedDates={this.state.displayedDate}
-              selectedServant={this.state.selectedServant}
-            />       
+              currentStep={ this.state.currentStep } 
+              displayedDates={ this.state.displayedDates }
+              churchRoles={ this.state.churchRoles }
+              selectedServants={ this.state.selectedServants }
+              isValidated={ this.state.isValidated }
+            />      
+
+            <div>&nbsp;</div>
 
             {this.previousButton}
             {this.nextButton}
+            {this.submitButton}
 
-          </form>
+          </Form>
         </React.Fragment>
-      </div>
+
+        <MessageModal
+          show={ this.state.msgModalShow }
+          onHide={ this.msgModalClose }
+          headerText={ this.state.msgModalHeader }
+          contentText1={ this.state.msgModalContent }
+        />
+        
+      </Container>
     )
   }
+
 }
  
 export default ServantSchedulerMstr;

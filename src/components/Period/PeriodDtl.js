@@ -8,7 +8,6 @@ class PeriodDtl extends Component {
   
   constructor(props){
     super(props);
-    
     const period = this.props.location.state;
     
     window.scrollTo(0, 0);
@@ -20,9 +19,10 @@ class PeriodDtl extends Component {
         status: 'A',
         description: '',
         selectedDays: [],
-        messageModalShow: false, 
-        messageModalMsg: '',
-        messageModalHdr: '',
+        msgModalShow: false, 
+        msgModalContent1: '',
+        msgModalContent2: '',
+        msgModalHeader: '',
         dateModalShow: false, 
       }
     }
@@ -34,11 +34,14 @@ class PeriodDtl extends Component {
         description: period.description,
         selectedDays: [],
         messageModalShow: false, 
-        messageModalMsg: '',
-        messageModalHdr: '',
+        msgModalShow: false,
+        msgModalContent1: '',
+        msgModalContent2: '',
+        msgModalHeader: '',
         dateModalShow: false,
       }
     }
+
   }
   
   handleDayClick = (day, { selected }) => {
@@ -62,7 +65,8 @@ class PeriodDtl extends Component {
     this.setState({ [e.target.name]: e.target.value.trim() })
   }
 
-  messageModalClose = () => {
+  msgModalClose = () => {
+    this.setState({ msgModalShow: false })
     this.props.history.push('/PeriodLP')
   }
   
@@ -72,7 +76,7 @@ class PeriodDtl extends Component {
   
   getPeriodDates = () => {
     
-    fetch('http://localhost:3001/getperioddate/'+this.state.periodid, {
+    fetch('http://localhost:3001/getperioddate/' + this.state.periodid, {
       method: 'get',
       headers: {'Content-Type': 'application/json'}
     })
@@ -82,13 +86,17 @@ class PeriodDtl extends Component {
         return response.json()
         .then(data => {
           for(var i in data){
-            result.push(new Date(data[i].predefineddate) );
+            result.push(new Date(data[i].predefineddate))
           }
           this.setState({ selectedDays: result })
         })
       }
+      else{
+        return response.json()
+        .then(data => console.log(data))
+      }
     }) 
-    .catch(err => console.log)
+    .catch(err => console.log('Fail to call getperiod API: ' + err))
 
   }
 
@@ -107,17 +115,9 @@ class PeriodDtl extends Component {
         selectedDays: convertedDays
       })
     })
-    .then (response => {
-      if (response.status === 200){
-        return response.json()
-        .then(data => this.setState({ messageModalShow: true , messageModalHdr: 'Information', messageModalMsg: data }))
-      }
-      else { 
-        return response.json()
-        .then(data => this.setState({ messageModalShow: true , messageModalHdr: 'Error', modalMsg: data }))
-      }
-    })
-    .catch(err => console.log(err))
+    .then(response => response.json())
+    .then(data => this.setState({ msgModalShow: true , msgModalHeader: 'Information', msgModalContent1: data }))     
+    .catch(err => console.log('Fail to call addperiod API: ' + err))
 
   }
 
@@ -126,29 +126,33 @@ class PeriodDtl extends Component {
     const convertedDays =
       this.state.selectedDays.map(selectedDay => new Date(selectedDay).toLocaleDateString());
 
-    fetch('http://localhost:3001/updateperiod', {
-      method: 'put',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({
-        periodid: this.state.periodid,
-        periodname: this.state.periodname,
-        status: this.state.status,
-        description: this.state.description,
-        selectedDays: convertedDays
+    Promise.all([
+      fetch('http://localhost:3001/updateperioddtl', {
+        method: 'put',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+          periodid: this.state.periodid,
+          periodname: this.state.periodname,
+          status: this.state.status,
+          description: this.state.description,
+        })
+      }),
+      fetch('http://localhost:3001/updateperioddates', {
+        method: 'put',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+          periodid: this.state.periodid,
+          selectedDays: convertedDays
+        })
       })
-    })
-    .then (response => {
-      if (response.status === 200){
-        return response.json()
-        .then(data => this.setState({ messageModalShow: true , messageModalHdr: 'Information', messageModalMsg: data }))
-      }
-      else { 
-        return response.json()
-        .then(data => this.setState({ messageModalShow: true , messageModalHdr: 'Error', messageModalMsg: data }))
-      }
+    ])
+    .then (async([dtlresponse, dateresponse]) => {
+      const dtlData = await dtlresponse.json()
+      const dateData = await dateresponse.json()
+      return [dtlData, dateData]
     }) 
-    .catch(err => console.log) 
-
+    .then(data => this.setState({ msgModalShow: true , msgModalHeader: 'Information', msgModalContent1: data[0], msgModalContent2: data[1] }))
+    .catch(err => console.log('Fail to call updateperiod API: ' + err)) 
   }
 
   savePeriod = () => {
@@ -172,118 +176,118 @@ class PeriodDtl extends Component {
 
   render() {
       
-      return (
+    return (
         
-        <Container className="pa2">
+      <Container className="pa2">
         
-          <h1>Maintain Period</h1>
+        <h1>Maintain Period</h1>
 
-          <Row>
-            <Col className="tr">
-              <Button className="ma1" onClick={ this.savePeriod }>
-                Save
-              </Button> 
-              <Button className="ma1" onClick={ ()=>this.props.history.push('/PeriodLP') }>  
-                Cancel
-              </Button> 
-            </Col>
-          </Row>
+        <Row>
+          <Col className="tr">
+            <Button className="ma1" onClick={ this.savePeriod }>
+              Save
+            </Button> 
+            <Button className="ma1" onClick={ ()=>this.props.history.push('/PeriodLP') }>  
+              Cancel
+            </Button> 
+          </Col>
+        </Row>
          
-          <Form className="pa2">
-
-            <Form.Row>
-
-              <Form.Group as={Col} controlId="formPeriodName">
-                <Form.Label>Period Name</Form.Label>
-                <Form.Control 
-                  type="text"
-                  placeholder="Enter Period name" 
-                  name="periodname" 
-                  value={ this.state.periodname } 
-                  onChange={ this.handlePeriodDetailChange }
-                  onBlur={ this.trimInputValue }
-                />
-              </Form.Group>
-
-              <Form.Group as={Col} controlId="formPeriodStatus">
-                <Form.Label>Status</Form.Label>
-                <Form.Control 
-                  as="select" 
-                  name="status"
-                  value={ this.state.status } 
-                  onChange={ this.handlePeriodDetailChange }
-                >
-                  <option value="A">Active</option>
-                  <option value="I">Inactive</option>
-                </Form.Control>
-              </Form.Group>
-
-            </Form.Row>
-
-            <Form.Group controlId="formPeriodDescr">
-              <Form.Label>Description</Form.Label>
+        <Form className="pa2">
+          <Form.Row>
+            <Form.Group as={Col} controlId="formPeriodName">
+              <Form.Label>Period Name</Form.Label>
               <Form.Control 
                 type="text"
-                placeholder="Enter Period Description" 
-                name="description"
-                value={ this.state.description } 
+                placeholder="Enter period name" 
+                name="periodname" 
+                value={ this.state.periodname } 
                 onChange={ this.handlePeriodDetailChange }
                 onBlur={ this.trimInputValue }
               />
             </Form.Group>
 
-            <Modal show={ this.state.dateModalShow } onHide={ this.dateModalClose }>
-              <Modal.Header closeButton><h4>Select Dates</h4></Modal.Header>
-              <Modal.Body className="tc">
-                <DayPicker 
-                  selectedDays={ this.state.selectedDays }
-                  onDayClick={ this.handleDayClick }
-                />
-              </Modal.Body>
-              <Modal.Footer>
-                <Button onClick={ this.dateModalClose }>OK</Button>
-              </Modal.Footer>
-            </Modal>
+            <Form.Group as={Col} controlId="formPeriodStatus">
+              <Form.Label>Status</Form.Label>
+              <Form.Control 
+                as="select" 
+                name="status"
+                value={ this.state.status }
+                onChange={ this.handlePeriodDetailChange }
+              >
+                <option value="A">Active</option>
+                <option value="I">Inactive</option>
+              </Form.Control>
+            </Form.Group>
+
+          </Form.Row>
+
+          <Form.Group controlId="formPeriodDescr">
+            <Form.Label>Description</Form.Label>
+            <Form.Control 
+              type="text"
+              placeholder="Enter period description" 
+              name="description"
+              value={ this.state.description } 
+              onChange={ this.handlePeriodDetailChange }
+              onBlur={ this.trimInputValue }
+            />
+          </Form.Group>
+
+          <Modal show={ this.state.dateModalShow } onHide={ this.dateModalClose }>
+            <Modal.Header closeButton><h4>Select Dates</h4></Modal.Header>
+            <Modal.Body className="tc">
+              <DayPicker 
+                selectedDays={ this.state.selectedDays }
+                onDayClick={ this.handleDayClick }
+              />
+            </Modal.Body>
+            <Modal.Footer>
+              <Button onClick={ this.dateModalClose }>OK</Button>
+            </Modal.Footer>
+          </Modal>
             
-            <Form.Row>
-              <Col>Selected dates</Col>
-              <Col className="tr">
-                <Button variant="primary"
-                        onClick={ ()=>this.setState({ dateModalShow: true }) }>
-                  Select dates
-                </Button>
-              </Col>
-            </Form.Row>
+          <Form.Row>
+            <Col>Selected dates</Col>
+            <Col className="tr">
+              <Button 
+                variant="primary"
+                onClick={ ()=>this.setState({ dateModalShow: true }) }
+              >
+                Select dates
+              </Button>
+            </Col>
+          </Form.Row>
             
-            <Form.Row>
-              {this.state.selectedDays.length > 0 &&
-                this.state.selectedDays.map((day, i) => {
-                  return (
-                    <ListGroup key={ i }
-                    >
-                      <ListGroup.Item 
-                        className="ma1 link dim black mw5 dt hide-child ba b--black-20 pa4 br2 pointer"
-                      >
-                         { day.toLocaleDateString() }
-                      </ListGroup.Item>
-                    </ListGroup>
-                  )
-                })
-              }
-            </Form.Row>         
+          <Form.Row>
+            {
+              this.state.selectedDays.length > 0 &&
+              this.state.selectedDays.map((day, i) => {
+                return (
+                  <ListGroup key={ i }>
+                    <ListGroup.Item className="ma1 link dim black mw5 dt hide-child ba b--black-20 pa4 br2 pointer">
+                      { day.toLocaleDateString() }
+                    </ListGroup.Item>
+                  </ListGroup>
+                )
+              })
+            }
+          </Form.Row>         
 
-          </Form>
+        </Form>
 
-          <MessageModal
-            show={ this.state.messageModalShow }
-            onHide={ this.messageModalClose }
-            header={ this.state.messageModalHdr }
-            errmsg={ this.state.messageModalMsg }
-          />
+        <MessageModal
+          show={ this.state.msgModalShow }
+          onHide={ this.msgModalClose }
+          headerText={ this.state.msgModalHeader }
+          contentText1={ this.state.msgModalContent1 }
+          contentText2={ this.state.msgModalContent2 }
+        />
 
-        </Container>
+      </Container>
     );
   }
+  
 }
  
 export default PeriodDtl;

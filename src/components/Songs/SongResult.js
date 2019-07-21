@@ -6,8 +6,7 @@ class SongResult extends Component {
   render(){
     return (
       <Container className="ma2">
-
-        <Table>
+        <Table responsive>
           <thead>
             <tr>
               <th>#</th>
@@ -17,20 +16,22 @@ class SongResult extends Component {
               <th>Composer</th>
             </tr>
           </thead>
+
           <tbody>
-          {
+          {       
             this.props.songList.map((song, i) => {
               return(
-                <tr key= {i}>
-                  <td>{ i+1 }</td>
-                  <td 
-                    style={ {cursor: 'pointer'} } 
-                    className="fw6 blue no-underline underline-hover" 
-                    onClick={ ()=>this.props.openEditMode(song) }>
-                    { song.songname }</td>
-                  <td>{ song.songtype }</td>
-                  <td>{ song.songkey }</td>
-                  <td>{ song.composer }</td>
+                <tr key={i}>
+                  <td className="w-10">{ i+1 }</td>
+                  <td
+                    className="fw6 blue no-underline underline-hover pointer w-30"
+                    onClick={ ()=>this.props.openEditMode(song) }
+                  >
+                    { song.songname }
+                  </td>
+                  <td className="w-20">{ song.songtype }</td>
+                  <td className="w-10">{ song.songkey }</td>
+                  <td className="w-30">{ song.composer }</td>
                 </tr>
               )
             })
@@ -41,6 +42,7 @@ class SongResult extends Component {
       </Container>
     )
   }
+
 }
 
 export default SongResult;

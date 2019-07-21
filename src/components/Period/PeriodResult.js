@@ -6,28 +6,30 @@ class PeriodResult extends Component {
   render(){
     return (
       <Container className="ma2">      
-        <Table>
+        <Table responsive>
           <thead>
             <tr>
               <th>#</th>
-              <th>Period Name</th>
+              <th>Name</th>
               <th>Status</th>
               <th>Description</th>
             </tr>
           </thead>
+          
           <tbody>
           {
             this.props.periodList.map((period, i) => {
               return(
                 <tr key= {i}>
-                  <td>{ i+1 }</td>
+                  <td className="w-5">{ i+1 }</td>
                   <td 
-                    className="fw6 blue no-underline underline-hover pointer"
-                    onClick={ ()=>this.props.openEditMode(period) }>
+                    className="fw6 blue no-underline underline-hover pointer w-30"
+                    onClick={ ()=>this.props.openEditMode(period) }
+                  >
                     { period.periodname }
                   </td>
-                  <td>{ (period.status==='A')? 'Active': 'Inactive' }</td>
-                  <td>{ period.description }</td>
+                  <td className="w-10">{ (period.status==='A')? 'Active': 'Inactive' }</td>
+                  <td className="w-55">{ period.description }</td>
                 </tr>
               )
             })
@@ -38,6 +40,7 @@ class PeriodResult extends Component {
       </Container>
     )
   }
+
 }
 
 export default PeriodResult;

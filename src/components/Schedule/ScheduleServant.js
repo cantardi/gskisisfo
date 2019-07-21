@@ -1,27 +1,31 @@
 import React, { Component } from 'react';
-import { Table, Col } from 'react-bootstrap';
+import { Container, Table, Col } from 'react-bootstrap';
 import { DateConvert } from '../../helpers/function';
 
-class ServantSchedulerStep3 extends Component {
+class ScheduleServant extends Component {
   
-  render() {
-    
-    if (this.props.currentStep !== 3) { // Prop: The current step
-      return null
-    }
+  returnServantName = (dateid, roleid) => {
+    const servant = this.props.servantSchedule
+                    .filter(schedule => Number(schedule.dateid) === dateid)
+                    .filter(schedule => Number(schedule.roleid) === roleid)
+                  
+    if (servant.length > 0) return servant[0].servantname
+    else return '-'
 
-    if (this.props.isValidated === true) {
-      return (
-        <div>
+  }
+
+	render(){
+    
+		return (
+			<Container>
         {
-          this.props.displayedDates.map(date => {
+          this.props.periodDates.map(date => {
             return(
               <Col 
                 key={ "date-"+date.id }
                 md={5}
                 className='t v-top dib br3 ma2 shadow-2'
               > 
-
                 <h4 className="pa2 tc">
                   { DateConvert(new Date(date.predefineddate)) }
                 </h4>
@@ -39,10 +43,7 @@ class ServantSchedulerStep3 extends Component {
                           
                           <td className="w-50">
                           {
-                            this.props.selectedServants.length > 0 &&
-                            this.props.selectedServants
-                            .filter(servant => Number(servant.dateid) === date.id)
-                            .filter(servant => Number(servant.roleid) === role.id)[0].servantname
+                            this.returnServantName(date.id, role.id)
                           }
                           </td>
                         </tr>
@@ -55,20 +56,10 @@ class ServantSchedulerStep3 extends Component {
             )
           })
         }
-        </div>
-      )
-    }
-    else {
-      return (
-        <div className="alert alert-info" role="alert">
-          Servant has not been selected for some pre-defined dates. Click on Previous button to complete the selection in order to submit.
-        </div>
-      )
-    }
-    
-  }
-
+			</Container>					
+		);
+	}
+	
 }
- 
-export default ServantSchedulerStep3;
 
+export default ScheduleServant;

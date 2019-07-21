@@ -11,7 +11,9 @@ class ServantDtl extends Component {
   constructor(props){
     super(props);
     const servant = this.props.location.state;
+
     window.scrollTo(0, 0);
+    
     if (typeof servant === 'undefined') {
       this.state = {
         servantid: '',
@@ -22,9 +24,9 @@ class ServantDtl extends Component {
         mobile1: '',
         mobile2: '',
         schedulingflag: false,
-        modalShow: false, 
-        modalMsg: '',
-        modalHdr: '',
+        msgModalShow: false, 
+        msgModalContent: '',
+        msgModalHeader: '',
       }
     }
     else {
@@ -37,14 +39,14 @@ class ServantDtl extends Component {
         mobile1: servant.mobile1,
         mobile2: servant.mobile2,
         schedulingflag: servant.schedulingflag,
-        modalShow: false, 
-        modalMsg: '',
-        modalHdr: '',
+        msgModalShow: false, 
+        msgModalContent: '',
+        msgModalHeader: '',
       }
     }
   }
 
-  handleChange = (e) => {
+  handleServantDetailChange = (e) => {
     this.setState({ [e.target.name]: e.target.value });
   }
   
@@ -56,17 +58,18 @@ class ServantDtl extends Component {
     this.setState({ birthdate: new Date(day).toLocaleDateString() });
   }
 
-  formatInput = (e) => {
+  trimInputValue = (e) => {
     this.setState({ [e.target.name]: e.target.value.trim() })
   }
 
-  modalClose = () => this.props.history.push('/ServantLP')
+  msgModalClose = () => {
+    this.setState({ msgModalShow: false })
+    this.props.history.push('/ServantLP')
+  }
 
-  saveServant = () => {
+  insertNewServant = () => {
     
-    if (this.state.servantid === ''){
-      
-      fetch('http://localhost:3001/addservant', {
+    fetch('http://localhost:3001/addservant', {
       method: 'post',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({
@@ -79,20 +82,15 @@ class ServantDtl extends Component {
         schedulingflag: this.state.schedulingflag,
       })
     })
-      .then (response => {
-        if (response.status === 200){
-          return response.json()
-          .then(data => this.setState({ modalShow: true , modalHdr: 'Information', modalMsg: data }))
-        }
-        else { 
-          return response.json()
-          .then(data => this.setState({ modalShow: true , modalHdr: 'Error', modalMsg: data }))
-        }})
-      .catch(err => console.log)
-    }
-    else {
-      
-      fetch('http://localhost:3001/updateservant', {
+    .then(response => response.json())
+    .then(data => this.setState({ msgModalShow: true , msgModalHeader: 'Information', msgModalContent: data }))     
+    .catch(err => console.log('Fail to call addservant API: ' + err))
+
+  }
+
+  updateExistingServant = () => {
+
+    fetch('http://localhost:3001/updateservant', {
       method: 'put',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({
@@ -106,141 +104,143 @@ class ServantDtl extends Component {
         schedulingflag: this.state.schedulingflag,
       })
     })
-    .then (response => {
-      if (response.status === 200){
-        return response.json()
-        .then(data => this.setState({ modalShow: true , modalHdr: 'Information', modalMsg: data }))
-      }
-      else { 
-        return response.json()
-        .then(data => this.setState({ modalShow: true , modalHdr: 'Error', modalMsg: data }))
-      }
-    }) 
-    .catch(err => console.log)
-    }  
+    .then(response => response.json())
+    .then(data => this.setState({ msgModalShow: true , msgModalHeader: 'Information', msgModalContent: data }))     
+    .catch(err => console.log('Fail to call updateservant API: ' + err))
+
+  }
+
+  saveServant = () => {
+    
+    if (this.state.servantid === ''){
+      this.insertNewServant();
+    }
+    else {
+      this.updateExistingServant();
+    } 
 
   }
 
   render() {
-      return (
 
-        <Container className="pa2">
+    return (
+      <Container className="pa2">
 
-          <h1>Maintain Servant</h1>
+        <h1>Maintain Servant</h1>
 
-          <Form className="pa2">
+        <Form className="pa2">
             
-            <Form.Row>
-              <Col className="tr">
-                <Button className="ma1" onClick={ this.saveServant }> 
-                  Save
-                </Button> 
-                <Button className="ma1" onClick={ ()=>this.props.history.push('/ServantLP') }>
-                  Cancel
-                </Button> 
-              </Col>
-            </Form.Row>
+          <Form.Row>
+            <Col className="tr">
+              <Button className="ma1" onClick={ this.saveServant }> 
+                Save
+              </Button> 
+              <Button className="ma1" onClick={ ()=>this.props.history.push('/ServantLP') }>
+                Cancel
+              </Button> 
+            </Col>
+          </Form.Row>
             
-            <Form.Group controlId="formServantName">
-              <Form.Label>Servant Name *</Form.Label>
+          <Form.Group controlId="formServantName">
+            <Form.Label>Servant Name *</Form.Label>
+            <Form.Control 
+              type="text"
+              placeholder="Enter servant name" 
+              name="servantname"
+              value={ this.state.servantname } 
+              onChange={ this.handleServantDetailChange }
+              onBlur={ this.trimInputValue }
+            />
+          </Form.Group>
+
+          <Form.Row>
+            <Form.Group as={Col} controlId="formGender">
+              <Form.Label>Gender *</Form.Label>
               <Form.Control 
-                type="text"
-                placeholder="Enter servant name" 
-                name="servantname"
-                value={ this.state.servantname } 
-                onChange={ this.handleChange }
-                onBlur={ this.formatInput }
+                as="select" 
+                name="gender"
+                value={ this.state.gender } 
+                onChange={ this.handleServantDetailChange }
+              >
+                <option value="">Choose...</option>
+                <option value="M">Male</option>
+                <option value="F">Female</option>
+              </Form.Control>
+            </Form.Group>
+
+            <Form.Group as={Col} controlId="formDob">
+              <Form.Label>Date of Birth *</Form.Label>
+              <div>
+              <DayPickerInput
+                placeholder={`${formatDate(new Date())}`}
+                name="birthdate"
+                value={ this.state.birthdate }
+                inputProps={ {className: 'form-control'} }
+                formatDate={ formatDate }
+                parseDate={ parseDate }
+                onDayChange={ this.handleDayChange }
+              />
+              </div>
+            </Form.Group>
+
+          </Form.Row>
+
+          <Form.Row>
+            <Form.Group as={Col} controlId="formEmail">
+              <Form.Label>Email *</Form.Label>
+              <Form.Control 
+                placeholder="Enter email" 
+                name="email"
+                value={ this.state.email } 
+                onChange={ this.handleServantDetailChange }
+                onBlur={ this.trimInputValue }
               />
             </Form.Group>
 
-            <Form.Row>
-              <Form.Group as={Col} controlId="formGender">
-                <Form.Label>Gender *</Form.Label>
-                <Form.Control 
-                  as="select" 
-                  name="gender"
-                  value={ this.state.gender } 
-                  onChange={ this.handleChange }
-                >
-                  <option value="">Choose...</option>
-                  <option value="M">Male</option>
-                  <option value="F">Female</option>
-                </Form.Control>
-              </Form.Group>
-
-              <Form.Group as={Col} controlId="formDob">
-                <Form.Label>Date of Birth *</Form.Label>
-                <div>
-                <DayPickerInput
-                  placeholder={`${formatDate(new Date())}`}
-                  name="birthdate"
-                  value={ this.state.birthdate }
-                  inputProps={ {className: 'form-control'} }
-                  formatDate={ formatDate }
-                  parseDate={ parseDate }
-                  onDayChange={ this.handleDayChange }
-                />
-                </div>
-              </Form.Group>
-
-            </Form.Row>
-
-            <Form.Row>
-              <Form.Group as={Col} controlId="formEmail">
-                <Form.Label>Email *</Form.Label>
-                <Form.Control 
-                  placeholder="Enter email" 
-                  name="email"
-                  value={ this.state.email } 
-                  onChange={ this.handleChange }
-                  onBlur={ this.formatInput }
-                />
-              </Form.Group>
-
-              <Form.Group as={Col} controlId="formMobile1">
-                <Form.Label>Mobile 1 *</Form.Label>
-                <Form.Control 
-                  placeholder="Enter first mobile" 
-                  name="mobile1"
-                  value={ this.state.mobile1 }
-                  onChange={ this.handleChange }
-                  onBlur={ this.formatInput }
-                />
-              </Form.Group>
-
-              <Form.Group as={Col} controlId="formMobile2">
-                <Form.Label>Mobile 2</Form.Label>
-                <Form.Control 
-                  placeholder="Enter second mobile" 
-                  name="mobile2"
-                  value={ this.state.mobile2 }
-                  onChange={ this.handleChange }
-                  onBlur={ this.formatInput }
-                />
-              </Form.Group>
-            </Form.Row>
-
-            <Form.Group id="formGridCheckbox">
-              <Form.Check 
-                label="Available for Scheduling" 
-                name="schedulingflag"
-                checked={ this.state.schedulingflag }
-                onChange={ this.handleChecked }
+            <Form.Group as={Col} controlId="formMobile1">
+              <Form.Label>Mobile 1 *</Form.Label>
+              <Form.Control 
+                placeholder="Enter first mobile" 
+                name="mobile1"
+                value={ this.state.mobile1 }
+                onChange={ this.handleServantDetailChange }
+                onBlur={ this.trimInputValue }
               />
             </Form.Group>
 
-          </Form>
+            <Form.Group as={Col} controlId="formMobile2">
+              <Form.Label>Mobile 2</Form.Label>
+              <Form.Control 
+                placeholder="Enter second mobile" 
+                name="mobile2"
+                value={ this.state.mobile2 }
+                onChange={ this.handleServantDetailChange }
+                onBlur={ this.trimInputValue }
+              />
+            </Form.Group>
+          </Form.Row>
 
-          <MessageModal
-            show={ this.state.modalShow }
-            onHide={ this.modalClose }
-            header={ this.state.modalHdr }
-            errmsg={ this.state.modalMsg }
-          />
-          
-        </Container>
+          <Form.Group id="formGridCheckbox">
+            <Form.Check 
+              label="Available for Scheduling" 
+              name="schedulingflag"
+              checked={ this.state.schedulingflag }
+              onChange={ this.handleChecked }
+            />
+          </Form.Group>
+
+        </Form>
+
+        <MessageModal
+          show={ this.state.msgModalShow }
+          onHide={ this.msgModalClose }
+          headerText={ this.state.msgModalHeader }
+          contentText1={ this.state.msgModalContent }
+        />
+      </Container>
     );
   }
+  
 }
  
 export default ServantDtl;

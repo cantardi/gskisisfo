@@ -6,6 +6,14 @@ class Administration extends Component {
 		return (
 			<Container className='tc ma2'>
 
+				<Button onClick={()=> this.props.history.push('/RoleList')} 
+								className='tc v-top dib br3 pa3 ma2 grow bw2 w5 h5 shadow-3'>
+					<div>
+						<h4>Role Management</h4>
+						<p>Manage the roles in GSKI.</p>
+					</div>
+				</Button>
+
 				<Button onClick={()=> this.props.history.push('/PeriodLP')} 
 								className='tc v-top dib br3 pa3 ma2 grow bw2 w5 h5 shadow-3'>
 					<div>
@@ -30,7 +38,7 @@ class Administration extends Component {
 					</div>
 				</Button>
 				
-				<Button onClick={()=> this.props.history.push('/PeriodLP')} 
+				<Button onClick={()=> this.props.history.push('/ScheduleLP')} 
 								className='tc v-top dib br3 pa3 ma2 grow bw2 w5 h5 shadow-3'>
 					<div>
 						<h4>Schedule Management</h4>

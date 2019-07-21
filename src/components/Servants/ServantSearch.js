@@ -58,7 +58,8 @@ class ServantSearch extends Component {
 				</Form>
 			</Container>   
     )      
-  }
+	}
+	
 }
 
 export default ServantSearch;

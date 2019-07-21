@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
-import { Table } from 'react-bootstrap';
+import { Container, Table } from 'react-bootstrap';
 import { DateConvert } from '../../helpers/function';
 
-class SongSchedulerStep3 extends Component {
+class ScheduleSong extends Component {
   
   returnBgColor = (songtype) => {
     let trBgColor = ''
@@ -26,17 +26,12 @@ class SongSchedulerStep3 extends Component {
     return trBgColor;
   }
 
-  render() {
-
-    if (this.props.currentStep !== 3) { // Prop: The current step
-      return null
-    }
-
-    if (this.props.isValidated === true) {
-      return (
-        <div>
+	render(){
+    
+		return (
+      <Container>
         {
-          this.props.displayedDates.map(date => {
+          this.props.periodDates.map(date => {
             return(
               <Table responsive size="sm" bordered key={ date.id }>
                 <thead key={ 'th-' + date.id }>
@@ -52,16 +47,16 @@ class SongSchedulerStep3 extends Component {
                 </thead>
                 <tbody>
                 {
-                  this.props.selectedSongs.length > 0 &&
-                  this.props.selectedSongs
-                  .filter(selectedSong => Number(selectedSong.dateid)===date.id)
-                  .map((selectedSong, i) => {
+                  this.props.songSchedule.length > 0 &&
+                  this.props.songSchedule
+                  .filter(song => Number(song.dateid)===date.id)
+                  .map((song, i) => {
                     return (
-                      <tr key={ 'tr-' + date.id + '-' + selectedSong.song.id } className={ this.returnBgColor(selectedSong.song.songtype) }>
+                      <tr key={ 'tr-' + date.id + '-' + song.id } className={ this.returnBgColor(song.songtype) }>
                         <td className="tc w-10"> {i+1}. </td>
-                        <td className="w-60"> { selectedSong.song.songname } <i>({ selectedSong.song.lyric.split('\n')[0] }...) </i></td>
-                        <td className="tc w-20"> { selectedSong.song.songtype } </td>
-                        <td className="tc w-10"> { selectedSong.song.songkey } </td>
+                        <td className="w-60"> { song.songname } <i>({ song.lyric.split('\n')[0] }...) </i></td>
+                        <td className="tc w-20"> { song.songtype } </td>
+                        <td className="tc w-10"> { song.songkey } </td>
                       </tr>
                     )
                   })
@@ -70,20 +65,11 @@ class SongSchedulerStep3 extends Component {
               </Table>
             )
           })
-        }		
-        </div>
-      )
-    }
-    else {
-      return (
-        <div className="alert alert-info" role="alert">
-          Song has not been selected for some pre-defined dates. Click on Previous button to complete the selection in order to submit.
-        </div>
-      )
-    }
-  }
-
+        }	
+      </Container>	
+		);
+	}
+	
 }
- 
-export default SongSchedulerStep3;
 
+export default ScheduleSong;
