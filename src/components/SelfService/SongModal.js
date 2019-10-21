@@ -1,10 +1,8 @@
 import React, { Component } from 'react';
-import { Table, Button, OverlayTrigger, Modal, InputGroup, FormControl, Row, Col, Popover } from 'react-bootstrap';
-import { DateConvert } from '../../helpers/function';
-import MessageModal from '../MessageModal';
-import { MdSearch, MdAddCircleOutline, MdVideoLibrary, MdClose } from 'react-icons/md';
+import { Button, Modal, Popover, OverlayTrigger, Col, Row, InputGroup, FormControl } from 'react-bootstrap';
+import { MdAddCircleOutline, MdVideoLibrary, MdSearch } from 'react-icons/md';
 
-class SongSchedulerStep2 extends Component {
+class SongModal extends Component {
 
   constructor(props){
     super(props);
@@ -12,26 +10,13 @@ class SongSchedulerStep2 extends Component {
       msgModalShow: false, 
       msgModalContent: '',
       msgModalHeader: '',
-      songModalShow: false,
       searchSongName: '',
-      filteredSongs: [], 
-      currentdateid: '',
+      filteredSongs: [],
     }
   }
 
-  msgModalClose = () => {
-    this.setState({ msgModalShow: false })
-  }
-  
-  songModalClose = () => {
-    this.setState({ songModalShow: false })
-    this.setState({ filteredSongs: [] })
-    this.setState({ searchSongName: ''})
-  }
-
-  songModalOpen = (e) => {
-    this.setState({ songModalShow: true })
-    this.setState({ currentdateid: e.target.id })
+  closeSongModal = () => {
+    this.setState({ filteredSongs: [] }, this.props.closeSongModal)
   }
 
   handleChange = (e) => {
@@ -81,9 +66,10 @@ class SongSchedulerStep2 extends Component {
     }
   }
 
-  callSongModal = () => {
+	render(){
+    
     return(
-      <Modal show={this.state.songModalShow} onHide={this.songModalClose} size="xl">
+      <Modal show={this.props.songModalShow} onHide={this.closeSongModal} size="xl">
 
         <Modal.Header closeButton><h4>Select Song</h4></Modal.Header>
         
@@ -118,7 +104,7 @@ class SongSchedulerStep2 extends Component {
                   <Row className="bg-light-blue br--top br3 pa2 tc">
                     <div className="w-80"><h1 className="f5 b">{ filteredSong.songname }</h1></div>
                     <div className="w-20">
-                      <MdAddCircleOutline size={25} className="pointer dim" onClick={ ()=>this.props.addSong(this.state.currentdateid, filteredSong) } />
+                      <MdAddCircleOutline size={25} className="pointer dim" onClick={ ()=>this.props.addSong(filteredSong) } />
                       <MdVideoLibrary size={25} className="pointer dim" onClick={ ()=>this.openVideo(filteredSong.url1) }/>
                     </div>
                   </Row>
@@ -149,82 +135,13 @@ class SongSchedulerStep2 extends Component {
         </Modal.Body>
 
         <Modal.Footer>
-          <Button onClick={this.songModalClose}>OK</Button>
+          <Button onClick={this.closeSongModal}>OK</Button>
         </Modal.Footer>
         
-      </Modal>
-    )
-  }
-
-  render() {
-    
-    if (this.props.currentStep !== 2) { // Prop: The current step
-      return null
-    }
-
-    return (   
-      <div>
-        {
-          this.props.displayedDates.map(date => {
-          return(
-            <Table key={ 'tbl'+date.id } responsive>            
-              <thead>
-                <tr>
-
-                  <th key={ 'th'+date.id }>
-                    { DateConvert(new Date(date.predefineddate)) } 
-                  </th>
-                  
-                  <th>
-                    <Button key={ 'btn'+date.id } id={ date.id } onClick={ this.songModalOpen }>Select Song</Button>
-                  </th>
-
-                </tr>
-              </thead>
-              <tbody>
-                <tr> 
-                  <td colSpan="2">
-                    {
-                      this.props.selectedSongs.length > 0 &&
-                      this.props.selectedSongs
-                      .filter(selectedSong => Number(selectedSong.dateid)===date.id)
-                      .map(selectedSong => {
-                        return (
-                          <div 
-                            key={ selectedSong.song.id }
-                            className="tc v-top dib br3 pa3 ma2 bw2 shadow-2"
-                          >
-                            { selectedSong.song.songname }
-                            <MdClose 
-                              className="ml2 pointer dim"
-                              onClick={ ()=>this.props.removeSong('div_' + date.id + '_' + selectedSong.song.id) } />
-                          </div>
-                        )
-                      })
-                    }
-                  </td>
-                </tr>
-              </tbody>
-            </Table>
-          )})
-        }    
-
-        {
-          this.callSongModal()
-        }
-
-        <MessageModal
-          show={ this.state.msgModalShow }
-          onHide={ this.msgModalClose }
-          headerText={ this.state.msgModalHeader }
-          contentText1={ this.state.msgModalContent }
-        />
-
-      </div>
-    )
-  }
-
+      </Modal>	
+		);
+	}
+	
 }
- 
-export default SongSchedulerStep2;
 
+export default SongModal;

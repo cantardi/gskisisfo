@@ -9,6 +9,7 @@ class PeriodLP extends Component {
   constructor(props){
     super(props);
 
+    this.PAGE_CHILD = './PeriodDtl';
     this.state = {
       periodList: [],
       searchPeriodName: '',
@@ -25,9 +26,7 @@ class PeriodLP extends Component {
     this.setState({ [e.target.name]: e.target.value });
   }
 
-  searchPeriod = () => {
-    this.setState({ periodList: [] })
-
+  callSearchPeriodAPI = () => {
     fetch('http://localhost:3001/searchPeriod', {
       method: 'post',
       headers: {'Content-Type': 'application/json'},
@@ -48,7 +47,11 @@ class PeriodLP extends Component {
       }
     }) 
     .catch(err => console.log("Fail to call searchperiod API: " + err)) 
+  }
 
+  searchPeriod = () => {
+    this.setState({ periodList: [] })
+    this.callSearchPeriodAPI();
   }
 
   clearSearch = () => {
@@ -60,12 +63,12 @@ class PeriodLP extends Component {
     })
   }
 
-  routeToPage = (pagename) => {
-    this.props.history.push(pagename);
+  addPeriod = () => {
+    this.props.history.push(this.PAGE_CHILD);
   }
 
-  openEditMode = (period) => {
-    this.props.history.push('/PeriodDtl', period);
+  updatePeriod = (period) => {
+    this.props.history.push(this.PAGE_CHILD, period);
   }
 
   msgModalClose = () => {
@@ -82,7 +85,7 @@ class PeriodLP extends Component {
           key="PeriodAction"
           align="right"
         >
-          <Dropdown.Item onClick={ () => this.routeToPage('/PeriodDtl') }>Add New Period</Dropdown.Item>
+          <Dropdown.Item onClick={ this.addPeriod }>Add New Period</Dropdown.Item>
         </DropdownButton>
 
         <PeriodSearch 
@@ -103,7 +106,7 @@ class PeriodLP extends Component {
             </div>
             <PeriodResult 
               periodList={ this.state.periodList } 
-              openEditMode={ this.openEditMode }
+              openEditMode={ this.updatePeriod }
             />
           </div>
         }

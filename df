@@ -1,0 +1,71 @@
+[33mcommit 13187b5debe984128063840917ef8e302d89db2a[m[33m ([m[1;36mHEAD -> [m[1;32mmaster[m[33m, [m[1;31morigin/master[m[33m)[m
+Author: cantardi <cantabile.ardi@gmail.com>
+Date:   Sun Jul 21 15:23:07 2019 +0700
+
+    completed basic code
+
+[33mcommit 08cc7b19a6f0742cfd30cb45de6b8dfb4a7ac2da[m
+Author: cantardi <cantabile.ardi@gmail.com>
+Date:   Sun Jul 21 15:22:35 2019 +0700
+
+    completed basic code
+
+[33mcommit 4bd17127c2502d47a9b0d05c35916b4e606f293c[m
+Author: cantardi <cantabile.ardi@gmail.com>
+Date:   Sat Jun 8 10:59:46 2019 +0700
+
+    Cleaning the code
+
+[33mcommit 7c12f8eddd9afd09a5d439037caa3d63552064d4[m
+Author: cantardi <cantabile.ardi@gmail.com>
+Date:   Thu May 23 23:48:06 2019 +0700
+
+    completed crud
+
+[33mcommit e7c81a546ee40e196750ad577885dcf88d547960[m
+Author: cantardi <cantabile.ardi@gmail.com>
+Date:   Wed May 22 12:57:41 2019 +0700
+
+    Improve control
+
+[33mcommit bcf6942db4d6ed79b4fe4f19cdddff00136477db[m
+Author: cantardi <cantabile.ardi@gmail.com>
+Date:   Fri May 10 08:21:17 2019 +0800
+
+    Finalize design for Song Management
+
+[33mcommit 356aa1c2203c731de622503de1557e8a1a56477a[m
+Author: cantardi <cantabile.ardi@gmail.com>
+Date:   Thu May 2 22:44:33 2019 +0700
+
+    Front-end structure basic confirmed
+
+[33mcommit 84a94134f438b118192077dcf7c4ce19c4bfaf07[m
+Author: cantardi <cantabile.ardi@gmail.com>
+Date:   Mon Apr 29 21:48:30 2019 +0700
+
+    Enter
+
+[33mcommit a651a1bb49d31ee3351eadbc1df2b538af6f1a09[m
+Author: cantardi <cantabile.ardi@gmail.com>
+Date:   Mon Apr 29 21:48:11 2019 +0700
+
+    Enter
+
+[33mcommit fb10e86dec005d70e303ad93e68e28a8ce5adbf9[m
+Author: cantardi <cantabile.ardi@gmail.com>
+Date:   Mon Apr 29 20:24:45 2019 +0700
+
+    Added Song Management
+
+[33mcommit 22639537773df024cd8452a4cfe9f01f8ceb10b3[m
+Author: cantardi <cantabile.ardi@gmail.com>
+Date:   Sat Apr 27 15:24:39 2019 +0700
+
+    enter
+
+[33mcommit 1990d81bda7595afc9eeaf2f3168937ea0f921c6[m
+Author: cantardi <cantabile.ardi@gmail.com>
+Date:   Sat Apr 13 10:34:32 2019 +0700
+
+    Initial commit from Create React App

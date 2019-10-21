@@ -3,6 +3,7 @@ import { Form, Container, Col, Button, Popover, OverlayTrigger } from 'react-boo
 import { DateConvert } from '../../helpers/function';
 import { MdAddCircleOutline, MdVideoLibrary, MdClose } from 'react-icons/md';
 import MessageModal from '../MessageModal';
+import SongModal from './SongModal';
 
 class SelectSong extends Component {
   
@@ -16,54 +17,39 @@ class SelectSong extends Component {
       selectedDate: '',
       displayedSongs: [],
       selectedSongs: [],
-      messageModalShow: false, 
-      messageModalMsg: '',
-      messageModalHdr: '',
+      songModalShow: false,
+      msgModalShow: false, 
+      msgModalHeader: '',
+      msgModalContent: '',
     }
     
   }
 
-  messageModalClose = () => {
-    this.props.history.push('/PeriodLP')
+  msgModalClose = () => {
+    this.props.history.push('/SelfService');
+  }
+
+  openSongModal = () => {
+    this.setState({ songModalShow: true })
+  }
+
+  closeSongModal = () => {
+    this.setState({ songModalShow: false })
   }
 
   handlePeriodChange = (e) => {
-
     this.setState({ selectedPeriod: e.target.value });
     this.setState({ displayedDates: [] });
     this.setState({ selectedSongs: [] });
     this.setState({ displayedSongs: [] });
-    
-    fetch('http://localhost:3001/getperioddate/'+e.target.value, {
-      method: 'get',
-      headers: {'Content-Type': 'application/json'}
-    })
-    .then (response => {
-      if (response.status === 200){
-        return response.json()
-        .then(data => this.setState({ displayedDates: data }))
-      }
-    }) 
-    .catch(err => console.log (err))
+    this.callGetPeriodDateAPI(e.target.value);
   }
 
   handleDateChange = (e) => {
-
     this.setState({ selectedDate: e.target.value });
     this.setState({ selectedSongs: [] });
     this.setState({ displayedSongs: [] });
-    
-    fetch('http://localhost:3001/getsongforselection/'+e.target.value, {
-      method: 'get',
-      headers: {'Content-Type': 'application/json'}
-    })
-    .then (response => {
-      if (response.status === 200){
-        return response.json()
-        .then(data => this.setState({ displayedSongs: data }))
-      }
-    }) 
-    .catch(err => console.log (err))
+    this.callGetSongForSelectionAPI(e.target.value);
   }
 
   handleKeyChange = (songid, e) => {
@@ -85,14 +71,39 @@ class SelectSong extends Component {
       .filter(selectedSong => selectedSong.songid===song.songid)
   }
 
-  addSong = (song) => {
+  addSongFromList = (song) => {
     const { selectedSongs } = this.state;
-
+    
     if (this.validateSong(song).length > 0){
       alert('Song already exists')
     }
     else{
       selectedSongs.push(song);
+      this.setState({ selectedSongs });
+    }
+  }
+
+  restructureSong = (song) => {
+    return ({
+      periodid: Number(this.state.selectedPeriod),
+      dateid: Number(this.state.selectedDate),
+      songid: song.id,
+      songname: song.songname,
+      songtype: song.songtype,
+      songkey: song.songkey
+    })
+  }
+
+  addSongOutofList = (song) => {
+    const { selectedSongs } = this.state;
+    
+    const restructuredSong = this.restructureSong(song)
+
+    if (this.validateSong(restructuredSong).length > 0){
+      alert('Song already exists')
+    }
+    else{
+      selectedSongs.push(restructuredSong);
       this.setState({ selectedSongs });
     }
   }
@@ -110,15 +121,13 @@ class SelectSong extends Component {
     }
   }
 
-  showOverlay = (songlyric) => {
-    return (
-      <Popover placement="right" id="popover-basic" title="Full Lyric">
-        {songlyric}
-      </Popover>
-    )
+  submitSongSelection = () => {
+    if (window.confirm('Are you sure you wish to submit this schedule?')) {
+      this.callSaveSongSelectionAPI();
+    }
   }
-  
-  componentDidMount(){
+
+  callGetPeriodAPI = () => {
     fetch('http://localhost:3001/getperiod', {
       method: 'get',
       headers: {'Content-Type': 'application/json'}
@@ -126,14 +135,76 @@ class SelectSong extends Component {
     .then (response => {
       if (response.status === 200){
         return response.json()
-        .then(data => this.setState({ allperiod: data}))
+        .then(data => this.setState({ allperiod: data }))
       }
       else { 
         return response.json()
-        .then(data => this.setState({ modalShow: true , modalHdr: 'Error', modalMsg: data }))
+        .then(data => this.setState({ msgModalShow: true , msgModalHeader: 'Error', msgModalContent: data }))
       }
     }) 
-    .catch(err => console.log)
+    .catch(err => console.log('Fail to call getperiodapi: ' + err))
+  }
+
+  callGetPeriodDateAPI = (periodid) => {
+    fetch('http://localhost:3001/getperioddate/'+periodid, {
+      method: 'get',
+      headers: {'Content-Type': 'application/json'}
+    })
+    .then (response => {
+      if (response.status === 200){
+        return response.json()
+        .then(data => this.setState({ displayedDates: data }))
+      }
+    }) 
+    .catch(err => console.log('Fail to call getperioddateapi: ' + err))
+  }
+
+  callGetSongForSelectionAPI = (dateid) => {
+    fetch('http://localhost:3001/getsongforselection/'+dateid, {
+      method: 'get',
+      headers: {'Content-Type': 'application/json'}
+    })
+    .then (response => {
+      if (response.status === 200){
+        return response.json()
+        .then(data => this.setState({ displayedSongs: data }))
+      }
+    }) 
+    .catch(err => console.log('Fail to call getsongforselectionapi: ' + err))
+  }
+
+  callSaveSongSelectionAPI = () => {
+ 
+    const selectedSongs = this.state.selectedSongs.map(song => ({
+        periodid: song.periodid,
+        dateid: song.dateid,
+        songid: song.songid,
+        songkey: song.songkey
+      })
+    )
+
+    fetch('http://localhost:3001/saveselectedsong', {
+      method: 'post',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        selectedSongs: selectedSongs
+      })
+    })
+    .then (response => {
+      if (response.status === 200){
+        return response.json()
+        .then(data => this.setState({ msgModalShow: true , msgModalHeader: 'Information', msgModalContent: data }))
+      }
+      else { 
+        return response.json()
+        .then(data => this.setState({ msgModalShow: true , msgModalHeader: 'Error', msgModalContent: data }))
+    }})
+    .catch(err => console.log('Fail to call saveselectedsong API: ' + err))
+
+  }
+
+  componentDidMount(){
+    this.callGetPeriodAPI();
   }
 
   render() {
@@ -199,7 +270,7 @@ class SelectSong extends Component {
                     <Form.Row className="bg-light-blue br--top br3 pa2">
                       <Col md={{ span: 10 }}><h1 className="f5 b">{ song.songname }</h1></Col>
                       <Col sm={{ span: 2 }}>
-                        <MdAddCircleOutline size={25} className="pointer" onClick={ ()=>this.addSong(song) } />
+                        <MdAddCircleOutline size={25} className="pointer" onClick={ ()=>this.addSongFromList(song) } />
                         <MdVideoLibrary size={25} className="pointer" onClick={ ()=>this.openVideo(song.url1) }/>
                       </Col>
                     </Form.Row>
@@ -213,7 +284,11 @@ class SelectSong extends Component {
                       </div>
                       <div className="f6 tl">
                         Lyric: { song.lyric.split('\n')[0] }...
-                        <OverlayTrigger trigger="click" placement="right" overlay={ ()=>this.showOverlay(song.lyric) } >
+                        <OverlayTrigger 
+                          trigger="click" 
+                          placement="auto" 
+                          overlay={ <Popover id="popover-basic" title="Full Lyric">{song.lyric}</Popover> } 
+                        >
                           <div className="dib pointer link dim blue">(Full lyric)</div>
                         </OverlayTrigger>
                       </div>
@@ -279,7 +354,7 @@ class SelectSong extends Component {
               {
                 this.state.selectedDate !== ''? 
                 (
-                  <Button className="ma1" onClick={ this.addFromMasterList }> 
+                  <Button className="ma1" onClick={ this.openSongModal }> 
                     Add from Master List
                   </Button> 
                 ):
@@ -302,11 +377,17 @@ class SelectSong extends Component {
             </Col>
           </Form.Row>
 
+          <SongModal
+            songModalShow={ this.state.songModalShow }
+            closeSongModal={ this.closeSongModal }
+            addSong={ this.addSongOutofList }
+          />
+
           <MessageModal
-            show={ this.state.modalShow }
-            onHide={ this.modalClose }
-            header={ this.state.modalHdr }
-            errmsg={ this.state.modalMsg }
+            show={ this.state.msgModalShow }
+            onHide={ this.msgModalClose }
+            headerText={ this.state.msgModalHeader }
+            contentText1={ this.state.msgModalContent }
           />
           
         </Container> 

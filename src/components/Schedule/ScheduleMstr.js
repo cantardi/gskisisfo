@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { Container, Row, Col, Tab, Nav, Button } from "react-bootstrap";
 import ScheduleSong from './ScheduleSong';
 import ScheduleServant from './ScheduleServant';
-import SelectedSongs from './SelectedSongs';
 import MessageModal from '../MessageModal';
 
 class ScheduleMstr extends Component {
@@ -140,9 +139,6 @@ class ScheduleMstr extends Component {
                 <Nav.Item>
                   <Nav.Link eventKey="second">Servant Schedule</Nav.Link>
                 </Nav.Item>
-                <Nav.Item>
-                  <Nav.Link eventKey="third">Selected Songs</Nav.Link>
-                </Nav.Item>
               </Nav>
             </Col>
             <Col sm={9}>
@@ -181,22 +177,7 @@ class ScheduleMstr extends Component {
                     )
                   }
                 </Tab.Pane>
-                <Tab.Pane eventKey="third">
-                  {
-                    this.state.selectedSongs.length > 0?
-                    (
-                      <SelectedSongs 
-                        selectedSongs = { this.state.selectedSongs }
-                        periodDates = { this.state.periodDates }
-                      />
-                    ):
-                    (
-                      <div className="alert alert-info" role="alert">
-                        Song has not been selected by Worship Leader for this period.
-                      </div>
-                    )
-                  }
-                </Tab.Pane>
+                
               </Tab.Content>
             </Col>
           </Row>

@@ -1,81 +1,82 @@
 import React from 'react';
+import { Form, Button } from 'react-bootstrap'
 
-class SignIn extends React.Component {
+class Login extends React.Component {
+  
   constructor(props){
     super(props);
     this.state = {
-      signInEmail: '',
-      signInPassword: ''
+      signInUsername: '',
+      signInPassword: '',
+      errMsg: '',
     }
   }
 
-  onEmailChange = (event) => {
-    this.setState({signInEmail: event.target.value})
+  handleLoginDetailChange = (e) => {
+    this.setState({ [e.target.name]: e.target.value });
   }
 
-  onPasswordChange = (event) => {
-    this.setState({signInPassword: event.target.value})
-  }
-
-  onSignInClick = () => {
+  handleSubmit = () => {
+    
     fetch('http://localhost:3001/signin', {
       method: 'post',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({
-        email: this.state.signInEmail,
+        username: this.state.signInUsername,
         password: this.state.signInPassword
       })
     })
-      .then (response => response.json())
-      .then (user => {
-        if(user.id) {
-          this.props.pageLoad(user);
-          this.props.routeChange('home');
-        }
-      })
-      .catch(console.log)
-
-  }
-
-  onRegisterClick = () => {
-    this.props.routeChange('register');
+    .then (response => {
+      if (response.status === 200){
+        return response.json()
+        .then(data => this.props.signInToSystem(data))
+      }
+      else {
+        this.setState({ errMsg: 'Username or password is incorrect'})
+      }
+    }) 
+    .catch(err => console.log("Fail to call signin api: " + err))
+      
   }
 
   render(){
     return (
-      <article className='br3 ba dark-gray b--black-10 mv4 w-100 w-50-m w-25-l mw6 shadow-5 center'>
-        <main className="pa4 black-80">
-            <fieldset id="sign_up" className="ba b--transparent ph0 mh0">
-              <legend align='center' className="f1 fw6 ph0 mh0">Sign In</legend>
-              <div className="mt3">
-                <label className="db fw6 lh-copy f6" htmlFor="email-address">Email</label>
-                <input className="pa2 input-reset ba bg-transparent hover-bg-black hover-white w-100"
-                  type="email"
-                  name="email-address" 
-                  id="email-address" 
-                  onChange={this.onEmailChange}/>
-              </div>
-              <div className="mv3">
-                <label className="db fw6 lh-copy f6" htmlFor="password">Password</label>
-                <input className="b pa2 input-reset ba bg-transparent hover-bg-black hover-white w-100" 
-                  type="password" 
-                  name="password" 
-                  id="password" 
-                  onChange={this.onPasswordChange}/>
-              </div>
-            </fieldset>
-            <div className="">
-              <input className="b ph3 pv2 input-reset ba b--black bg-transparent grow pointer f6 dib" type="submit" value="Sign in" 
-                onClick={this.onSignInClick}/>
-            </div>
-            <div className="lh-copy mt3">
-              <p className="f6 link dim black db pointer" onClick={this.onRegisterClick}>Register</p>
-            </div>
-        </main>
-      </article>
+      <div className="vh-100 dt w-100">
+        <div className="dtc v-mid">
+          
+          <Form className="br2 pa4 bw2 center mw6-ns shadow-2">
+            <h3 className="tc pa3">Account Login</h3>
+
+            <Form.Group controlId="formBasicUsername">
+              <Form.Label>Username</Form.Label>
+              <Form.Control type="username" name="signInUsername" placeholder="Enter username" onChange={this.handleLoginDetailChange} required />
+            </Form.Group>
+
+            <Form.Group controlId="formBasicPassword">
+              <Form.Label>Password</Form.Label>
+              <Form.Control type="password" name="signInPassword" placeholder="Enter password" onChange={this.handleLoginDetailChange}  required/>
+            </Form.Group>
+
+            <Form.Row>
+              <Button className="w-100" variant="primary" onClick={this.handleSubmit}>
+                Login
+              </Button>
+            </Form.Row>
+            
+            {
+              this.state.errMsg !== ''? (
+                <div className="alert alert-danger mt3 tc" role="alert">{this.state.errMsg}</div>
+              ): (
+                null
+              )
+            }
+
+          </Form>
+        </div>
+      </div>
     )  
   }
   
 }
 
-export default SignIn;
+export default Login;

@@ -11,6 +11,7 @@ class PeriodDtl extends Component {
     const period = this.props.location.state;
     
     window.scrollTo(0, 0);
+    this.PAGE_PARENT = './PeriodLP'
 
     if (typeof period === 'undefined') {
       this.state = {
@@ -32,8 +33,7 @@ class PeriodDtl extends Component {
         periodname: period.periodname,
         status: period.status,
         description: period.description,
-        selectedDays: [],
-        messageModalShow: false, 
+        selectedDays: [], 
         msgModalShow: false,
         msgModalContent1: '',
         msgModalContent2: '',
@@ -74,9 +74,9 @@ class PeriodDtl extends Component {
     this.setState({ dateModalShow: false })
   }
   
-  getPeriodDates = () => {
+  callGetPeriodDateAPI = (periodid) => {
     
-    fetch('http://localhost:3001/getperioddate/' + this.state.periodid, {
+    fetch('http://localhost:3001/getperioddate/' + periodid, {
       method: 'get',
       headers: {'Content-Type': 'application/json'}
     })
@@ -100,10 +100,7 @@ class PeriodDtl extends Component {
 
   }
 
-  insertNewPeriod = () => {
-    
-    const convertedDays =
-      this.state.selectedDays.map(selectedDay => new Date(selectedDay).toLocaleDateString());
+  callAddPeriodAPI = (convertedDays) => {
 
     fetch('http://localhost:3001/addperiod', {
       method: 'post',
@@ -121,11 +118,8 @@ class PeriodDtl extends Component {
 
   }
 
-  updateExistingPeriod = () => {
+  callUpdatePeriodAPI = (convertedDays) => {
     
-    const convertedDays =
-      this.state.selectedDays.map(selectedDay => new Date(selectedDay).toLocaleDateString());
-
     Promise.all([
       fetch('http://localhost:3001/updateperioddtl', {
         method: 'put',
@@ -158,10 +152,14 @@ class PeriodDtl extends Component {
   savePeriod = () => {
     
     if (this.state.periodid === ''){
-      this.insertNewPeriod();
+      const convertedDays =
+        this.state.selectedDays.map(selectedDay => new Date(selectedDay).toLocaleDateString());
+      this.callAddPeriodAPI(convertedDays);
     }
     else {
-      this.updateExistingPeriod(); 
+      const convertedDays =
+        this.state.selectedDays.map(selectedDay => new Date(selectedDay).toLocaleDateString());
+      this.callUpdatePeriodAPI(convertedDays); 
     } 
 
   }
@@ -169,7 +167,7 @@ class PeriodDtl extends Component {
   componentDidMount(){
 
     if (this.state.periodid !== ''){
-      this.getPeriodDates();
+      this.callGetPeriodDateAPI(this.state.periodid);
     }
 
   }
@@ -187,7 +185,7 @@ class PeriodDtl extends Component {
             <Button className="ma1" onClick={ this.savePeriod }>
               Save
             </Button> 
-            <Button className="ma1" onClick={ ()=>this.props.history.push('/PeriodLP') }>  
+            <Button className="ma1" onClick={ ()=>this.props.history.push(this.PAGE_PARENT) }>  
               Cancel
             </Button> 
           </Col>
@@ -196,7 +194,7 @@ class PeriodDtl extends Component {
         <Form className="pa2">
           <Form.Row>
             <Form.Group as={Col} controlId="formPeriodName">
-              <Form.Label>Period Name</Form.Label>
+              <Form.Label>Period Name*</Form.Label>
               <Form.Control 
                 type="text"
                 placeholder="Enter period name" 
@@ -223,7 +221,7 @@ class PeriodDtl extends Component {
           </Form.Row>
 
           <Form.Group controlId="formPeriodDescr">
-            <Form.Label>Description</Form.Label>
+            <Form.Label>Description*</Form.Label>
             <Form.Control 
               type="text"
               placeholder="Enter period description" 
@@ -232,6 +230,7 @@ class PeriodDtl extends Component {
               onChange={ this.handlePeriodDetailChange }
               onBlur={ this.trimInputValue }
             />
+            <Form.Control.Feedback>Hello</Form.Control.Feedback>
           </Form.Group>
 
           <Modal show={ this.state.dateModalShow } onHide={ this.dateModalClose }>

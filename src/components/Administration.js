@@ -46,7 +46,7 @@ class Administration extends Component {
 					</div>
 				</Button>
 
-				<Button onClick={()=> this.props.history.push('/PeriodLP')} 
+				<Button onClick={()=> this.props.history.push('/ServiceLP')} 
 								className='tc v-top dib br3 pa3 ma2 grow bw2 w5 h5 shadow-3'>
 					<div>
 						<h4>Service Management</h4>
