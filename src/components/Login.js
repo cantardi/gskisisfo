@@ -18,7 +18,7 @@ class Login extends React.Component {
 
   handleSubmit = () => {
     
-    fetch(process.env.BACKEND_URL + '/signin', {
+    fetch('https://gskisisfobackend.herokuapp.com/signin', {
       method: 'post',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({
