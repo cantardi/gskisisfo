@@ -95,7 +95,7 @@ class RoleList extends Component {
     let newRoleName = []
     addedRole.map(role => newRoleName.push(Object ({rolename: role.rolename}) ))
 
-    fetch('http://localhost:3001/addnewrole', {
+    fetch(process.env.BACKEND_URL & 'addnewrole', {
       method: 'post',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({
@@ -117,7 +117,7 @@ class RoleList extends Component {
 
   deleteRoleRequest = () => {
 
-    fetch('http://localhost:3001/deleterole', {
+    fetch(process.env.BACKEND_URL & 'deleterole', {
       method: 'delete',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({
@@ -154,7 +154,7 @@ class RoleList extends Component {
 
   componentDidMount(){
 
-    fetch('http://localhost:3001/getchurchrole', {
+    fetch(process.env.BACKEND_URL & 'getchurchrole', {
       method: 'get',
       headers: {'Content-Type': 'application/json'}
     })
