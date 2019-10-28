@@ -27,7 +27,7 @@ class PeriodLP extends Component {
   }
 
   callSearchPeriodAPI = () => {
-    fetch('http://localhost:3001/searchPeriod', {
+    fetch('https://gskisisfobackend.herokuapp.com/searchPeriod', {
       method: 'post',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({

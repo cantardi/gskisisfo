@@ -69,7 +69,7 @@ class SongDtl extends Component {
 
   insertNewSong = () => {
 
-    fetch('http://localhost:3001/addsong', {
+    fetch('https://gskisisfobackend.herokuapp.com/addsong', {
       method: 'post',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({
@@ -94,7 +94,7 @@ class SongDtl extends Component {
 
   updateExistingSong = () => {
 
-    fetch('http://localhost:3001/updatesong', {
+    fetch('https://gskisisfobackend.herokuapp.com/updatesong', {
       method: 'put',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({

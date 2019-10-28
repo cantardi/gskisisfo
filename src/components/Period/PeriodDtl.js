@@ -76,7 +76,7 @@ class PeriodDtl extends Component {
   
   callGetPeriodDateAPI = (periodid) => {
     
-    fetch('http://localhost:3001/getperioddate/' + periodid, {
+    fetch('https://gskisisfobackend.herokuapp.com/getperioddate/' + periodid, {
       method: 'get',
       headers: {'Content-Type': 'application/json'}
     })
@@ -102,7 +102,7 @@ class PeriodDtl extends Component {
 
   callAddPeriodAPI = (convertedDays) => {
 
-    fetch('http://localhost:3001/addperiod', {
+    fetch('https://gskisisfobackend.herokuapp.com/addperiod', {
       method: 'post',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({
@@ -121,7 +121,7 @@ class PeriodDtl extends Component {
   callUpdatePeriodAPI = (convertedDays) => {
     
     Promise.all([
-      fetch('http://localhost:3001/updateperioddtl', {
+      fetch('https://gskisisfobackend.herokuapp.com/updateperioddtl', {
         method: 'put',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({
@@ -131,7 +131,7 @@ class PeriodDtl extends Component {
           description: this.state.description,
         })
       }),
-      fetch('http://localhost:3001/updateperioddates', {
+      fetch('https://gskisisfobackend.herokuapp.com/updateperioddates', {
         method: 'put',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({

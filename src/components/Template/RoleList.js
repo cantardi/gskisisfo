@@ -153,7 +153,7 @@ class RoleList extends Component {
   }
 
   componentDidMount(){
-    console.log(process.env.BACKEND_URL+'getchurchrole');
+    
     fetch('https://gskisisfobackend.herokuapp.com/getchurchrole', {
       method: 'get',
       headers: {'Content-Type': 'application/json'}

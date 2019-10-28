@@ -105,7 +105,7 @@ class SongSchedulerMstr extends Component {
 
   callGetPeriodAPI = () => {
     
-    fetch('http://localhost:3001/getschedulingperiod/song', {
+    fetch('https://gskisisfobackend.herokuapp.com/getschedulingperiod/song', {
       method: 'get',
       headers: {'Content-Type': 'application/json'}
     })
@@ -125,7 +125,7 @@ class SongSchedulerMstr extends Component {
   
   callGetPeriodDateAPI = (periodid) => {
     
-    fetch('http://localhost:3001/getperioddate/' + periodid, {
+    fetch('https://gskisisfobackend.herokuapp.com/getperioddate/' + periodid, {
       method: 'get',
       headers: {'Content-Type': 'application/json'}
     })
@@ -152,7 +152,7 @@ class SongSchedulerMstr extends Component {
       })
     )
 
-    fetch('http://localhost:3001/schedulesong', {
+    fetch('https://gskisisfobackend.herokuapp.com/schedulesong', {
       method: 'post',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({

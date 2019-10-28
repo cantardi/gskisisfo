@@ -27,7 +27,7 @@ class SongLP extends Component {
   searchSong = () => {
     this.setState({ songList: [] });
     
-    fetch('http://localhost:3001/searchSong', {
+    fetch('https://gskisisfobackend.herokuapp.com/searchSong', {
       method: 'post',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({
