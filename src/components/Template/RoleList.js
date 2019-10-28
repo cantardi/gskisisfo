@@ -153,8 +153,7 @@ class RoleList extends Component {
   }
 
   componentDidMount(){
-
-    fetch(`$(process.env.BACKEND_URL)/getchurchrole`, {
+    fetch(process.env.BACKEND_URL+'getchurchrole', {
       method: 'get',
       headers: {'Content-Type': 'application/json'}
     })
