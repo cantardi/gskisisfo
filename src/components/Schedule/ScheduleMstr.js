@@ -31,7 +31,7 @@ class ScheduleMstr extends Component {
 
   callGetPeriodDateAPI = (periodid) => {
     
-    fetch('http://localhost:3001/getperioddate/' + periodid, {
+    fetch('https://gskisisfobackend.herokuapp.com/getperioddate/' + periodid, {
       method: 'get',
       headers: {'Content-Type': 'application/json'}
     })
@@ -47,7 +47,7 @@ class ScheduleMstr extends Component {
   
   callGetChurchRoleAPI = () => {
     
-    fetch('http://localhost:3001/getchurchrole/', {
+    fetch('https://gskisisfobackend.herokuapp.com/getchurchrole/', {
       method: 'get',
       headers: {'Content-Type': 'application/json'}
     })
@@ -67,7 +67,7 @@ class ScheduleMstr extends Component {
 
   callGetSongScheduleAPI = (periodid) => {
 
-    fetch('http://localhost:3001/getsongschedule/'+periodid, {
+    fetch('https://gskisisfobackend.herokuapp.com/getsongschedule/'+periodid, {
       method: 'get',
       headers: {'Content-Type': 'application/json'}
     })
@@ -83,7 +83,7 @@ class ScheduleMstr extends Component {
 
   callGetServantScheduleAPI = (periodid) => {
 
-    fetch('http://localhost:3001/getservantschedule/'+periodid, {
+    fetch('https://gskisisfobackend.herokuapp.com/getservantschedule/'+periodid, {
       method: 'get',
       headers: {'Content-Type': 'application/json'}
     })

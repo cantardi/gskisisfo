@@ -96,7 +96,7 @@ class PeriodDtl extends Component {
         .then(data => console.log(data))
       }
     }) 
-    .catch(err => console.log('Fail to call getperiod API: ' + err))
+    .catch(err => console.log('Fail to call getperioddate API: ' + err))
 
   }
 

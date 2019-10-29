@@ -28,7 +28,7 @@ class ScheduleLP extends Component {
   searchPeriod = () => {
     this.setState({ periodList: [] })
 
-    fetch('http://localhost:3001/searchPeriod', {
+    fetch('https://gskisisfobackend.herokuapp.com/searchPeriod', {
       method: 'post',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({

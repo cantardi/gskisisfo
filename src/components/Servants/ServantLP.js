@@ -26,7 +26,7 @@ class ServantLP extends Component {
   searchServant = () => {
     this.setState({ servantList: [] });
     
-    fetch('http://localhost:3001/searchservant', {
+    fetch('https://gskisisfobackend.herokuapp.com/searchservant', {
       method: 'post',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({

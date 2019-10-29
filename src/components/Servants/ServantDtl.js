@@ -69,7 +69,7 @@ class ServantDtl extends Component {
 
   insertNewServant = () => {
     
-    fetch('http://localhost:3001/addservant', {
+    fetch('https://gskisisfobackend.herokuapp.com/addservant', {
       method: 'post',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({
