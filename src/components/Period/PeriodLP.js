@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Container, Dropdown, DropdownButton } from 'react-bootstrap';
+import { Container, Dropdown, DropdownButton, Spinner } from 'react-bootstrap';
 import PeriodSearch from './PeriodSearch';
 import PeriodResult from './PeriodResult';
 import MessageModal from '../MessageModal';
