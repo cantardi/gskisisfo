@@ -98,7 +98,8 @@ class PeriodLP extends Component {
         />
 
         {
-          this.state.periodList.length > 0 &&
+          this.state.periodList.length > 0 
+          ? 
           <div>
             <div className="alert alert-info" role="alert">
               Search feature will display only the first 20 rows.
@@ -109,6 +110,10 @@ class PeriodLP extends Component {
               openEditMode={ this.updatePeriod }
             />
           </div>
+          :
+          <Spinner animation="border" role="status">
+            <span className="sr-only">Loading...</span>
+          </Spinner>
         }
         
         <MessageModal
