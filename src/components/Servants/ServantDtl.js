@@ -90,7 +90,7 @@ class ServantDtl extends Component {
 
   updateExistingServant = () => {
 
-    fetch('http://localhost:3001/updateservant', {
+    fetch('https://gskisisfobackend.herokuapp.com/updateservant', {
       method: 'put',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({
