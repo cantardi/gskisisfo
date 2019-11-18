@@ -12,7 +12,7 @@ class Calendar extends React.Component {
 	}
 
 	componentDidMount() {
-		fetch('http://localhost:3001/getschedulebyservant/7', {
+		fetch('https://gskisisfobackend.herokuapp.com/getschedulebyservant/7', {
       method: 'get',
       headers: {'Content-Type': 'application/json'},
     })

@@ -33,7 +33,7 @@ class ServiceLP extends Component {
     this.setState({ selectedSongs: [] });
     this.setState({ displayedSongs: [] });
     
-    fetch('http://localhost:3001/getperioddate/'+e.target.value, {
+    fetch('https://gskisisfobackend.herokuapp.com/getperioddate/'+e.target.value, {
       method: 'get',
       headers: {'Content-Type': 'application/json'}
     })
@@ -47,7 +47,7 @@ class ServiceLP extends Component {
   }
 
   componentDidMount(){
-    fetch('http://localhost:3001/getperiod', {
+    fetch('https://gskisisfobackend.herokuapp.com/getperiod', {
       method: 'get',
       headers: {'Content-Type': 'application/json'}
     })

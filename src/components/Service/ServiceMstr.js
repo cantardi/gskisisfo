@@ -38,7 +38,7 @@ class ServiceMstr extends Component {
   
   callGetChurchRoleAPI = () => {
     
-    fetch('http://localhost:3001/getchurchrole/', {
+    fetch('https://gskisisfobackend.herokuapp.com/getchurchrole/', {
       method: 'get',
       headers: {'Content-Type': 'application/json'}
     })
@@ -57,7 +57,7 @@ class ServiceMstr extends Component {
   }
 
   callGetServantAPI = () => {
-    fetch('http://localhost:3001/getservant', {
+    fetch('https://gskisisfobackend.herokuapp.com/getservant', {
       method: 'get',
       headers: {'Content-Type': 'application/json'}
     })
@@ -77,7 +77,7 @@ class ServiceMstr extends Component {
 
   callGetSongByDateAPI = (dateid) => {
     
-    fetch('http://localhost:3001/getsongbydate/'+dateid, {
+    fetch('https://gskisisfobackend.herokuapp.com/getsongbydate/'+dateid, {
       method: 'get',
       headers: {'Content-Type': 'application/json'}
     })
@@ -142,7 +142,7 @@ class ServiceMstr extends Component {
 
   callGetSelectedSongByDateAPI = (dateid) => {
 
-    fetch('http://localhost:3001/getselectedsongbydate/'+dateid, {
+    fetch('https://gskisisfobackend.herokuapp.com/getselectedsongbydate/'+dateid, {
       method: 'get',
       headers: {'Content-Type': 'application/json'}
     })
@@ -160,7 +160,7 @@ class ServiceMstr extends Component {
 
   callGetServantByDateAPI = (dateid) => {
 
-    fetch('http://localhost:3001/getservantbydate/'+dateid, {
+    fetch('https://gskisisfobackend.herokuapp.com/getservantbydate/'+dateid, {
       method: 'get',
       headers: {'Content-Type': 'application/json'}
     })

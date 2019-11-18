@@ -31,7 +31,7 @@ class SongModal extends Component {
 
   callSearchSongAPI = () => {
 
-    fetch('http://localhost:3001/searchSong', {
+    fetch('https://gskisisfobackend.herokuapp.com/searchSong', {
       method: 'post',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({
