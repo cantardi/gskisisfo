@@ -21,6 +21,7 @@ import ScheduleLP from "./components/Schedule/ScheduleLP";
 import ServiceLP from "./components/Service/ServiceLP";
 import ServiceMstr from "./components/Service/ServiceMstr";
 import SelectSong from "./components/SelfService/SelectSong";
+import {userContext} from './helpers/userContext';
 
 class App extends Component {
   
@@ -53,50 +54,51 @@ class App extends Component {
     }
     else {
       return (
-
-        <BrowserRouter>
+        <userContext.Provider value={this.state.user}>
+          <BrowserRouter>
         
-          <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark">
-            <Navbar.Brand>
-              <NavLink className="nav-link" to="/">GSKI Rehuel</NavLink>
-            </Navbar.Brand> 
-            <Navbar.Toggle aria-controls="responsive-navbar-nav" />
-            <Navbar.Collapse id="responsive-navbar-nav">
-              <Nav className="mr-auto">
-                <NavLink className="nav-link" to="/Calendar">Calendar</NavLink>
-                <NavLink className="nav-link" to="/SelfService">Self Service</NavLink>
-                <NavLink className="nav-link" to="/Administration">Administration</NavLink>
-              </Nav>
-              <Nav>
-                <NavLink className="nav-link" to="/Account">Account</NavLink>
-                <div className="nav-link pointer" onClick={this.signOut}>Sign Out</div>
-              </Nav>
-            </Navbar.Collapse>
-          </Navbar>
-  
-          <div className="content">
-            <Route exact path="/" component={Home}/>
-            <Route path="/Calendar" component={Calendar}/>
-            <Route path="/SelfService" component={SelfService}/>
-            <Route path="/Administration" component={Administration}/>
-            <Route path="/AccountSetup" component={AccountSetup}/>
-            <Route path="/PeriodLP" component={PeriodLP}/>
-            <Route path="/PeriodDtl" component={PeriodDtl}/>
-            <Route path="/SongLP" component={SongLP}/>
-            <Route path="/SongDtl" component={SongDtl}/>
-            <Route path="/SongSchedulerMstr" component={SongSchedulerMstr}/>
-            <Route path="/ServantLP" component={ServantLP}/>
-            <Route path="/ServantDtl" component={ServantDtl}/>
-            <Route path="/ServantSchedulerMstr" component={ServantSchedulerMstr}/>
-            <Route path="/RoleList" component={RoleList}/>
-            <Route path="/ScheduleMstr" component={ScheduleMstr}/>
-            <Route path="/ScheduleLP" component={ScheduleLP}/>
-            <Route path="/SelectSong" component={SelectSong}/>
-            <Route path="/ServiceLP" component={ServiceLP}/>
-            <Route path="/ServiceMstr" component={ServiceMstr}/>
-          </div>
-  
-        </BrowserRouter>
+            <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark">
+              <Navbar.Brand>
+                <NavLink className="nav-link" to="/">GSKI Rehuel</NavLink>
+              </Navbar.Brand> 
+              <Navbar.Toggle aria-controls="responsive-navbar-nav" />
+              <Navbar.Collapse id="responsive-navbar-nav">
+                <Nav className="mr-auto">
+                  <NavLink className="nav-link" to="/Calendar">Calendar</NavLink>
+                  <NavLink className="nav-link" to="/SelfService">Self Service</NavLink>
+                  <NavLink className="nav-link" to="/Administration">Administration</NavLink>
+                </Nav>
+                <Nav>
+                  <NavLink className="nav-link" to="/Account">Account</NavLink>
+                  <div className="nav-link pointer" onClick={this.signOut}>Sign Out</div>
+                </Nav>
+              </Navbar.Collapse>
+            </Navbar>
+
+            <div className="content">
+              <Route exact path="/" component={Home}/>
+              <Route path="/Calendar" component={Calendar}/>
+              <Route path="/SelfService" component={SelfService}/>
+              <Route path="/Administration" component={Administration}/>
+              <Route path="/AccountSetup" component={AccountSetup}/>
+              <Route path="/PeriodLP" component={PeriodLP}/>
+              <Route path="/PeriodDtl" component={PeriodDtl}/>
+              <Route path="/SongLP" component={SongLP}/>
+              <Route path="/SongDtl" component={SongDtl}/>
+              <Route path="/SongSchedulerMstr" component={SongSchedulerMstr}/>
+              <Route path="/ServantLP" component={ServantLP}/>
+              <Route path="/ServantDtl" component={ServantDtl}/>
+              <Route path="/ServantSchedulerMstr" component={ServantSchedulerMstr}/>
+              <Route path="/RoleList" component={RoleList}/>
+              <Route path="/ScheduleMstr" component={ScheduleMstr}/>
+              <Route path="/ScheduleLP" component={ScheduleLP}/>
+              <Route path="/SelectSong" component={SelectSong}/>
+              <Route path="/ServiceLP" component={ServiceLP}/>
+              <Route path="/ServiceMstr" component={ServiceMstr}/>
+            </div>
+
+          </BrowserRouter>
+        </userContext.Provider>
       );
     }
 

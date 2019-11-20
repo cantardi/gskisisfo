@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { Carousel } from "react-bootstrap";
- 
+import {userContext} from './helpers/userContext';
+
 class Home extends Component {
   render() {
     return (
@@ -13,6 +14,11 @@ class Home extends Component {
         </div>
         <div>
           <img alt="foto3" src="https://i.gocollette.com/tour-media-manager/tours/europe/norway/102/packages/master-package/top-carousel/spectacularscandinavia_hero1_norway.jpg" />
+        </div>
+        <div>
+          <userContext.Consumer>
+            { user => user.username }
+          </userContext.Consumer>
         </div>
       </Carousel>
     );
