@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { Carousel } from "react-bootstrap";
-import {userContext} from './helpers/userContext';
+import {userContext} from '../helpers/userContext';
 
 class Home extends Component {
   render() {
