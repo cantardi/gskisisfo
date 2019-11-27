@@ -69,7 +69,7 @@ class SongDtl extends Component {
 
   insertNewSong = () => {
 
-    fetch('https://gskisisfobackend.herokuapp.com/addsong', {
+    fetch(process.env.REACT_APP_BACKEND_URL + '/addsong', {
       method: 'post',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({
@@ -94,7 +94,7 @@ class SongDtl extends Component {
 
   updateExistingSong = () => {
 
-    fetch('https://gskisisfobackend.herokuapp.com/updatesong', {
+    fetch(process.env.REACT_APP_BACKEND_URL + '/updatesong', {
       method: 'put',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({

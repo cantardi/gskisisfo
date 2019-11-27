@@ -1,18 +1,18 @@
 import React from "react";
-import BigCalendar from 'react-big-calendar';
+import { Calendar, momentLocalizer } from 'react-big-calendar';
 import moment from 'moment';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 
-const localizer = BigCalendar.momentLocalizer(moment) // or globalizeLocalizer
+const localizer = momentLocalizer(moment)
 
-class Calendar extends React.Component {
+class MyCalendar extends React.Component {
 	
 	state = {
 		schedule: []
 	}
 
 	componentDidMount() {
-		fetch('https://gskisisfobackend.herokuapp.com/getschedulebyservant/7', {
+		fetch(process.env.REACT_APP_BACKEND_URL + '/getschedulebyservant/7', {
       method: 'get',
       headers: {'Content-Type': 'application/json'},
     })
@@ -45,7 +45,7 @@ class Calendar extends React.Component {
 	render() {
 		return (
 			<div>
-					<BigCalendar
+					<Calendar
 					 style={{height: 500}}
 					 culture='en-GB'
 					 localizer={localizer}
@@ -60,4 +60,4 @@ class Calendar extends React.Component {
   
 }
 
-export default Calendar;
+export default MyCalendar;

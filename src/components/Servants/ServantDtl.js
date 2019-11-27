@@ -69,7 +69,7 @@ class ServantDtl extends Component {
 
   insertNewServant = () => {
     
-    fetch('https://gskisisfobackend.herokuapp.com/addservant', {
+    fetch(process.env.REACT_APP_BACKEND_URL + '/addservant', {
       method: 'post',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({
@@ -90,7 +90,7 @@ class ServantDtl extends Component {
 
   updateExistingServant = () => {
 
-    fetch('https://gskisisfobackend.herokuapp.com/updateservant', {
+    fetch(process.env.REACT_APP_BACKEND_URL + '/updateservant', {
       method: 'put',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({

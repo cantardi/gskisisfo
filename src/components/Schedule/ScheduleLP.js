@@ -28,7 +28,7 @@ class ScheduleLP extends Component {
   searchPeriod = () => {
     this.setState({ periodList: [] })
 
-    fetch('https://gskisisfobackend.herokuapp.com/searchPeriod', {
+    fetch(process.env.REACT_APP_BACKEND_URL + '/searchPeriod', {
       method: 'post',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({

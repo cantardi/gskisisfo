@@ -113,7 +113,7 @@ class ServiceSong extends Component {
 
   callSearchSongAPI = () => {
 
-    fetch('https://gskisisfobackend.herokuapp.com/searchSong', {
+    fetch(process.env.REACT_APP_BACKEND_URL + '/searchSong', {
       method: 'post',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({

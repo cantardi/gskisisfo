@@ -95,7 +95,7 @@ class RoleList extends Component {
     let newRoleName = []
     addedRole.map(role => newRoleName.push(Object ({rolename: role.rolename}) ))
 
-    fetch('https://gskisisfobackend.herokuapp.com/addnewrole', {
+    fetch(process.env.REACT_APP_BACKEND_URL + '/addnewrole', {
       method: 'post',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({
@@ -117,7 +117,7 @@ class RoleList extends Component {
 
   deleteRoleRequest = () => {
 
-    fetch('https://gskisisfobackend.herokuapp.com/deleterole', {
+    fetch(process.env.REACT_APP_BACKEND_URL + '/deleterole', {
       method: 'delete',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({
@@ -154,7 +154,7 @@ class RoleList extends Component {
 
   componentDidMount(){
     
-    fetch('https://gskisisfobackend.herokuapp.com/getchurchrole', {
+    fetch(process.env.REACT_APP_BACKEND_URL + '/getchurchrole', {
       method: 'get',
       headers: {'Content-Type': 'application/json'}
     })

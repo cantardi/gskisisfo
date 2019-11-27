@@ -18,7 +18,7 @@ class Login extends React.Component {
 
   handleSubmit = () => {
     
-    fetch('https://gskisisfobackend.herokuapp.com/signin', {
+    fetch(process.env.REACT_APP_BACKEND_URL + '/signin', {
       method: 'post',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({
@@ -40,6 +40,7 @@ class Login extends React.Component {
   }
 
   render(){
+    
     return (
       <div className="vh-100 dt w-100">
         <div className="dtc v-mid">

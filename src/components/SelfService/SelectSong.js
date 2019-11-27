@@ -128,7 +128,7 @@ class SelectSong extends Component {
   }
 
   callGetPeriodAPI = () => {
-    fetch('https://gskisisfobackend.herokuapp.com/getperiod', {
+    fetch(process.env.REACT_APP_BACKEND_URL + '/getperiod', {
       method: 'get',
       headers: {'Content-Type': 'application/json'}
     })
@@ -146,7 +146,7 @@ class SelectSong extends Component {
   }
 
   callGetPeriodDateAPI = (periodid) => {
-    fetch('https://gskisisfobackend.herokuapp.com/getperioddate/'+periodid, {
+    fetch(process.env.REACT_APP_BACKEND_URL + '/getperioddate/'+periodid, {
       method: 'get',
       headers: {'Content-Type': 'application/json'}
     })
@@ -160,7 +160,7 @@ class SelectSong extends Component {
   }
 
   callGetSongForSelectionAPI = (dateid) => {
-    fetch('https://gskisisfobackend.herokuapp.com/getsongforselection/'+dateid, {
+    fetch(process.env.REACT_APP_BACKEND_URL + '/getsongforselection/'+dateid, {
       method: 'get',
       headers: {'Content-Type': 'application/json'}
     })
@@ -183,7 +183,7 @@ class SelectSong extends Component {
       })
     )
 
-    fetch('https://gskisisfobackend.herokuapp.com/saveselectedsong', {
+    fetch(process.env.REACT_APP_BACKEND_URL + '/saveselectedsong', {
       method: 'post',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({

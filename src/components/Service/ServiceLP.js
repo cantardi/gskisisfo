@@ -33,7 +33,7 @@ class ServiceLP extends Component {
     this.setState({ selectedSongs: [] });
     this.setState({ displayedSongs: [] });
     
-    fetch('https://gskisisfobackend.herokuapp.com/getperioddate/'+e.target.value, {
+    fetch(process.env.REACT_APP_BACKEND_URL + '/getperioddate/'+e.target.value, {
       method: 'get',
       headers: {'Content-Type': 'application/json'}
     })
@@ -47,7 +47,7 @@ class ServiceLP extends Component {
   }
 
   componentDidMount(){
-    fetch('https://gskisisfobackend.herokuapp.com/getperiod', {
+    fetch(process.env.REACT_APP_BACKEND_URL + '/getperiod', {
       method: 'get',
       headers: {'Content-Type': 'application/json'}
     })

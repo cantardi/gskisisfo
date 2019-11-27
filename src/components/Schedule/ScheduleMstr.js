@@ -31,7 +31,7 @@ class ScheduleMstr extends Component {
 
   callGetPeriodDateAPI = (periodid) => {
     
-    fetch('https://gskisisfobackend.herokuapp.com/getperioddate/' + periodid, {
+    fetch(process.env.REACT_APP_BACKEND_URL + '/getperioddate/' + periodid, {
       method: 'get',
       headers: {'Content-Type': 'application/json'}
     })
@@ -47,7 +47,7 @@ class ScheduleMstr extends Component {
   
   callGetChurchRoleAPI = () => {
     
-    fetch('https://gskisisfobackend.herokuapp.com/getchurchrole/', {
+    fetch(process.env.REACT_APP_BACKEND_URL + '/getchurchrole/', {
       method: 'get',
       headers: {'Content-Type': 'application/json'}
     })
@@ -67,7 +67,7 @@ class ScheduleMstr extends Component {
 
   callGetSongScheduleAPI = (periodid) => {
 
-    fetch('https://gskisisfobackend.herokuapp.com/getsongschedule/'+periodid, {
+    fetch(process.env.REACT_APP_BACKEND_URL + '/getsongschedule/'+periodid, {
       method: 'get',
       headers: {'Content-Type': 'application/json'}
     })
@@ -83,7 +83,7 @@ class ScheduleMstr extends Component {
 
   callGetServantScheduleAPI = (periodid) => {
 
-    fetch('https://gskisisfobackend.herokuapp.com/getservantschedule/'+periodid, {
+    fetch(process.env.REACT_APP_BACKEND_URL + '/getservantschedule/'+periodid, {
       method: 'get',
       headers: {'Content-Type': 'application/json'}
     })

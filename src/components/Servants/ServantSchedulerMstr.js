@@ -107,7 +107,7 @@ class ServantSchedulerMstr extends Component {
   
   callGetPeriodAPI = () => {
     
-    fetch('https://gskisisfobackend.herokuapp.com/getschedulingperiod/servant', {
+    fetch(process.env.REACT_APP_BACKEND_URL + '/getschedulingperiod/servant', {
       method: 'get',
       headers: {'Content-Type': 'application/json'}
     })
@@ -127,7 +127,7 @@ class ServantSchedulerMstr extends Component {
 
   callGetPeriodDateAndGetRoleAPI = (periodid) => {
     
-    fetch('https://gskisisfobackend.herokuapp.com/getperioddate/'+periodid, {
+    fetch(process.env.REACT_APP_BACKEND_URL + '/getperioddate/'+periodid, {
       method: 'get',
       headers: {'Content-Type': 'application/json'}
     })
@@ -141,7 +141,7 @@ class ServantSchedulerMstr extends Component {
           return dateIdArray
         })
         .then(dateIdArray => {
-          fetch('https://gskisisfobackend.herokuapp.com/getchurchrole', {
+          fetch(process.env.REACT_APP_BACKEND_URL + '/getchurchrole', {
             method: 'get',
             headers: {'Content-Type': 'application/json'}
           })
@@ -180,7 +180,7 @@ class ServantSchedulerMstr extends Component {
   }
 
   callGetServantAPI = () => {
-    fetch('https://gskisisfobackend.herokuapp.com/getservant', {
+    fetch(process.env.REACT_APP_BACKEND_URL + '/getservant', {
       method: 'get',
       headers: {'Content-Type': 'application/json'}
     })
@@ -210,7 +210,7 @@ class ServantSchedulerMstr extends Component {
                               })
                             )
 
-    fetch('https://gskisisfobackend.herokuapp.com/scheduleservant', {
+    fetch(process.env.REACT_APP_BACKEND_URL + '/scheduleservant', {
       method: 'post',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({

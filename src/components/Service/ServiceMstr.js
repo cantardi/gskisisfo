@@ -38,7 +38,7 @@ class ServiceMstr extends Component {
   
   callGetChurchRoleAPI = () => {
     
-    fetch('https://gskisisfobackend.herokuapp.com/getchurchrole/', {
+    fetch(process.env.REACT_APP_BACKEND_URL + '/getchurchrole/', {
       method: 'get',
       headers: {'Content-Type': 'application/json'}
     })
@@ -57,7 +57,7 @@ class ServiceMstr extends Component {
   }
 
   callGetServantAPI = () => {
-    fetch('https://gskisisfobackend.herokuapp.com/getservant', {
+    fetch(process.env.REACT_APP_BACKEND_URL + '/getservant', {
       method: 'get',
       headers: {'Content-Type': 'application/json'}
     })
@@ -77,7 +77,7 @@ class ServiceMstr extends Component {
 
   callGetSongByDateAPI = (dateid) => {
     
-    fetch('https://gskisisfobackend.herokuapp.com/getsongbydate/'+dateid, {
+    fetch(process.env.REACT_APP_BACKEND_URL + '/getsongbydate/'+dateid, {
       method: 'get',
       headers: {'Content-Type': 'application/json'}
     })
@@ -142,7 +142,7 @@ class ServiceMstr extends Component {
 
   callGetSelectedSongByDateAPI = (dateid) => {
 
-    fetch('https://gskisisfobackend.herokuapp.com/getselectedsongbydate/'+dateid, {
+    fetch(process.env.REACT_APP_BACKEND_URL + '/getselectedsongbydate/'+dateid, {
       method: 'get',
       headers: {'Content-Type': 'application/json'}
     })
@@ -160,7 +160,7 @@ class ServiceMstr extends Component {
 
   callGetServantByDateAPI = (dateid) => {
 
-    fetch('https://gskisisfobackend.herokuapp.com/getservantbydate/'+dateid, {
+    fetch(process.env.REACT_APP_BACKEND_URL + '/getservantbydate/'+dateid, {
       method: 'get',
       headers: {'Content-Type': 'application/json'}
     })
