@@ -10,6 +10,7 @@ class PeriodLP extends Component {
     super(props);
 
     this.PAGE_CHILD = './PeriodDtl';
+
     this.state = {
       periodList: [],
       searchPeriodName: '',
@@ -78,6 +79,7 @@ class PeriodLP extends Component {
   render() {
     return (
       <Container className="pa2">
+        
         <DropdownButton 
           className="ma2"
           title="Action"

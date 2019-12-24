@@ -2,6 +2,7 @@ import React , { Component } from 'react';
 import { Button, Container } from 'react-bootstrap'
 
 class SelfService extends Component {
+	
 	render() {
 		return (
 			<Container className='tc ma2'>
@@ -23,9 +24,9 @@ class SelfService extends Component {
 				</Button>
 
 			</Container>
-		)
-		
+		)	
 	}
+	
 }
 
 export default SelfService;

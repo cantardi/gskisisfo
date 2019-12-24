@@ -7,6 +7,7 @@ import Calendar from "./components/Calendar";
 import SelfService from "./components/SelfService";
 import Administration from "./components/Administration";
 import AccountSetup from "./components/AccountSetup";
+import MasterFieldList from "./components/Template/MasterFieldList";
 import PeriodLP from "./components/Period/PeriodLP";
 import PeriodDtl from "./components/Period/PeriodDtl";
 import SongLP from "./components/Songs/SongLP";
@@ -15,12 +16,12 @@ import SongSchedulerMstr from "./components/Songs/SongSchedulerMstr";
 import ServantLP from "./components/Servants/ServantLP";
 import ServantDtl from "./components/Servants/ServantDtl";
 import ServantSchedulerMstr from "./components/Servants/ServantSchedulerMstr";
-import RoleList from "./components/Template/RoleList";
 import ScheduleMstr from "./components/Schedule/ScheduleMstr";
 import ScheduleLP from "./components/Schedule/ScheduleLP";
 import ServiceLP from "./components/Service/ServiceLP";
 import ServiceMstr from "./components/Service/ServiceMstr";
 import SelectSong from "./components/SelfService/SelectSong";
+import MasterDataLP from "./components/Template/MasterDataLP";
 import {userContext} from './helpers/userContext';
 
 class App extends Component {
@@ -89,12 +90,13 @@ class App extends Component {
               <Route path="/ServantLP" component={ServantLP}/>
               <Route path="/ServantDtl" component={ServantDtl}/>
               <Route path="/ServantSchedulerMstr" component={ServantSchedulerMstr}/>
-              <Route path="/RoleList" component={RoleList}/>
+              <Route path="/MasterFieldList" component={MasterFieldList}/>
               <Route path="/ScheduleMstr" component={ScheduleMstr}/>
               <Route path="/ScheduleLP" component={ScheduleLP}/>
               <Route path="/SelectSong" component={SelectSong}/>
               <Route path="/ServiceLP" component={ServiceLP}/>
               <Route path="/ServiceMstr" component={ServiceMstr}/>
+              <Route path="/MasterDataLP" component={MasterDataLP}/>
             </div>
 
           </BrowserRouter>
@@ -106,3 +108,4 @@ class App extends Component {
 }
 
 export default App;
+

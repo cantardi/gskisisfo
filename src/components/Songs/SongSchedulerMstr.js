@@ -50,7 +50,7 @@ class SongSchedulerMstr extends Component {
   _submit() {
 
     if (window.confirm('Are you sure you wish to submit this schedule?')) {
-      this.callScheduleSongAPI();
+      this.callAddSongSchedAPI();
     }
 
   }
@@ -143,7 +143,7 @@ class SongSchedulerMstr extends Component {
 
   }
 
-  callScheduleSongAPI = () => {
+  callAddSongSchedAPI = () => {
     const songSchedule = this.state.selectedSongs.map(song =>
       ({
         periodid: this.state.selectedPeriod,
@@ -152,11 +152,11 @@ class SongSchedulerMstr extends Component {
       })
     )
 
-    fetch(process.env.REACT_APP_BACKEND_URL + '/schedulesong', {
+    fetch(process.env.REACT_APP_BACKEND_URL + '/addsongschedule', {
       method: 'post',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({
-        songSchedule: songSchedule
+        songschedule: songSchedule
       })
     })
     .then (response => {
@@ -168,7 +168,7 @@ class SongSchedulerMstr extends Component {
         return response.json()
         .then(data => this.setState({ msgModalShow: true , msgModalHeader: 'Error', msgModalContent: data }))
     }})
-    .catch(err => console.log('Fail to call schedulesong API: ' + err))
+    .catch(err => console.log('Fail to call addsongschedule API: ' + err))
 
   }
   

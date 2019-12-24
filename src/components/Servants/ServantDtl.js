@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Form, Col, Button, Container } from 'react-bootstrap';
+import { Form, Row, Col, Button, Alert, Container } from 'react-bootstrap';
 import { formatDate, parseDate } from 'react-day-picker/moment';
 import 'moment/locale/it';
 import DayPickerInput from 'react-day-picker/DayPickerInput';
@@ -13,9 +13,11 @@ class ServantDtl extends Component {
     const servant = this.props.location.state;
 
     window.scrollTo(0, 0);
-    
+    this.PAGE_PARENT = './ServantLP'
+
     if (typeof servant === 'undefined') {
       this.state = {
+        genderLists: [],
         servantid: '',
         servantname: '',
         gender: '',
@@ -27,14 +29,17 @@ class ServantDtl extends Component {
         msgModalShow: false, 
         msgModalContent: '',
         msgModalHeader: '',
+        variant: '',
+        formErrorMsg: ''
       }
     }
     else {
       this.state = {
+        genderLists: [],
         servantid: servant.id,
         servantname: servant.servantname,
         gender: servant.gender,
-        birthdate: new Date(servant.birthdate).toLocaleDateString(),
+        birthdate: formatDate(new Date(servant.birthdate)),
         email: servant.email,
         mobile1: servant.mobile1,
         mobile2: servant.mobile2,
@@ -42,6 +47,8 @@ class ServantDtl extends Component {
         msgModalShow: false, 
         msgModalContent: '',
         msgModalHeader: '',
+        variant: '',
+        formErrorMsg: ''
       }
     }
   }
@@ -55,11 +62,24 @@ class ServantDtl extends Component {
   }
 
   handleDayChange = (day) => {
-    this.setState({ birthdate: new Date(day).toLocaleDateString() });
+    this.setState({ birthdate: day });
   }
 
   trimInputValue = (e) => {
     this.setState({ [e.target.name]: e.target.value.trim() })
+  }
+  
+  validateForm = () => {
+    const { servantname, gender, birthdate, email, mobile1 } = this.state
+
+    if (servantname === '' || gender === '' || birthdate === '' || email === '' || mobile1 === '') { 
+      const text = "One or more input fields are not completed in the form. Please complete all fields with asterisk (*) in the form in order to save."
+      this.setState({ variant: 'danger', formErrorMsg: text })
+    }
+    else {
+      this.setState({ variant: '', formErrorMsg: '' })
+      return true
+    }
   }
 
   msgModalClose = () => {
@@ -67,7 +87,19 @@ class ServantDtl extends Component {
     this.props.history.push('/ServantLP')
   }
 
-  insertNewServant = () => {
+  callGetMasterFieldValuesAPI = () => {
+    
+    fetch(process.env.REACT_APP_BACKEND_URL + '/getfieldvalues/Gender', {
+      method: 'get',
+      headers: {'Content-Type': 'application/json'},
+    })
+    .then(res => res.json())
+    .then(data => this.setState({ genderLists: data }))
+    .catch(err => console.log('Fail to call getfieldvalues API: ' + err)) 
+    
+  }
+
+  callAddServantAPI = () => {
     
     fetch(process.env.REACT_APP_BACKEND_URL + '/addservant', {
       method: 'post',
@@ -88,7 +120,7 @@ class ServantDtl extends Component {
 
   }
 
-  updateExistingServant = () => {
+  callUpdateServantAPI = () => {
 
     fetch(process.env.REACT_APP_BACKEND_URL + '/updateservant', {
       method: 'put',
@@ -111,16 +143,20 @@ class ServantDtl extends Component {
   }
 
   saveServant = () => {
-    
-    if (this.state.servantid === ''){
-      this.insertNewServant();
+    if (this.validateForm() === true){
+      if (this.state.servantid === ''){
+        this.callAddServantAPI();
+      }
+      else {
+        this.callUpdateServantAPI();
+      } 
     }
-    else {
-      this.updateExistingServant();
-    } 
-
   }
 
+  componentDidMount() {
+    this.callGetMasterFieldValuesAPI();
+  }
+  
   render() {
 
     return (
@@ -128,19 +164,21 @@ class ServantDtl extends Component {
 
         <h1>Maintain Servant</h1>
 
-        <Form className="pa2">
-            
-          <Form.Row>
-            <Col className="tr">
-              <Button className="ma1" onClick={ this.saveServant }> 
-                Save
-              </Button> 
-              <Button className="ma1" onClick={ ()=>this.props.history.push('/ServantLP') }>
-                Cancel
-              </Button> 
-            </Col>
-          </Form.Row>
-            
+        <Row>
+          <Col className="tr">
+            <Button className="ma1" onClick={ this.saveServant }> 
+              Save
+            </Button> 
+            <Button className="ma1" onClick={ ()=>this.props.history.push(this.PAGE_PARENT) }>
+              Cancel
+            </Button> 
+          </Col>
+        </Row>
+        
+        <Alert className="mt2 mb2" variant={ this.state.variant }>{ this.state.formErrorMsg }</Alert>
+        
+        <Form>
+                
           <Form.Group controlId="formServantName">
             <Form.Label>Servant Name *</Form.Label>
             <Form.Control 
@@ -163,8 +201,14 @@ class ServantDtl extends Component {
                 onChange={ this.handleServantDetailChange }
               >
                 <option value="">Choose...</option>
-                <option value="M">Male</option>
-                <option value="F">Female</option>
+                {
+                  this.state.genderLists.length > 0 &&
+                  this.state.genderLists.map(gender => {
+                    return (
+                      <option key={ gender.id } value={ gender.id }>{ gender.description }</option> 
+                    )
+                  })
+                }
               </Form.Control>
             </Form.Group>
 

@@ -40,7 +40,7 @@ class ServiceServant extends Component {
                 return(
                   <tr key={ "role-"+role.id }>
                     <td className="w-30">
-                      {role.rolename}
+                      {role.description}
                     </td>          
                     <td className="w-40">
                     {

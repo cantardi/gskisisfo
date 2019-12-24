@@ -1,5 +1,5 @@
-import React, { Component } from "react";
-import { Form, Modal, Row, Col, Button, Container, ListGroup } from "react-bootstrap";
+import React, { Component } from 'react';
+import { Form, Modal, Alert, Row, Col, Button, Container, ListGroup } from 'react-bootstrap';
 import DayPicker, {DateUtils} from 'react-day-picker';
 import 'react-day-picker/lib/style.css';
 import MessageModal from '../MessageModal';
@@ -24,6 +24,8 @@ class PeriodDtl extends Component {
         msgModalContent1: '',
         msgModalContent2: '',
         msgModalHeader: '',
+        variant: '',
+        formErrorMsg: '',
         dateModalShow: false, 
       }
     }
@@ -38,6 +40,8 @@ class PeriodDtl extends Component {
         msgModalContent1: '',
         msgModalContent2: '',
         msgModalHeader: '',
+        variant: '',
+        formErrorMsg: '',
         dateModalShow: false,
       }
     }
@@ -65,9 +69,22 @@ class PeriodDtl extends Component {
     this.setState({ [e.target.name]: e.target.value.trim() })
   }
 
+  validateForm = () => {
+    const { periodname, description, selectedDays } = this.state
+
+    if (periodname === '' || description === '' || selectedDays.length === 0) { 
+      const text = "One or more input fields are not completed in the form. Please complete all fields with asterisk (*) in the form in order to save."
+      this.setState({ variant: 'danger', formErrorMsg: text })
+    }
+    else {
+      this.setState({ variant: '', formErrorMsg: '' })
+      return true
+    }
+  }
+
   msgModalClose = () => {
     this.setState({ msgModalShow: false })
-    this.props.history.push('/PeriodLP')
+    this.props.history.push(this.PAGE_PARENT)
   }
   
   dateModalClose = () => {
@@ -131,7 +148,7 @@ class PeriodDtl extends Component {
           description: this.state.description,
         })
       }),
-      fetch(process.env.REACT_APP_BACKEND_URL + '/updateperioddates', {
+      fetch(process.env.REACT_APP_BACKEND_URL + '/updateperioddate', {
         method: 'put',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({
@@ -151,17 +168,19 @@ class PeriodDtl extends Component {
 
   savePeriod = () => {
     
-    if (this.state.periodid === ''){
-      const convertedDays =
-        this.state.selectedDays.map(selectedDay => new Date(selectedDay).toLocaleDateString());
-      this.callAddPeriodAPI(convertedDays);
+    if (this.validateForm() === true){
+      if (this.state.periodid === ''){
+        const convertedDays =
+          this.state.selectedDays.map(selectedDay => new Date(selectedDay).toLocaleDateString());
+        this.callAddPeriodAPI(convertedDays);
+      }
+      else {
+        const convertedDays =
+          this.state.selectedDays.map(selectedDay => new Date(selectedDay).toLocaleDateString());
+        this.callUpdatePeriodAPI(convertedDays); 
+      } 
     }
-    else {
-      const convertedDays =
-        this.state.selectedDays.map(selectedDay => new Date(selectedDay).toLocaleDateString());
-      this.callUpdatePeriodAPI(convertedDays); 
-    } 
-
+    
   }
 
   componentDidMount(){
@@ -190,8 +209,10 @@ class PeriodDtl extends Component {
             </Button> 
           </Col>
         </Row>
-         
-        <Form className="pa2">
+        
+        <Alert className="mt2 mb2" variant={ this.state.variant }>{ this.state.formErrorMsg }</Alert>
+
+        <Form>
           <Form.Row>
             <Form.Group as={Col} controlId="formPeriodName">
               <Form.Label>Period Name*</Form.Label>
@@ -230,7 +251,6 @@ class PeriodDtl extends Component {
               onChange={ this.handlePeriodDetailChange }
               onBlur={ this.trimInputValue }
             />
-            <Form.Control.Feedback>Hello</Form.Control.Feedback>
           </Form.Group>
 
           <Modal show={ this.state.dateModalShow } onHide={ this.dateModalClose }>
@@ -247,7 +267,7 @@ class PeriodDtl extends Component {
           </Modal>
             
           <Form.Row>
-            <Col>Selected dates</Col>
+            <Col>Selected dates*</Col>
             <Col className="tr">
               <Button 
                 variant="primary"
@@ -259,18 +279,18 @@ class PeriodDtl extends Component {
           </Form.Row>
             
           <Form.Row>
-            {
-              this.state.selectedDays.length > 0 &&
-              this.state.selectedDays.map((day, i) => {
-                return (
-                  <ListGroup key={ i }>
-                    <ListGroup.Item className="ma1 link dim black mw5 dt hide-child ba b--black-20 pa4 br2 pointer">
-                      { day.toLocaleDateString() }
-                    </ListGroup.Item>
-                  </ListGroup>
-                )
-              })
-            }
+          {
+            this.state.selectedDays.length > 0 &&
+            this.state.selectedDays.map((day, i) => {
+              return (
+                <ListGroup key={ i }>
+                  <ListGroup.Item className="ma1 link dim black mw5 dt hide-child ba b--black-20 pa4 br2 pointer">
+                    { day.toLocaleDateString() }
+                  </ListGroup.Item>
+                </ListGroup>
+              )
+            })
+          }
           </Form.Row>         
 
         </Form>

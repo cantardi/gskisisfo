@@ -37,10 +37,12 @@ class SongSearch extends Component {
 								onKeyPress={ this.handleKeyPress } 
 							>
 								<option value="">All</option>
-								<option value="Worship">Worship</option>
-								<option value="Praise">Praise</option>
-								<option value="Hymn">Hymn</option>
-								<option value="Sermon">Sermon Intro</option>
+								{
+									this.props.songTypeLists.length > 0 &&
+									this.props.songTypeLists.map(songtype => {
+										return <option key={songtype.id} value={songtype.id}>{songtype.description}</option>	
+									})
+								}
 							</Form.Control>
 						</Col>
 					</Form.Group>

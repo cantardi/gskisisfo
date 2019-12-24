@@ -177,7 +177,7 @@ class ServiceSong extends Component {
                       key={ "scheduled-" + song.songid }
                       className="tc v-top dib br3 pa3 ma2 bw2 shadow-2"
                     >
-                      { song.songname } / { song.songkey }
+                      { song.songname } / { song.songkeydescr }
                     </div>
                   )
                 })
@@ -205,7 +205,7 @@ class ServiceSong extends Component {
                             key={ "selected-" + song.songid }
                             className="tc v-top dib br3 pa3 ma2 bw2 shadow-2"
                           >
-                            { song.songname } / { song.songkey }
+                            { song.songname } / { song.songkeydescr }
                           </div>
                         )
                       })
@@ -241,7 +241,7 @@ class ServiceSong extends Component {
                             key={ "realized-" + song.songid }
                             className="tc v-top dib br3 pa3 ma2 bw2 shadow-2"
                           >
-                            { song.songname } / { song.songkey }
+                            { song.songname } / { song.songkeydescr }
                             <MdClose 
                               className="ml2 pointer"
                               onClick={ ()=>this.props.removeSong(song.songid) } 

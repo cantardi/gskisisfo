@@ -46,7 +46,7 @@ class SongSchedulerStep2 extends Component {
 
   callSearchSongAPI = () => {
 
-    fetch(process.env.REACT_APP_BACKEND_URL + '/searchSong', {
+    fetch(process.env.REACT_APP_BACKEND_URL + '/searchsong', {
       method: 'post',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({
@@ -128,7 +128,7 @@ class SongSchedulerStep2 extends Component {
                       By: { filteredSong.composer }
                     </div>
                     <div className="f6 tl">
-                      Type: { filteredSong.songtype }
+                      Type: { filteredSong.songtypedescr }
                     </div>
                     <div className="f6 tl">
                       Lyric: { filteredSong.lyric.split('\n')[0] }...

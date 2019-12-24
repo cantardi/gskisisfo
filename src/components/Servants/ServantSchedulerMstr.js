@@ -141,7 +141,7 @@ class ServantSchedulerMstr extends Component {
           return dateIdArray
         })
         .then(dateIdArray => {
-          fetch(process.env.REACT_APP_BACKEND_URL + '/getchurchrole', {
+          fetch(process.env.REACT_APP_BACKEND_URL + '/getfieldvalues/Role List', {
             method: 'get',
             headers: {'Content-Type': 'application/json'}
           })
@@ -149,6 +149,7 @@ class ServantSchedulerMstr extends Component {
             if (response.status === 200){
               return response.json()
               .then(data => {
+                
                 this.setState({ churchRoles: data })
 
                 let { selectedServants } = this.state
@@ -160,7 +161,7 @@ class ServantSchedulerMstr extends Component {
                         selectedServants.push({
                           dateid: dateId,
                           roleid: data.id,
-                          rolename: data.rolename,
+                          rolename: data.description,
                           servantid: '',
                           servantname: ''
                         })
@@ -281,7 +282,6 @@ class ServantSchedulerMstr extends Component {
   }
 
   render() { 
-    
     return (
       <Container className="pa2">
         

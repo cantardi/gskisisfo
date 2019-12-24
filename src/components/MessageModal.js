@@ -10,7 +10,7 @@ class MessageModal extends Component {
           <Modal.Body>{ this.props.contentText }
             <div className="ma1">{ this.props.contentText1 }</div>
             <div className="ma1">{ this.props.contentText2 }</div>
-            <div className="ma1">{ this.props.contentText3 }</div>
+            <div className="ma1 red">{ this.props.errorText }</div>
           </Modal.Body>
           <Modal.Footer>
             <Button onClick={this.props.onHide} >Close</Button>

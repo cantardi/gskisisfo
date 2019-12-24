@@ -12,7 +12,7 @@ class ServantSchedulerStep3 extends Component {
 
     if (this.props.isValidated === true) {
       return (
-        <div>
+        <div className="tc">
         {
           this.props.displayedDates.map(date => {
             return(
@@ -26,7 +26,7 @@ class ServantSchedulerStep3 extends Component {
                   { DateConvert(new Date(date.predefineddate)) }
                 </h4>
 
-                <Table size="sm" responsive className="f6">
+                <Table size="sm" responsive className="f6 tl">
                   <tbody>
                   {
                     this.props.churchRoles.length > 0 &&
@@ -34,7 +34,7 @@ class ServantSchedulerStep3 extends Component {
                       return(
                         <tr key={ "role-"+role.id }>
                           <th className="w-50">
-                            {role.rolename}
+                            {role.description}
                           </th>
                           
                           <td className="w-50">

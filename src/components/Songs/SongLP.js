@@ -11,6 +11,9 @@ class SongLP extends Component {
     
     this.state = {
       songList: [],
+      songlanglists: [],
+      songtypelists: [],
+      songkeylists: [],
       searchSongName: '',
       searchSongType: '',
       searchComposer: '',
@@ -24,10 +27,9 @@ class SongLP extends Component {
     this.setState({ [e.target.name]: e.target.value });
   }
 
-  searchSong = () => {
-    this.setState({ songList: [] });
+  callSearchSongAPI = () => {
     
-    fetch(process.env.REACT_APP_BACKEND_URL + '/searchSong', {
+    fetch(process.env.REACT_APP_BACKEND_URL + '/searchsong', {
       method: 'post',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({
@@ -48,6 +50,37 @@ class SongLP extends Component {
         }
       }) 
       .catch(err => console.log("Fail to call searchsong API: " + err)) 
+  }
+  
+  callGetMasterFieldValuesAPI = () => {
+    
+    Promise.all([
+      fetch(process.env.REACT_APP_BACKEND_URL + '/getfieldvalues/Song Language', {
+        method: 'get',
+        headers: {'Content-Type': 'application/json'},
+      }),
+      fetch(process.env.REACT_APP_BACKEND_URL + '/getfieldvalues/Song Type', {
+        method: 'get',
+        headers: {'Content-Type': 'application/json'}
+      }),
+      fetch(process.env.REACT_APP_BACKEND_URL + '/getfieldvalues/Song Key', {
+        method: 'get',
+        headers: {'Content-Type': 'application/json'}
+      })
+    ])
+    .then (async([songlangresp, songtyperesp, songkeyresp]) => {
+      const songlangdata = await songlangresp.json()
+      const songtypedata = await songtyperesp.json()
+      const songkeydata = await songkeyresp.json()
+      return [songlangdata, songtypedata, songkeydata]
+    }) 
+    .then(data => this.setState({ songlanglists: data[0], songtypelists: data[1], songkeylists: data[2] }))
+    .catch(err => console.log('Fail to call getfieldvalues API: ' + err))  
+  }
+
+  searchSong = () => {
+    this.setState({ songList: [] });
+    this.callSearchSongAPI();
   }
 
   clearSearch = () => {
@@ -71,6 +104,10 @@ class SongLP extends Component {
     this.setState({ msgModalShow: false }) 
   }
 
+  componentDidMount() {
+    this.callGetMasterFieldValuesAPI()
+  }
+  
   render() {
 
     return (
@@ -91,6 +128,7 @@ class SongLP extends Component {
         </DropdownButton>
 
         <SongSearch 
+          songTypeLists={ this.state.songtypelists }
           songName={ this.state.searchSongName }
           songType={ this.state.searchSongType }
           songComposer={ this.state.searchComposer }

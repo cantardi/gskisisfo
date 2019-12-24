@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Container } from 'react-bootstrap';
+import { Container, Dropdown, DropdownButton } from 'react-bootstrap';
 import PeriodSearch from '../Period/PeriodSearch';
 import PeriodResult from '../Period/PeriodResult';
 import MessageModal from '../MessageModal';
@@ -8,6 +8,8 @@ class ScheduleLP extends Component {
   
   constructor(props){
     super(props);
+
+    this.PAGE_PARENT='./Administration'
 
     this.state = {
       periodList: [],
@@ -25,10 +27,9 @@ class ScheduleLP extends Component {
     this.setState({ [e.target.name]: e.target.value });
   }
 
-  searchPeriod = () => {
-    this.setState({ periodList: [] })
-
-    fetch(process.env.REACT_APP_BACKEND_URL + '/searchPeriod', {
+  callSearchPeriodAPI = () => {
+    
+    fetch(process.env.REACT_APP_BACKEND_URL + '/searchperiod', {
       method: 'post',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({
@@ -48,7 +49,11 @@ class ScheduleLP extends Component {
       }
     }) 
     .catch(err => console.log("Fail to call searchperiod API: " + err)) 
+  }
 
+  searchPeriod = () => {
+    this.setState({ periodList: [] })
+    this.callSearchPeriodAPI()
   }
 
   clearSearch = () => {
@@ -75,6 +80,16 @@ class ScheduleLP extends Component {
   render() {
     return (
       <Container className="pa2">
+        
+        <DropdownButton 
+          className="ma2"
+          title="Action"
+          id="dropdown-secondary-button"
+          key="ScheduleAction"
+          align="right"
+        >
+          <Dropdown.Item onClick={ this.addPeriod }>Add New Period</Dropdown.Item>
+        </DropdownButton>
 
         <PeriodSearch 
           periodName={ this.state.searchPeriodName }

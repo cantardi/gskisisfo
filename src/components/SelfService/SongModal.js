@@ -11,7 +11,7 @@ class SongModal extends Component {
       msgModalContent: '',
       msgModalHeader: '',
       searchSongName: '',
-      filteredSongs: [],
+      filteredSongs: []
     }
   }
 
@@ -114,7 +114,7 @@ class SongModal extends Component {
                       By: { filteredSong.composer }
                     </div>
                     <div className="f6 tl">
-                      Type: { filteredSong.songtype }
+                      Type: { filteredSong.songtypedescr }
                     </div>
                     <div className="f6 tl">
                       Lyric: { filteredSong.lyric.split('\n')[0] }...

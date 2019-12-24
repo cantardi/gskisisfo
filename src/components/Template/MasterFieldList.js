@@ -1,24 +1,26 @@
 import React, { Component } from 'react';
 import { Container } from 'react-bootstrap';
-import { Button, Modal, InputGroup, FormControl, Row, Col } from 'react-bootstrap';
+import { Alert, Button, Modal, InputGroup, FormControl, Row, Col } from 'react-bootstrap';
 import { MdClose, MdAddCircleOutline } from 'react-icons/md';
 import MessageModal from "../MessageModal";
 
-class RoleList extends Component {
+class MasterFieldList extends Component {
   
   constructor(props){
 
     super(props);
     
     this.state = {
-      roleList: [],
-      newRoleName: '',
-      addedRole: [],
-      deletedRole: [],
+      masterFields: [],
+      newFieldName: '',
+      addedField: [],
+      deletedField: [],
       msgModalShow: false,
       msgModalHeader: '', 
       msgModalContent: '',
-      roleModalShow: false,
+      errorText: '',
+      variant: '',
+      fieldModalShow: false,
       btnSaveDisabled: true,
     }
   }
@@ -31,8 +33,8 @@ class RoleList extends Component {
     this.setState({ msgModalShow: false })
   }
 
-  roleModalClose = () => {
-    this.setState({ roleModalShow: false })
+  fieldModalClose = () => {
+    this.setState({ fieldModalShow: false })
   } 
 
   enableSaveButton() {
@@ -41,65 +43,73 @@ class RoleList extends Component {
     }
   }
 
-  addRole = () => {
-    const { roleList, addedRole } = this.state;
+  addField = () => {
+    
+    if (this.state.newFieldName !== ''){
+      const { masterFields, addedField } = this.state;
 
-    let existingIdArray = []
-    let maxId = ''
-    let newAddedList = roleList.filter(role => role.id.toString().includes('n'))
+      let existingIdArray = []
+      let maxId = ''
+      let newAddedList = masterFields.filter(field => field.id.toString().includes('n'))
 
-    if (newAddedList.length === 0) {
-      existingIdArray.push(0)
-    }          
-    else {
-      newAddedList.map(role => existingIdArray.push( Number(role.id.toString().substring(1, role.id.length)) ))
-    }        
+      if (newAddedList.length === 0) {
+        existingIdArray.push(0)
+      }          
+      else {
+        newAddedList.map(field => existingIdArray.push( Number(field.id.toString().substring(1, field.id.length)) ))
+      }        
 
-    maxId = Math.max(...existingIdArray)
+      maxId = Math.max(...existingIdArray)
 
-    let newRole = { id: 'n'+(maxId+1), rolename: this.state.newRoleName }
+      let newField = { id: 'n'+(maxId+1), fieldname: this.state.newFieldName }
 
-    roleList.push(newRole);
-    addedRole.push(newRole);
+      masterFields.push(newField);
+      addedField.push(newField);
 
-    this.setState({ roleList });
-    this.setState({ addedRole });
-    this.setState({ roleModalShow: false })  
+      this.setState({ masterFields });
+      this.setState({ addedField });
 
-    this.enableSaveButton();
+      this.setState({ newFieldName: '', errorText: '', variant: '' });
+      this.setState({ fieldModalShow: false })  
+
+      this.enableSaveButton();
+    }
+    else{
+      this.setState({ variant: 'danger', errorText: "Field name is empty. Please fill in the name to proceed." })
+    }
 
   }
 
-  removeRole = (objid) => {
+  removeField = (objid) => {
     if (window.confirm('Are you sure you wish to delete this item?')) {
-      const { roleList, deletedRole, addedRole } = this.state;
+      const { masterFields, deletedField, addedField } = this.state;
 
       if (objid.toString().substring(0,1)!=='n') {
-        deletedRole.push(objid);
-        this.setState({ deletedRole });  
+        deletedField.push(objid);
+        this.setState({ deletedField });  
       }
 
-      let newRoleList = roleList.filter(newArray => newArray.id !== objid )
-      let newAddedRoleList = addedRole.filter(newArray => newArray.id !== objid )
+      let newFieldList = masterFields.filter(newArray => newArray.id !== objid )
+      let newAddedFieldList = addedField.filter(newArray => newArray.id !== objid )
       
-      this.setState({ roleList: newRoleList });
-      this.setState({ addedRole: newAddedRoleList });
+      this.setState({ masterFields: newFieldList });
+      this.setState({ addedField: newAddedFieldList });
 
       this.enableSaveButton();
     }
   }
 
-  addRoleRequest = () => {
-    const { addedRole } = this.state;
+  callAddFieldAPI = () => {
+    const { addedField } = this.state;
     
-    let newRoleName = []
-    addedRole.map(role => newRoleName.push(Object ({rolename: role.rolename}) ))
+    let newFieldName = []
+    addedField.map(field => newFieldName.push(Object ({fieldname: field.fieldname}) ))
 
-    fetch(process.env.REACT_APP_BACKEND_URL + '/addnewrole', {
+    fetch(process.env.REACT_APP_BACKEND_URL + '/addmasterfield', {
       method: 'post',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({
-        newroles: newRoleName
+        newfield: newFieldName
       })
     })
     .then(response => {
@@ -112,16 +122,16 @@ class RoleList extends Component {
         .then(data => this.setState({ msgModalShow: true , msgModalHeader: 'Error', msgModalContent: data }))
       }
     })
-    .catch(err => console.log("Fail to call add API: " + err))
+    .catch(err => console.log("Fail to call addmasterfield API: " + err))
   }
 
-  deleteRoleRequest = () => {
+  callDeleteFieldAPI = () => {
 
-    fetch(process.env.REACT_APP_BACKEND_URL + '/deleterole', {
+    fetch(process.env.REACT_APP_BACKEND_URL + '/deletemasterfield', {
       method: 'delete',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({
-        deletedroles: this.state.deletedRole
+        deletedfield: this.state.deletedField
       })
     })
     .then(response => {
@@ -134,19 +144,20 @@ class RoleList extends Component {
         .then(data => this.setState({ msgModalShow: true , msgModalHeader: 'Error', msgModalContent: data }))
       }
     })
-    .catch(err => console.log("Fail to call delete API: " + err))
+    .catch(err => console.log("Fail to call deletemasterfield API: " + err))
+    
   }
 
-  saveRole = () => {
+  saveField = () => {
 
-    if (this.state.addedRole.length > 0){
-      this.addRoleRequest();
-      this.setState({ addedRole: [] })
+    if (this.state.addedField.length > 0){
+      this.callAddFieldAPI();
+      this.setState({ addedField: [] })
     }
 
-    if (this.state.deletedRole.length > 0){
-      this.deleteRoleRequest();
-      this.setState({ deletedRole: [] })
+    if (this.state.deletedField.length > 0){
+      this.callDeleteFieldAPI();
+      this.setState({ deletedField: [] })
     }
     
     this.setState({ btnSaveDisabled: true })
@@ -154,33 +165,35 @@ class RoleList extends Component {
 
   componentDidMount(){
     
-    fetch(process.env.REACT_APP_BACKEND_URL + '/getchurchrole', {
+    fetch(process.env.REACT_APP_BACKEND_URL + '/getmasterfield', {
       method: 'get',
       headers: {'Content-Type': 'application/json'}
     })
     .then (response => {
       if (response.status === 200){
         return response.json()
-        .then(data => this.setState({ roleList: data }))
+        .then(data => this.setState({ masterFields: data }))
       }
       else { 
         return response.json()
         .then(data => this.setState({ msgModalShow: true , msgModalHeader: 'Information', msgModalContent: data }))
       }
     }) 
-    .catch(err => console.log('Fail to call getrole API: ' + err))
+    .catch(err => console.log('Fail to call getmasterfield API: ' + err))
+
   }
 
   render() {   
+    
     return (
       <Container className="pa2">
           
-        <h1>Setup Role List</h1>
+        <h1>Setup Master Field List</h1>
 
         <Row>
           <Col className="tr">
             <Button className="ma1" 
-                    onClick={ this.saveRole }
+                    onClick={ this.saveField }
                     disabled={ this.state.btnSaveDisabled }
             >  
               Save
@@ -192,17 +205,17 @@ class RoleList extends Component {
         </Row>
 
         {
-          this.state.roleList.length > 0 &&
-          this.state.roleList.map((role, i) => {
+          this.state.masterFields.length > 0 &&
+          this.state.masterFields.map((field, i) => {
             return (
               <div 
                 key={ i }
                 className="tc v-top dib br3 pa3 ma2 bw2 shadow-2"
               >
-              { role.rolename }
+              { field.fieldname }
                 <MdClose 
                   className="ml2 pointer dim"
-                  onClick={ ()=>this.removeRole(role.id) }
+                  onClick={ ()=>this.removeField(field.id) }
                 />
               </div>
             )
@@ -213,26 +226,27 @@ class RoleList extends Component {
           <MdAddCircleOutline 
             size={20} 
             className="pointer dim" 
-            onClick={ ()=>this.setState({ roleModalShow: true }) }
+            onClick={ ()=>this.setState({ fieldModalShow: true }) }
           />
         </div>
 
-        <Modal show={this.state.roleModalShow} onHide={this.roleModalClose} size="lg">
-          <Modal.Header closeButton><h4>Input New Role</h4></Modal.Header>
+        <Modal show={this.state.fieldModalShow} onHide={this.fieldModalClose} size="lg">
+          <Modal.Header closeButton><h4>Input New Field</h4></Modal.Header>
           <Modal.Body className="tc">
             <InputGroup className="mb-3">
               <InputGroup.Prepend>
-                <InputGroup.Text>Role Name</InputGroup.Text>
+                <InputGroup.Text>Field Name</InputGroup.Text>
               </InputGroup.Prepend>
               <FormControl
-                placeholder="Enter role name here"
-                name="newRoleName"
+                placeholder="Enter field name here"
+                name="newFieldName"
 								onChange={ this.handleChange } 
               />
             </InputGroup>
+            <Alert variant={this.state.variant}>{ this.state.errorText }</Alert>
           </Modal.Body>
           <Modal.Footer>
-            <Button onClick={ this.addRole }>OK</Button>
+            <Button onClick={ this.addField }>OK</Button>
           </Modal.Footer>
         </Modal>
 
@@ -248,4 +262,4 @@ class RoleList extends Component {
   }
 }
 
-export default RoleList;
+export default MasterFieldList;

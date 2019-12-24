@@ -4,9 +4,9 @@ import { DateConvert } from '../../helpers/function';
 
 class SongSchedulerStep3 extends Component {
   
-  returnBgColor = (songtype) => {
+  returnBgColor = (songtypedescr) => {
     let trBgColor = ''
-    switch(songtype){
+    switch(songtypedescr){
       case 'Worship':
         trBgColor = 'bg-light-blue';
         break;
@@ -57,11 +57,11 @@ class SongSchedulerStep3 extends Component {
                   .filter(selectedSong => Number(selectedSong.dateid)===date.id)
                   .map((selectedSong, i) => {
                     return (
-                      <tr key={ 'tr-' + date.id + '-' + selectedSong.song.id } className={ this.returnBgColor(selectedSong.song.songtype) }>
+                      <tr key={ 'tr-' + date.id + '-' + selectedSong.song.id } className={ this.returnBgColor(selectedSong.song.songtypedescr) }>
                         <td className="tc w-10"> {i+1}. </td>
                         <td className="w-60"> { selectedSong.song.songname } <i>({ selectedSong.song.lyric.split('\n')[0] }...) </i></td>
-                        <td className="tc w-20"> { selectedSong.song.songtype } </td>
-                        <td className="tc w-10"> { selectedSong.song.songkey } </td>
+                        <td className="tc w-20"> { selectedSong.song.songtypedescr } </td>
+                        <td className="tc w-10"> { selectedSong.song.songkeydescr } </td>
                       </tr>
                     )
                   })

@@ -2,15 +2,24 @@ import React , { Component } from 'react';
 import { Button, Container } from 'react-bootstrap'
 
 class Administration extends Component {
+	
 	render() {
 		return (
 			<Container className='tc ma2'>
 
-				<Button onClick={()=> this.props.history.push('/RoleList')} 
+				<Button onClick={()=> this.props.history.push('/MasterFieldList')} 
 								className='tc v-top dib br3 pa3 ma2 grow bw2 w5 h5 shadow-3'>
 					<div>
-						<h4>Role Management</h4>
-						<p>Manage the roles in GSKI.</p>
+						<h4>Master Field Management</h4>
+						<p>Manage the master field in GSKI.</p>
+					</div>
+				</Button>
+
+				<Button onClick={()=> this.props.history.push('/MasterDataLP')} 
+								className='tc v-top dib br3 pa3 ma2 grow bw2 w5 h5 shadow-3'>
+					<div>
+						<h4>Master Data Management</h4>
+						<p>Manage the master data in system.</p>
 					</div>
 				</Button>
 
@@ -58,6 +67,7 @@ class Administration extends Component {
 		)
 		
 	}
+	
 }
 
 export default Administration;

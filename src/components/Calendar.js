@@ -29,7 +29,7 @@ class MyCalendar extends React.Component {
 								allDay: false,
 								startDate: new Date (event.predefineddate),
 								endDate: new Date (event.predefineddate),
-								title: event.rolename
+								title: event.roleshortdescr
 							})
 						)
 					})
@@ -43,9 +43,10 @@ class MyCalendar extends React.Component {
 	}
 
 	render() {
+
 		return (
 			<div>
-					<Calendar
+				<Calendar
 					 style={{height: 500}}
 					 culture='en-GB'
 					 localizer={localizer}
@@ -53,7 +54,7 @@ class MyCalendar extends React.Component {
 					 views={['month']}
 					 startAccessor="startDate"
 					 endAccessor="endDate"
-				 />
+			 />
 			</div>
 		)
 	}

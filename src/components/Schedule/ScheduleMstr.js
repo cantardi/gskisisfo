@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Container, Row, Col, Tab, Nav, Button } from "react-bootstrap";
+import { Container, Row, Col, Tab, Nav, Button, Spinner } from "react-bootstrap";
 import ScheduleSong from './ScheduleSong';
 import ScheduleServant from './ScheduleServant';
 import MessageModal from '../MessageModal';
@@ -9,10 +9,14 @@ class ScheduleMstr extends Component {
   constructor(props) {
     super(props);
     const period = this.props.location.state;
+    
     window.scrollTo(0, 0);
+    this.PAGE_PARENT = './ScheduleLP'
     
     this.state = {
       periodid: period.id,
+      periodname: period.periodname,
+      perioddescr: period.description,
       servantSchedule: [],
       songSchedule: [], 
       selectedSongs: [],
@@ -21,6 +25,7 @@ class ScheduleMstr extends Component {
       msgModalShow: false, 
       msgModalContent: '',
       msgModalHeader: '',
+      spinnerShow: true
     }
 
   }
@@ -47,7 +52,7 @@ class ScheduleMstr extends Component {
   
   callGetChurchRoleAPI = () => {
     
-    fetch(process.env.REACT_APP_BACKEND_URL + '/getchurchrole/', {
+    fetch(process.env.REACT_APP_BACKEND_URL + '/getfieldvalues/Role List', {
       method: 'get',
       headers: {'Content-Type': 'application/json'}
     })
@@ -61,12 +66,12 @@ class ScheduleMstr extends Component {
         .then(data => this.setState({ msgModalShow: true , msgModalHeader: 'Error', msgModalContent: data }))
       }
     }) 
-    .catch(err => console.log('Fail to call getchurchrole API: ' + err))
+    .catch(err => console.log('Fail to call getfieldvalues API: ' + err))
 
   }
 
   callGetSongScheduleAPI = (periodid) => {
-
+    
     fetch(process.env.REACT_APP_BACKEND_URL + '/getsongschedule/'+periodid, {
       method: 'get',
       headers: {'Content-Type': 'application/json'}
@@ -74,7 +79,11 @@ class ScheduleMstr extends Component {
     .then (response => {
       if (response.status === 200){
         return response.json()
-        .then(data => this.setState({ songSchedule: data }))
+        .then(data => this.setState({ songSchedule: data, spinnerShow: false }))
+      }
+      else {
+        return response.json()
+        .then(() => this.setState({ spinnerShow: false }))
       }
     }) 
     .catch(err => console.log('Fail to call getsongschedule API: ' + err))
@@ -90,7 +99,11 @@ class ScheduleMstr extends Component {
     .then (response => {
       if (response.status === 200){
         return response.json()
-        .then(data => this.setState({ servantSchedule: data }))
+        .then(data => this.setState({ servantSchedule: data, spinnerShow: false }))
+      }
+      else {
+        return response.json()
+        .then(() => this.setState({ spinnerShow: false }))
       }
     }) 
     .catch(err => console.log('Fail to call getservantschedule API: ' + err))
@@ -113,21 +126,13 @@ class ScheduleMstr extends Component {
         
         <br/>
 
-        <Row >
+        <Row>
           <Col className="tr">
-            <Button className="ma1" onClick={ this.editSchedule }>
-              Edit
-            </Button> 
-            <Button className="ma1" onClick={ this.printSchedule }>
-              Print
-            </Button> 
-            <Button className="ma1" onClick={ ()=>this.props.history.push('/ScheduleLP') }>  
+            <Button className="ma1 tr" onClick={ ()=>this.props.history.push(this.PAGE_PARENT) }>  
               Return to Search
-            </Button> 
+            </Button>
           </Col>
         </Row>
-
-        <br/>
 
         <Tab.Container id="left-tabs-example" defaultActiveKey="first" >
           <Row>
@@ -143,37 +148,60 @@ class ScheduleMstr extends Component {
             </Col>
             <Col sm={9}>
               <Tab.Content>
-                <Tab.Pane eventKey="first">  
+                <Tab.Pane eventKey="first"> 
                   {
-                    this.state.songSchedule.length > 0?
+                    this.state.spinnerShow === false ?
+                    ( 
+                      this.state.songSchedule.length > 0?
+                      (
+                        <ScheduleSong
+                          songSchedule = { this.state.songSchedule }
+                          periodid = { this.state.periodid }
+                          periodDates = { this.state.periodDates }
+                          periodName = { this.state.periodname }
+                          periodDescr = { this.state.perioddescr }
+                          callGetSongScheduleAPI = { ()=>this.callGetSongScheduleAPI(this.state.periodid) }
+                        /> 
+                      ):
+                      (
+                        <div className="alert alert-info" role="alert">
+                          Song has not been scheduled for this period.
+                        </div>
+                      )
+                    ): 
                     (
-                      <ScheduleSong
-                        songSchedule = { this.state.songSchedule }
-                        periodDates = { this.state.periodDates }
-                      /> 
-                    ):
-                    (
-                      <div className="alert alert-info" role="alert">
-                        Song has not been scheduled for this period.
-                      </div>
+                      <Spinner animation="border" role="status">
+                        <span className="sr-only">Loading...</span>
+                      </Spinner>
                     )
                   } 
  
                 </Tab.Pane>
                 <Tab.Pane eventKey="second">
                   {
-                    this.state.servantSchedule.length > 0?
-                    (
-                      <ScheduleServant 
-                        servantSchedule = { this.state.servantSchedule }
-                        periodDates = { this.state.periodDates }
-                        churchRoles = { this.state.churchRoles }
-                      />
+                    this.state.spinnerShow === false ?
+                    ( 
+                      this.state.servantSchedule.length > 0?
+                      (
+                        <ScheduleServant 
+                          servantSchedule = { this.state.servantSchedule }
+                          periodid = { this.state.periodid }
+                          periodDates = { this.state.periodDates }
+                          periodName = { this.state.periodname }
+                          periodDescr = { this.state.perioddescr }
+                          churchRoles = { this.state.churchRoles }
+                        />
+                      ):
+                      (
+                        <div className="alert alert-info" role="alert">
+                          Servant has not been scheduled for this period.
+                        </div>
+                      )
                     ):
                     (
-                      <div className="alert alert-info" role="alert">
-                        Servant has not been scheduled for this period.
-                      </div>
+                      <Spinner animation="border" role="status">
+                        <span className="sr-only">Loading...</span>
+                      </Spinner>
                     )
                   }
                 </Tab.Pane>

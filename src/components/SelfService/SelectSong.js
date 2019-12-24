@@ -21,12 +21,13 @@ class SelectSong extends Component {
       msgModalShow: false, 
       msgModalHeader: '',
       msgModalContent: '',
+      songkeylists: []
     }
     
   }
 
   msgModalClose = () => {
-    this.props.history.push('/SelfService');
+    this.setState({ msgModalShow: false })
   }
 
   openSongModal = () => {
@@ -59,7 +60,7 @@ class SelectSong extends Component {
     let foundIndex = selectedSongs.findIndex(updatedItem => updatedItem.songid === songid)
 
     let updatedSong = Object.assign({}, selectedSongs[foundIndex])
-    updatedSong.songkey = e.target.value;
+    updatedSong.songkey = Number(e.target.value);
 
     selectedSongs.splice(foundIndex, 1, updatedSong)
     this.setState({ selectedSongs });
@@ -122,9 +123,56 @@ class SelectSong extends Component {
   }
 
   submitSongSelection = () => {
-    if (window.confirm('Are you sure you wish to submit this schedule?')) {
+    if (window.confirm('Are you sure you wish to submit this schedule? All servants in charge will get notification for the song selection after you click OK.')) {
       this.callSaveSongSelectionAPI();
+      this.callNotifyServantAPI();
+      this.setState({ selectedPeriod: '' });
+      this.setState({ selectedDate: '' });
+      this.setState({ displayedDates: [] });
+      this.setState({ selectedSongs: [] });
+      this.setState({ displayedSongs: [] });
     }
+  }
+
+  callNotifyServantAPI = () => {
+    
+    const notifiedSongs = this.state.selectedSongs.map(song => ({
+        songname: song.songname,
+        songkey: song.songkey,
+        songurl: song.url1
+      })
+    ) 
+
+    fetch(process.env.REACT_APP_BACKEND_URL + '/sendemailbyservice', {
+      method: 'post',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        servicedateid: this.state.selectedDate,
+        selectedsongs: notifiedSongs
+      })
+    })
+    .then (response => {
+      if (response.status === 200){
+        response.json()
+        .then(data => alert(data))
+      }
+    }) 
+    .catch(err => console.log("Fail to call sendemailbyservice API --- " + err))     
+  
+  }
+  
+  callGetMasterFieldValuesAPI = () => {
+    fetch(process.env.REACT_APP_BACKEND_URL + '/getfieldvalues/Song Key', {
+      method: 'get',
+      headers: {'Content-Type': 'application/json'}
+    })
+    .then (response => {
+      if (response.status === 200){
+        return response.json()
+        .then(data => this.setState({ songkeylists: data }))
+      }
+    })
+    .catch(err => console.log('Fail to call getfieldvalues API: ' + err))     
   }
 
   callGetPeriodAPI = () => {
@@ -146,7 +194,7 @@ class SelectSong extends Component {
   }
 
   callGetPeriodDateAPI = (periodid) => {
-    fetch(process.env.REACT_APP_BACKEND_URL + '/getperioddate/'+periodid, {
+    fetch(process.env.REACT_APP_BACKEND_URL + '/getperioddateforselection/'+periodid, {
       method: 'get',
       headers: {'Content-Type': 'application/json'}
     })
@@ -155,8 +203,12 @@ class SelectSong extends Component {
         return response.json()
         .then(data => this.setState({ displayedDates: data }))
       }
+      else { 
+        return response.json()
+        .then(data => this.setState({ msgModalShow: true , msgModalHeader: 'Information', msgModalContent: data }))
+      }
     }) 
-    .catch(err => console.log('Fail to call getperioddateapi: ' + err))
+    .catch(err => console.log('Fail to call getperioddateapi --- ' + err))
   }
 
   callGetSongForSelectionAPI = (dateid) => {
@@ -168,6 +220,10 @@ class SelectSong extends Component {
       if (response.status === 200){
         return response.json()
         .then(data => this.setState({ displayedSongs: data }))
+      }
+      else { 
+        return response.json()
+        .then(data => this.setState({ msgModalShow: true , msgModalHeader: 'Information', msgModalContent: data }))
       }
     }) 
     .catch(err => console.log('Fail to call getsongforselectionapi: ' + err))
@@ -205,6 +261,7 @@ class SelectSong extends Component {
 
   componentDidMount(){
     this.callGetPeriodAPI();
+    this.callGetMasterFieldValuesAPI();
   }
 
   render() {
@@ -280,7 +337,7 @@ class SelectSong extends Component {
                         By: { song.composer }
                       </div>
                       <div className="f6 tl">
-                        Type: { song.songtype }
+                        Type: { song.songtypedescr }
                       </div>
                       <div className="f6 tl">
                         Lyric: { song.lyric.split('\n')[0] }...
@@ -328,18 +385,14 @@ class SelectSong extends Component {
                           onChange={ (e)=>this.handleKeyChange(selectedSong.songid, e) }
                         >
                           <option value="">Choose...</option>
-                          <option value="C">C</option>
-                          <option value="C#">C#</option>
-                          <option value="D">D</option>
-                          <option value="Eb">Eb</option>
-                          <option value="E">E</option>
-                          <option value="F">F</option>
-                          <option value="F#">F#</option>
-                          <option value="G">G</option>
-                          <option value="Ab">Ab</option>
-                          <option value="A">A</option>
-                          <option value="Bb">Bb</option>
-                          <option value="B">B</option>
+                          {
+                            this.state.songkeylists.length > 0 &&
+                            this.state.songkeylists.map(songkey => {
+                              return (
+                                <option key={ songkey.id } value={ songkey.id }>{ songkey.description }</option> 
+                              )
+                            })
+                          }
                         </Form.Control>
                       </div>
                     </div>

@@ -13,7 +13,7 @@ class ServiceMstr extends Component {
     window.scrollTo(0, 0);
 
     const date = this.props.location.state
-
+    
     this.state = {
       dateid: date.dateid,
       datevalue: date.datevalue,
@@ -29,66 +29,10 @@ class ServiceMstr extends Component {
       msgModalContent: '',
       msgModalHeader: '',
     }
-
   }
 
   msgModalClose = () => {
     this.setState({ msgModalShow: false });
-  }
-  
-  callGetChurchRoleAPI = () => {
-    
-    fetch(process.env.REACT_APP_BACKEND_URL + '/getchurchrole/', {
-      method: 'get',
-      headers: {'Content-Type': 'application/json'}
-    })
-    .then (response => {
-      if (response.status === 200){
-        return response.json()
-        .then(data => this.setState({ churchRoles: data }))
-      }
-      else { 
-        return response.json()
-        .then(data => this.setState({ msgModalShow: true , msgModalHeader: 'Error', msgModalContent: data }))
-      }
-    }) 
-    .catch(err => console.log('Fail to call getchurchrole API: ' + err))
-
-  }
-
-  callGetServantAPI = () => {
-    fetch(process.env.REACT_APP_BACKEND_URL + '/getservant', {
-      method: 'get',
-      headers: {'Content-Type': 'application/json'}
-    })
-    .then (response => {
-      if (response.status === 200){
-        return response.json()
-        .then(data => this.setState({ servantList: data }))
-      }
-      else { 
-        return response.json()
-        .then(data => this.setState({ msgModalShow: true , msgModalHeader: 'Error', msgModalContent: data }))
-      }
-    }) 
-    .catch(err => console.log('Fail to call getservant API: ' + err))
-
-  }
-
-  callGetSongByDateAPI = (dateid) => {
-    
-    fetch(process.env.REACT_APP_BACKEND_URL + '/getsongbydate/'+dateid, {
-      method: 'get',
-      headers: {'Content-Type': 'application/json'}
-    })
-    .then (response => {
-      if (response.status === 200){
-        return response.json()
-        .then(data => this.setState({ scheduledSongs: data }))
-      }
-    }) 
-    .catch(err => console.log('Fail to call getsongbydate API: ' + err))
-
   }
 
   removeSong = (songid) => {
@@ -129,7 +73,7 @@ class ServiceMstr extends Component {
       servantid: Number(event.target.value),
     }
 
-    let foundIndex = realizedServants.findIndex(servant => servant.roleid === roleid)
+    //let foundIndex = realizedServants.findIndex(servant => servant.roleid === roleid)
     //realizedServants = realizedServants.splice(foundIndex, 1, updatedServant)
     
     console.log(scheduledServants)
@@ -140,9 +84,54 @@ class ServiceMstr extends Component {
 
   }
 
-  callGetSelectedSongByDateAPI = (dateid) => {
+  callGetChurchRoleAPI = () => {
+    
+    fetch(process.env.REACT_APP_BACKEND_URL + '/getfieldvalues/Role List', {
+      method: 'get',
+      headers: {'Content-Type': 'application/json'}
+    })
+    .then (response => {
+      if (response.status === 200){
+        return response.json()
+        .then(data => this.setState({ churchRoles: data }))
+      }
+    }) 
+    .catch(err => console.log('Fail to call getfieldvalues API --- ' + err))
+  }
 
-    fetch(process.env.REACT_APP_BACKEND_URL + '/getselectedsongbydate/'+dateid, {
+  callGetServantAPI = () => {
+    fetch(process.env.REACT_APP_BACKEND_URL + '/getservant', {
+      method: 'get',
+      headers: {'Content-Type': 'application/json'}
+    })
+    .then (response => {
+      if (response.status === 200){
+        return response.json()
+        .then(data => this.setState({ servantList: data }))
+      }
+    }) 
+    .catch(err => console.log('Fail to call getservant API --- ' + err))
+
+  }
+
+  callGetSongByDateAPI = (dateid) => {
+    
+    fetch(process.env.REACT_APP_BACKEND_URL + '/getsongbydate/'+dateid, {
+      method: 'get',
+      headers: {'Content-Type': 'application/json'}
+    })
+    .then (response => {
+      if (response.status === 200){
+        return response.json()
+        .then(data => this.setState({ scheduledSongs: data }))
+      }
+    }) 
+    .catch(err => console.log('Fail to call getsongbydate API --- ' + err))
+  }
+
+  callGetSongSelectedByDateAPI = (dateid) => {
+
+    fetch(process.env.REACT_APP_BACKEND_URL + '/getsongselectedbydate/'+dateid, {
       method: 'get',
       headers: {'Content-Type': 'application/json'}
     })
@@ -154,7 +143,7 @@ class ServiceMstr extends Component {
         })
       }
     }) 
-    .catch(err => console.log('Fail to call getselectedsongbydate API: ' + err))
+    .catch(err => console.log('Fail to call getsongselectedbydate API ---' + err))
 
   }
 
@@ -170,7 +159,7 @@ class ServiceMstr extends Component {
         .then(data => this.setState({ scheduledServants: data, realizedServants: data }))
       }
     }) 
-    .catch(err => console.log('Fail to call getservantbydate API: ' + err))
+    .catch(err => console.log('Fail to call getservantbydate API --- ' + err))
 
   }
 
@@ -178,7 +167,7 @@ class ServiceMstr extends Component {
     this.callGetChurchRoleAPI();
     this.callGetSongByDateAPI(this.state.dateid);
     this.callGetServantByDateAPI(this.state.dateid);
-    this.callGetSelectedSongByDateAPI(this.state.dateid);
+    this.callGetSongSelectedByDateAPI(this.state.dateid);
     this.callGetServantAPI();
   }
 
@@ -237,7 +226,7 @@ class ServiceMstr extends Component {
                     ):
                     (
                       <div className="alert alert-info" role="alert">
-                        Servant has not been scheduled for this date.
+                        Song has not been scheduled for this date.
                       </div>
                     )
                   }

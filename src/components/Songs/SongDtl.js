@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Form, Col, Row, Button, Container } from 'react-bootstrap';
+import { Form, Col, Row, Button, Alert, Container } from 'react-bootstrap';
 import MessageModal from '../MessageModal';
 
 class SongDtl extends Component {
@@ -9,9 +9,13 @@ class SongDtl extends Component {
     const song = this.props.location.state;
 
     window.scrollTo(0, 0);
+    this.PAGE_PARENT = './SongLP'
     
     if (typeof song === 'undefined') {
       this.state = {
+        songlanglists: [],
+        songtypelists: [],
+        songkeylists: [],
         songid: '',
         songname: '',
         songlanguage: '',
@@ -24,6 +28,8 @@ class SongDtl extends Component {
         url2: '',
         schedulingflag: false,
         lyric: '',
+        variant: '',
+        formErrorMsg: '',
         msgModalShow: false, 
         msgModalContent: '',
         msgModalHeader: '',
@@ -31,6 +37,9 @@ class SongDtl extends Component {
     }
     else {
       this.state = {
+        songlanglists: [],
+        songtypelists: [],
+        songkeylists: [],
         songid: song.id,
         songname: song.songname,
         songlanguage: song.songlanguage,
@@ -43,6 +52,8 @@ class SongDtl extends Component {
         url2: song.url2,
         schedulingflag: song.schedulingflag,
         lyric: song.lyric,
+        variant: '',
+        formErrorMsg: '',
         msgModalShow: false, 
         msgModalContent: '',
         msgModalHeader: '',
@@ -62,12 +73,52 @@ class SongDtl extends Component {
     this.setState({ [e.target.name]: e.target.value.trim() })
   }
 
-  msgModalClose = () => {
-    this.setState({ msgModalShow: false })
-    this.props.history.push('/SongLP')
+  validateForm = () => {
+    const { songname, songlanguage, songtype } = this.state
+
+    if (songname === '' || songlanguage === '' || songtype === '') { 
+      const text = "One or more input fields are not completed in the form. Please complete all fields with asterisk (*) in the form in order to save."
+      this.setState({ variant: 'danger', formErrorMsg: text })
+    }
+    else {
+      this.setState({ variant: '', formErrorMsg: '' })
+      return true
+    }
   }
 
-  insertNewSong = () => {
+  msgModalClose = () => {
+    this.setState({ msgModalShow: false })
+    this.props.history.push(this.PAGE_PARENT)
+  }
+
+  callGetMasterFieldValuesAPI = () => {
+    
+    Promise.all([
+      fetch(process.env.REACT_APP_BACKEND_URL + '/getfieldvalues/Song Language', {
+        method: 'get',
+        headers: {'Content-Type': 'application/json'},
+      }),
+      fetch(process.env.REACT_APP_BACKEND_URL + '/getfieldvalues/Song Type', {
+        method: 'get',
+        headers: {'Content-Type': 'application/json'}
+      }),
+      fetch(process.env.REACT_APP_BACKEND_URL + '/getfieldvalues/Song Key', {
+        method: 'get',
+        headers: {'Content-Type': 'application/json'}
+      })
+    ])
+    .then (async([songlangresp, songtyperesp, songkeyresp]) => {
+      const songlangdata = await songlangresp.json()
+      const songtypedata = await songtyperesp.json()
+      const songkeydata = await songkeyresp.json()
+      return [songlangdata, songtypedata, songkeydata]
+    }) 
+    .then(data => this.setState({ songlanglists: data[0], songtypelists: data[1], songkeylists: data[2] }))
+    .catch(err => console.log('Fail to call getfieldvalues API: ' + err)) 
+    
+  }
+
+  callAddSongAPI = () => {
 
     fetch(process.env.REACT_APP_BACKEND_URL + '/addsong', {
       method: 'post',
@@ -92,7 +143,7 @@ class SongDtl extends Component {
 
   }
 
-  updateExistingSong = () => {
+  callUpdateSongAPI = () => {
 
     fetch(process.env.REACT_APP_BACKEND_URL + '/updatesong', {
       method: 'put',
@@ -128,18 +179,25 @@ class SongDtl extends Component {
 
   saveSong = () => {
     
-    if (this.state.songid === ''){
-      this.insertNewSong();
+    if (this.validateForm() === true){
+      if (this.state.songid === ''){
+        this.callAddSongAPI();
+      }
+      else {
+        this.callUpdateSongAPI();
+      }  
     }
-    else {
-      this.updateExistingSong();
-    }  
     
   }
 
+  componentDidMount() {
+    this.callGetMasterFieldValuesAPI();
+  }
+  
   render() {
     
     return (
+
       <Container className="pa2">
           
         <h1>Maintain Song</h1>
@@ -149,13 +207,15 @@ class SongDtl extends Component {
             <Button className="ma1" onClick={ this.saveSong }>
               Save
             </Button> 
-            <Button className="ma1" onClick={ ()=>this.props.history.push('/SongLP') }>  
+            <Button className="ma1" onClick={ ()=>this.props.history.push(this.PAGE_PARENT) }>  
               Cancel
             </Button> 
           </Col>
         </Row>
 
-        <Form className="pa2">
+        <Alert className="mt2 mb2" variant={ this.state.variant }>{ this.state.formErrorMsg }</Alert>
+
+        <Form>
           
           <Form.Group controlId="formSongName">
             <Form.Label>Song Name *</Form.Label>
@@ -180,12 +240,14 @@ class SongDtl extends Component {
                 onChange={ this.handleSongDetailChange }
               >
                 <option value="">Choose...</option>
-                <option value="BIND">Bahasa Indonesia</option>
-                <option value="BJAW">Bahasa Jawa</option>
-                <option value="BBAT">Bahasa Batak</option>
-                <option value="ENGL">English</option>
-                <option value="CHIN">Chinese</option>
-                <option value="JAPN">Japanese</option>
+                {
+                  this.state.songlanglists.length > 0 &&
+                  this.state.songlanglists.map(songlang => {
+                    return (
+                      <option key={ songlang.id } value={ songlang.id }>{ songlang.description }</option> 
+                    )
+                  })
+                }
               </Form.Control>
             </Form.Group>
 
@@ -199,10 +261,14 @@ class SongDtl extends Component {
                 onChange={ this.handleSongDetailChange }
               >
                 <option value="">Choose...</option>
-                <option value="Worship">Worship</option>
-                <option value="Praise">Praise</option>
-                <option value="Hymn">Hymn</option>
-                <option value="Sermon Intro">Sermon Intro</option>
+                {
+                  this.state.songtypelists.length > 0 &&
+                  this.state.songtypelists.map(songtype => {
+                    return (
+                      <option key={ songtype.id } value={ songtype.id }>{ songtype.description }</option> 
+                    )
+                  })
+                }
               </Form.Control>
             </Form.Group>
 
@@ -215,18 +281,14 @@ class SongDtl extends Component {
                 onChange={ this.handleSongDetailChange }
               >
                 <option value="">Choose...</option>
-                <option value="C">C</option>
-                <option value="C#">C#</option>
-                <option value="D">D</option>
-                <option value="Eb">Eb</option>
-                <option value="E">E</option>
-                <option value="F">F</option>
-                <option value="F#">F#</option>
-                <option value="G">G</option>
-                <option value="Ab">Ab</option>
-                <option value="A">A</option>
-                <option value="Bb">Bb</option>
-                <option value="B">B</option>
+                {
+                  this.state.songkeylists.length > 0 &&
+                  this.state.songkeylists.map(songkey => {
+                    return (
+                      <option key={ songkey.id } value={ songkey.id }>{ songkey.description }</option> 
+                    )
+                  })
+                }
               </Form.Control>
             </Form.Group>
           </Form.Row>

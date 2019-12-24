@@ -29,8 +29,8 @@ class SongResult extends Component {
                   >
                     { song.songname }
                   </td>
-                  <td className="w-20">{ song.songtype }</td>
-                  <td className="w-10">{ song.songkey }</td>
+                  <td className="w-20">{ song.songtypedescr }</td>
+                  <td className="w-10">{ song.songkeydescr }</td>
                   <td className="w-30">{ song.composer }</td>
                 </tr>
               )

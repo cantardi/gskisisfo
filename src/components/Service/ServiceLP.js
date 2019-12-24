@@ -16,37 +16,26 @@ class ServiceLP extends Component {
       displayedSongs: [],
       selectedSongs: [],
       msgModalShow: false, 
-      msgModalContent: '',
       msgModalHeader: '',
+      msgModalContent: '',
     }
     
   }
 
-  messageModalClose = () => {
+  msgModalClose = () => {
     this.setState({ msgModalShow: false })
   }
 
   handlePeriodChange = (e) => {
-
     this.setState({ selectedPeriod: e.target.value });
     this.setState({ displayedDates: [] });
     this.setState({ selectedSongs: [] });
     this.setState({ displayedSongs: [] });
-    
-    fetch(process.env.REACT_APP_BACKEND_URL + '/getperioddate/'+e.target.value, {
-      method: 'get',
-      headers: {'Content-Type': 'application/json'}
-    })
-    .then (response => {
-      if (response.status === 200){
-        return response.json()
-        .then(data => this.setState({ displayedDates: data }))
-      }
-    }) 
-    .catch(err => console.log (err))
+    this.callGetPeriodDateAPI(e.target.value);
   }
 
-  componentDidMount(){
+  callGetPeriodAPI = () => {
+
     fetch(process.env.REACT_APP_BACKEND_URL + '/getperiod', {
       method: 'get',
       headers: {'Content-Type': 'application/json'}
@@ -58,10 +47,34 @@ class ServiceLP extends Component {
       }
       else { 
         return response.json()
-        .then(data => this.setState({ msgModalShow: true , msgModalHeader: 'Error', msgModalContent: data }))
+        .then(data => this.setState({ msgModalShow: true , msgModalHeader: 'Information', msgModalContent: data }))
       }
     }) 
-    .catch(err => console.log('Fail to call getperiod API: ' + err))
+    .catch(err => console.log('Fail to call getperiod API --- ' + err))
+
+  }
+  
+  callGetPeriodDateAPI = (id) => {
+
+    fetch(process.env.REACT_APP_BACKEND_URL + '/getperioddate/'+id, {
+      method: 'get',
+      headers: {'Content-Type': 'application/json'}
+    })
+    .then (response => {
+      if (response.status === 200){
+        return response.json()
+        .then(data => this.setState({ displayedDates: data }))
+      }
+      else { 
+        return response.json()
+        .then(data => this.setState({ msgModalShow: true , msgModalHeader: 'Information', msgModalContent: data }))
+      }
+    }) 
+    .catch(err => console.log('Fail to call getperioddate API --- ' + err))
+  }
+
+  componentDidMount(){
+    this.callGetPeriodAPI();
   }
 
   openServiceDate = (dateid, datevalue) => {
@@ -98,48 +111,38 @@ class ServiceLP extends Component {
             </Form.Control>
           </Form.Group>
           
-          {
-            (this.state.selectedPeriod !== '' && this.state.displayedDates.length === 0) ? 
-            (
-              <div className="alert alert-info" role="alert">
-                Predefined dates do not exist in this period. Please add predefined dates for this period in Period Management page.
-              </div>
-            ):
-            (
-              <Form.Group>
-                <Form.Row>Service Dates</Form.Row>
-                <Form.Row>
-                {
-                  this.state.displayedDates.length > 0 &&
-                  this.state.displayedDates.map(date => {
-                    return (
-                      <Col 
-                        key={ "date-"+date.id }
-                        md={2}
-                        className='t v-top dib br3 ma2 shadow-2 pointer grow'
-                        onClick={ ()=>this.openServiceDate(date.id, date.predefineddate) } 
-                      > 
-                        <h6 className="pa2 tc">
-                          { DateConvert(new Date(date.predefineddate)) }
-                        </h6>
+          <Form.Group>
+            <Form.Row>Service Dates</Form.Row>
+            <Form.Row>
+            {
+              this.state.displayedDates.length > 0 &&
+              this.state.displayedDates.map(date => {
+                return (
+                  <Col 
+                    key={ "date-"+date.id }
+                    md={2}
+                    className='t v-top dib br3 ma2 shadow-2 pointer grow'
+                    onClick={ ()=>this.openServiceDate(date.id, date.predefineddate) } 
+                  > 
+                    <h6 className="pa2 tc">
+                      { DateConvert(new Date(date.predefineddate)) }
+                    </h6>
 
-                        <p className="tc">Song is not selected</p>
-                      </Col>
-                    )
-                  })
-                }
-                </Form.Row>
-              </Form.Group>
-            )  
-          }
-          
+                    <p className="tc">Song is not selected</p>
+                  </Col>
+                )
+              })
+            }
+            </Form.Row>
+          </Form.Group>
+
           <MessageModal
             show={ this.state.msgModalShow }
-            onHide={ this.modalClose }
-            header={ this.state.msgModalHeader }
-            content1={ this.state.msgModalContent }
+            onHide={ this.msgModalClose }
+            headerText={ this.state.msgModalHeader }
+            contentText1={ this.state.msgModalContent }
           />
-          
+            
         </Container> 
       )
   }

@@ -23,9 +23,7 @@ class ServantLP extends Component {
     this.setState({ [e.target.name]: e.target.value });
   }
 
-  searchServant = () => {
-    this.setState({ servantList: [] });
-    
+  callSearchServantAPI = () => {
     fetch(process.env.REACT_APP_BACKEND_URL + '/searchservant', {
       method: 'post',
       headers: {'Content-Type': 'application/json'},
@@ -36,17 +34,22 @@ class ServantLP extends Component {
         limit: 20
       })
     })
-      .then (response => {
-        if (response.status === 200){
-          return response.json()
-          .then(data => this.setState({ servantList: data }))
-        }
-        else { 
-          return response.json()
-          .then(data => this.setState({ msgModalShow: true , msgModalHeader: 'Error', msgModalContent: data }))
-        }
-      }) 
-      .catch(err => console.log("Fail to call searchservant API: " + err)) 
+    .then (response => {
+      if (response.status === 200){
+        return response.json()
+        .then(data => this.setState({ servantList: data }))
+      }
+      else { 
+        return response.json()
+        .then(data => this.setState({ msgModalShow: true , msgModalHeader: 'Information', msgModalContent: data }))
+      }
+    }) 
+    .catch(err => console.log("Fail to call searchservant API: " + err)) 
+  }
+
+  searchServant = () => {
+    this.setState({ servantList: [] });
+    this.callSearchServantAPI();
   }
 
   clearSearch = () => {
@@ -66,7 +69,7 @@ class ServantLP extends Component {
     this.props.history.push('/ServantDtl', servant);
   }
 
-   msgModalClose = () => {
+  msgModalClose = () => {
     this.setState({ msgModalShow: false }) 
   }
 
