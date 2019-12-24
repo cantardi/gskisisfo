@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Nav, Navbar } from 'react-bootstrap';
-import { Route, NavLink, BrowserRouter } from "react-router-dom";
+import { Route, NavLink, Link, BrowserRouter } from "react-router-dom";
 import Home from "./components/Home";
 import Login from "./components/Login";
 import Calendar from "./components/Calendar";
@@ -60,14 +60,14 @@ class App extends Component {
         
             <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark">
               <Navbar.Brand>
-                <NavLink className="nav-link" to="/">GSKI Rehuel</NavLink>
+                <Nav.Link as={Link} eventKey="1" className="nav-link" to="/">GSKI Rehuel</Nav.Link>
               </Navbar.Brand> 
               <Navbar.Toggle aria-controls="responsive-navbar-nav" />
               <Navbar.Collapse id="responsive-navbar-nav">
                 <Nav className="mr-auto">
-                  <NavLink className="nav-link" to="/Calendar">Calendar</NavLink>
-                  <NavLink className="nav-link" to="/SelfService">Self Service</NavLink>
-                  <NavLink className="nav-link" to="/Administration">Administration</NavLink>
+                  <Nav.Link as={Link} eventKey="2" className="nav-link" to="/Calendar">Calendar</Nav.Link>
+                  <Nav.Link as={Link} eventKey="3" className="nav-link" to="/SelfService">Self Service</Nav.Link>
+                  <Nav.Link as={Link} eventKey="4" className="nav-link" to="/Administration">Administration</Nav.Link>
                 </Nav>
                 <Nav>
                   <NavLink className="nav-link" to="/Account">Account</NavLink>
