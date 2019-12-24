@@ -21,6 +21,8 @@ class PeriodLP extends Component {
       msgModalContent: '',
     }
 
+    window.scrollTo(0, 0);
+
   }
   
   handlePeriodSearchChange = (e) => {

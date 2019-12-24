@@ -21,6 +21,8 @@ class SongLP extends Component {
       msgModalContent: '',
       msgModalHeader: '',
     }
+
+    window.scrollTo(0, 0);
   }
   
   handleSongSearchChange = (e) => {
