@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
 import { Container, Table, Button, Row, Col, Alert } from 'react-bootstrap';
 import { DateConvert } from '../../helpers/function';
-import SongPdf from './SongPdf';
 import { PDFDownloadLink } from '@react-pdf/renderer';
 import { MdVideoLibrary } from 'react-icons/md';
-import ScheduleSongEditModal from './ScheduleSongEditModal';
+import { history } from '../../helpers/function'
+import SongPdf from './R_SongPdf';
+import ScheduleSongEditModal from './R_ScheduleSongEditModal';
 
 class ScheduleSong extends Component {
   
@@ -36,15 +37,15 @@ class ScheduleSong extends Component {
     }
     return trBgColor;
   }
-
+  
   editSongSchedModalClose = () => {
-    this.setState({ editSongSchedModalShow: false }, this.props.callGetSongScheduleAPI)
+    this.setState({ editSongSchedModalShow: false })
   }
 
   editSchedule = () => {
     this.setState({ editSongSchedModalShow: true })
   }
-  
+
   openVideo = (videourl) => {
     if (videourl) {
       window.open(videourl, '_blank');
@@ -59,20 +60,34 @@ class ScheduleSong extends Component {
 
         <Row className="mt2">
           <Col className="tc">
-            <Button className="ma1" onClick={ this.editSchedule }>
-              Edit
-            </Button> 
-
-            <PDFDownloadLink className="btn btn-primary" 
-              document={ <SongPdf periodDates={this.props.periodDates} 
-                          periodName={this.props.periodName}
-                          periodDescr={this.props.periodDescr}
-                          songSchedule={this.props.songSchedule}
+            
+            {
+              this.props.editDisplayFlag === true?
+              (
+                <Button className="ma1" onClick={ this.editSchedule }>
+                  Edit
+                </Button>
+              ): 
+              (
+                null
+              )
+            }
+      
+            <PDFDownloadLink className="btn btn-primary ma1" 
+              document={ <SongPdf periodDates={ this.props.periodDates } 
+                          periodName={ this.props.periodName }
+                          periodDescr={ this.props.periodDescr }
+                          songSchedule={ this.props.songSchedule }
                         />} 
               fileName={`Song_${this.props.periodName}.pdf`}
             >
               {({ blob, url, loading, error }) => (loading ? 'Loading document...' : 'Download')}
             </PDFDownloadLink>
+
+            <Button className="ma1" onClick={ ()=>history.push(this.props.PAGE_PARENT) }>  
+              Return to Search
+            </Button>
+
           </Col>
         </Row>
         
@@ -128,6 +143,7 @@ class ScheduleSong extends Component {
           displayedDates={ this.props.periodDates }
           selectedSongs = { this.props.songSchedule }
           periodid = { this.props.periodid }
+          reloadData = { this.props.reloadData }
         />
 
       </Container>	

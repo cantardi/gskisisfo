@@ -1,9 +1,11 @@
 import React, { Component } from 'react';
 import { Container, Table, Button, Row, Col, Alert } from 'react-bootstrap';
 import { DateConvert } from '../../helpers/function';
-import ServantPdf from './ServantPdf';
-import ServantNotifyModal from './ServantNotifyModal';
 import { pdf, PDFDownloadLink } from '@react-pdf/renderer';
+import { history } from '../../helpers/function';
+import ServantPdf from './R_ServantPdf';
+import ScheduleServantEditModal from './R_ScheduleServantEditModal';
+import NotifyServantModal from './R_NotifyServantModal';
 
 class ScheduleServant extends Component {
 
@@ -12,7 +14,10 @@ class ScheduleServant extends Component {
     this.state = {
       notifyModalShow: false,
       notifyServantList: [],
-      fileattachment: ''
+      fileattachment: '',
+      editServantSchedModalShow: false,
+      addedSchedule: [],
+      deletedSchedule: []
     }
   }
 
@@ -25,11 +30,15 @@ class ScheduleServant extends Component {
     else return '-'
 
   }
-
-  editSchedule = () => {
-    //this.props.history.push('/EditServantSchedule', {});
+   
+  editServantSchedModalClose = () => {
+    this.setState({ editServantSchedModalShow: false })
   }
 
+  editSchedule = () => {
+    this.setState({ editServantSchedModalShow: true })
+  }
+  
   loadServantToNotify = () => {    
     this.callGetServantEmailAPI();
     this.setState({ notifyModalShow: true })    
@@ -124,30 +133,50 @@ class ScheduleServant extends Component {
 	render(){
     
 		return (
-
+      
 			<Container>
         
         <Row className="mt2">
           <Col className="tc">
-            <Button className="ma1" onClick={ this.editSchedule }>
-              Edit
-            </Button> 
-
-            <PDFDownloadLink className="btn btn-primary" 
-              document={ <ServantPdf periodDates={this.props.periodDates} 
-                          periodName={this.props.periodName}
-                          periodDescr={this.props.periodDescr}
-                          churchRoles={this.props.churchRoles}
-                          returnServantName={this.returnServantName}
+            {
+              this.props.editDisplayFlag === true? 
+              (
+                <Button className="ma1" onClick={ this.editSchedule }>
+                  Edit
+                </Button> 
+              ):
+              (
+                null
+              )
+            }
+            
+            <PDFDownloadLink className="btn btn-primary ma1" 
+              document={ <ServantPdf periodDates={ this.props.periodDates } 
+                          periodName={ this.props.periodName }
+                          periodDescr={ this.props.periodDescr }
+                          churchRoles={ this.props.churchRoles }
+                          returnServantName={ this.returnServantName }
                         />} 
               fileName={`Servant_${this.props.periodName}.pdf`} 
             >
               {({ blob, url, loading, error }) => (loading ? 'Loading document...' : 'Download')}
             </PDFDownloadLink>
 
-            <Button className="ma1" onClick={ this.loadServantToNotify }>
-              Notify
-            </Button> 
+            {
+              this.props.notifyDisplayFlag === true?
+              (
+                <Button className="ma1" onClick={ this.loadServantToNotify }>
+                  Notify
+                </Button> 
+              ):
+              (
+                null
+              )
+            }
+            
+            <Button className="ma1" onClick={ ()=>history.push(this.props.PAGE_PARENT) }>  
+              Return to Search
+            </Button>
 
           </Col>
         </Row>
@@ -178,7 +207,7 @@ class ScheduleServant extends Component {
                         return(
                           <tr key={ "role-"+role.id }>
                             <th className="w-50">
-                              {role.description}
+                              { role.description }
                             </th>
                             
                             <td className="w-50">
@@ -198,7 +227,18 @@ class ScheduleServant extends Component {
           }
         </div>
 
-        <ServantNotifyModal
+        <ScheduleServantEditModal
+          show={ this.state.editServantSchedModalShow }
+          onHide={ this.editServantSchedModalClose }
+          displayedDates={ this.props.periodDates }
+          selectedServants={ this.props.servantSchedule }
+          servantList = { this.props.servantList }
+          periodid = { this.props.periodid }
+          churchRoles = { this.props.churchRoles }
+          reloadData = { this.props.reloadData }
+        />
+
+        <NotifyServantModal
           show={ this.state.notifyModalShow }
           onHide={ this.notifyModalClose }
           notifyServantList={ this.state.notifyServantList }

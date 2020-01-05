@@ -1,11 +1,5 @@
 import React from 'react';
-import {
-  Document,
-  Page,
-  View,
-  Text,
-  StyleSheet
-} from '@react-pdf/renderer';
+import { Document, Page, View, Text, StyleSheet } from '@react-pdf/renderer';
 import { DateConvert } from '../../helpers/function';
 
 const styles = StyleSheet.create({
@@ -23,13 +17,7 @@ const styles = StyleSheet.create({
     padding: 8,
     margin: 5,
     flex: "1 0 45%",
-    width: "45%",
-    borderStyle: "solid",
-    borderWidth: 1, 
-    borderTopLeftRadius: 5,
-    borderTopRightRadius: 5,
-    borderBottomRightRadius: 5,
-    borderBottomLeftRadius: 5,
+    width: "45%"
   },
   periodTitle: {
     color: "#0c5460",

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-import { Container } from 'react-bootstrap';
-import { Alert, Button, Modal, InputGroup, FormControl, Row, Col } from 'react-bootstrap';
+import { Container, Alert, Button, Modal, InputGroup, FormControl, Row, Col } from 'react-bootstrap';
 import { MdClose, MdAddCircleOutline } from 'react-icons/md';
+import {history} from '../../helpers/function'
 import MessageModal from "../MessageModal";
 
 class MasterFieldList extends Component {
@@ -198,7 +198,7 @@ class MasterFieldList extends Component {
             >  
               Save
             </Button> 
-            <Button className="ma1" onClick={ ()=>this.props.history.push('/Administration') }>  
+            <Button className="ma1" onClick={ ()=>history.push('/Administration') }>  
               Cancel
             </Button> 
           </Col>

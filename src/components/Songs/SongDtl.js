@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Form, Col, Row, Button, Alert, Container } from 'react-bootstrap';
+import {history} from '../../helpers/function'
 import MessageModal from '../MessageModal';
 
 class SongDtl extends Component {
@@ -88,7 +89,7 @@ class SongDtl extends Component {
 
   msgModalClose = () => {
     this.setState({ msgModalShow: false })
-    this.props.history.push(this.PAGE_PARENT)
+    history.push(this.PAGE_PARENT)
   }
 
   callGetMasterFieldValuesAPI = () => {
@@ -207,7 +208,7 @@ class SongDtl extends Component {
             <Button className="ma1" onClick={ this.saveSong }>
               Save
             </Button> 
-            <Button className="ma1" onClick={ ()=>this.props.history.push(this.PAGE_PARENT) }>  
+            <Button className="ma1" onClick={ ()=>history.push(this.PAGE_PARENT) }>  
               Cancel
             </Button> 
           </Col>

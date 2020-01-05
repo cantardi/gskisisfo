@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Container, Dropdown, DropdownButton } from 'react-bootstrap';
+import {history} from '../../helpers/function'
 import SongSearch from './SongSearch';
 import SongResult from './SongResult';
 import MessageModal from '../MessageModal';
@@ -95,11 +96,11 @@ class SongLP extends Component {
   }
 
   routeToPage = (pagename) => {
-    this.props.history.push(pagename);
+    history.push(pagename);
   }
 
   openEditMode = (song) => {
-    this.props.history.push('/SongDtl', song);
+    history.push('/SongDtl', song);
   }
   
   msgModalClose = () => {
@@ -111,7 +112,7 @@ class SongLP extends Component {
   }
   
   render() {
-
+    
     return (
       <Container className="pa2">
         <DropdownButton 

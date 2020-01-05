@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Form, Row, Col, Button, Alert, Container } from 'react-bootstrap';
+import {history} from '../../helpers/function'
 import { formatDate, parseDate } from 'react-day-picker/moment';
 import 'moment/locale/it';
 import DayPickerInput from 'react-day-picker/DayPickerInput';
@@ -84,7 +85,7 @@ class ServantDtl extends Component {
 
   msgModalClose = () => {
     this.setState({ msgModalShow: false })
-    this.props.history.push('/ServantLP')
+    history.push('/ServantLP')
   }
 
   callGetMasterFieldValuesAPI = () => {
@@ -169,7 +170,7 @@ class ServantDtl extends Component {
             <Button className="ma1" onClick={ this.saveServant }> 
               Save
             </Button> 
-            <Button className="ma1" onClick={ ()=>this.props.history.push(this.PAGE_PARENT) }>
+            <Button className="ma1" onClick={ ()=>history.push(this.PAGE_PARENT) }>
               Cancel
             </Button> 
           </Col>

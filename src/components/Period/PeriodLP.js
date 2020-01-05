@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Container, Dropdown, DropdownButton } from 'react-bootstrap';
+import {history} from '../../helpers/function'
 import PeriodSearch from './PeriodSearch';
 import PeriodResult from './PeriodResult';
 import MessageModal from '../MessageModal';
@@ -67,11 +68,11 @@ class PeriodLP extends Component {
   }
 
   addPeriod = () => {
-    this.props.history.push(this.PAGE_CHILD);
+    history.push(this.PAGE_CHILD);
   }
 
   updatePeriod = (period) => {
-    this.props.history.push(this.PAGE_CHILD, period);
+    history.push(this.PAGE_CHILD, period);
   }
 
   msgModalClose = () => {

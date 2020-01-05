@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { Container, Dropdown, DropdownButton } from 'react-bootstrap';
+import {history} from '../../helpers/function'
 import ServantSearch from './ServantSearch';
 import ServantResult from './ServantResult';
 import MessageModal from '../MessageModal';
@@ -63,11 +64,11 @@ class ServantLP extends Component {
   }
 
   routeToPage = (pagename) => {
-    this.props.history.push(pagename);
+    history.push(pagename);
   }
 
   openEditMode = (servant) => {
-    this.props.history.push('/ServantDtl', servant);
+    history.push('/ServantDtl', servant);
   }
 
   msgModalClose = () => {

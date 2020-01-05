@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { Form, Container, Col } from 'react-bootstrap';
-import { DateConvert } from '../../helpers/function';
+import { DateConvert, history } from '../../helpers/function';
 import MessageModal from '../MessageModal';
 
 class ServiceLP extends Component {
@@ -79,13 +79,13 @@ class ServiceLP extends Component {
 
   openServiceDate = (dateid, datevalue) => {
     const date = {dateid, datevalue}
-    this.props.history.push('/ServiceMstr', date);
+    history.push('/ServiceMstr', date);
   }
 
   render() {
     
     return ( 
-      <Container className="ma2">   
+      <Container className="pa2">   
         
         <h1>Service Management</h1>
         
@@ -128,7 +128,7 @@ class ServiceLP extends Component {
                       { DateConvert(new Date(date.predefineddate)) }
                     </h6>
 
-                    <p className="tc">Song is not selected</p>
+                    <p className="tc">Click to view details</p>
                   </Col>
                 )
               })

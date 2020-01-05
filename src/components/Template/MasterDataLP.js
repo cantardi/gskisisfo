@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Container, Form, Row, Col, Button, Table, FormControl, InputGroup, Modal } from 'react-bootstrap';
-import { MdAddCircleOutline, MdRemoveCircleOutline } from 'react-icons/md';
+import {history} from '../../helpers/function'
 import MessageModal from '../MessageModal';
 
 class MasterDataLP extends Component {
@@ -294,21 +294,24 @@ class MasterDataLP extends Component {
             <Button className="ma1" onClick={ this.saveMasterFieldValue } disabled={ this.state.btnSaveDisabled }>
               Save
             </Button> 
-            <Button className="ma1" onClick={ ()=>this.props.history.push('./Administration') }>  
+            <Button className="ma1" onClick={ ()=>history.push('./Administration') }>  
               Cancel
             </Button> 
           </Col>
         </Row>
 
+        <br/>
+
         <Form>
           <Form.Group as={Row} controlId="formFieldName">
-						<Form.Label column md={3}>Field Name</Form.Label>
+						<Form.Label column md={2} className="ma1">Field Name</Form.Label>
 						<Col md={6}>
 							<Form.Control 
 								as="select"  
 								name="searchFieldName"
 								value={ this.state.fieldId } 
-								onChange={ this.handleFieldChange }
+                onChange={ this.handleFieldChange }
+                className="ma1"
 							>
                 <option key="0" value="">--Select--</option>
                 {
@@ -324,11 +327,13 @@ class MasterDataLP extends Component {
                 }
 							</Form.Control>
 						</Col>
-            <Col md={1}>
+            <Col md={2}>
             {
               this.state.fieldId !== ''
               ?
-              <MdAddCircleOutline size={30} className="pointer" onClick={ ()=>this.setState({ fieldModalShow: true }) } /> 
+              <Button className="ma1" onClick={ ()=>this.setState({ fieldModalShow: true }) } >
+                Add
+              </Button>
               :
               null
             }
@@ -340,10 +345,9 @@ class MasterDataLP extends Component {
           <thead>
             <tr>
               <th className="w-5">#</th>
-              <th className="w-25">Field Name</th>
-              <th className="w-45">Description</th>
-              <th className="w-23">Legend</th>
-              <th className="w-2">&nbsp;</th>
+              <th className="w-55">Description</th>
+              <th className="w-30">Legend</th>
+              <th className="w-10">&nbsp;</th>
             </tr>
           </thead>
           
@@ -353,24 +357,27 @@ class MasterDataLP extends Component {
             this.state.fieldDetails.map((fieldDetail, i) => {
               return(
                 <tr key= {fieldDetail.id}>
-                  <td className="w-5">{ i+1 }</td>
-                  <td className="w-25">{ fieldDetail.fieldname }</td>
-                  <td className="w-45">
+                  <td className="w-5 ma1">{ i+1 }</td>
+                  <td className="w-55">
                     <FormControl 
                       name="descriptionText"
                       value={ fieldDetail.description } 
+                      className="ma1"
                       onChange={ (e)=>this.handleDescrChange(e, fieldDetail.id) }>  
                     </FormControl>
                   </td>
-                  <td className="w-23">
+                  <td className="w-30">
                     <FormControl 
                       name="shortdescrText"
-                      value={ fieldDetail.shortdescr } 
+                      value={ fieldDetail.shortdescr }
+                      className="ma1"
                       onChange={ (e)=>this.handleShortDescrChange(e, fieldDetail.id) }>
                     </FormControl>
                   </td>
-                  <td className="w-2">
-                    <MdRemoveCircleOutline size={30} className="pointer" onClick={ ()=>this.removeFieldValue(fieldDetail.id) } />
+                  <td className="w-10">
+                  <Button className="ma1" onClick={ ()=>this.removeFieldValue(fieldDetail.id) } >
+                    Remove
+                  </Button>              
                   </td>
                 </tr>
               )

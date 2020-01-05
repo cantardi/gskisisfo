@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Form, Container, Button } from 'react-bootstrap';
+import {history} from '../../helpers/function'
 import MessageModal from '../MessageModal';
 import ServantSchedulerStep1 from './ServantSchedulerStep1';
 import ServantSchedulerStep2 from './ServantSchedulerStep2';
@@ -31,7 +32,7 @@ class ServantSchedulerMstr extends Component {
 
   msgModalClose = () => {
     this.setState({ msgModalShow: false });
-    this.props.history.push('/ServantLP')
+    history.push('/ServantLP')
   }
 
   _next() {
@@ -52,7 +53,7 @@ class ServantSchedulerMstr extends Component {
   _submit() {
 
     if (window.confirm('Are you sure you wish to submit this schedule?')) {
-      this.callScheduleServantAPI();
+      this.callAddServantSchedAPI();
     }
 
   }
@@ -199,7 +200,7 @@ class ServantSchedulerMstr extends Component {
 
   }
 
-  callScheduleServantAPI = () => {
+  callAddServantSchedAPI = () => {
     const servantSchedule = this.state.selectedServants
                             .filter(servant => servant.servantid !== '')
                             .map(servant =>
@@ -211,7 +212,7 @@ class ServantSchedulerMstr extends Component {
                               })
                             )
 
-    fetch(process.env.REACT_APP_BACKEND_URL + '/scheduleservant', {
+    fetch(process.env.REACT_APP_BACKEND_URL + '/addservantschedule', {
       method: 'post',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({
@@ -227,7 +228,7 @@ class ServantSchedulerMstr extends Component {
         return response.json()
         .then(data => this.setState({ msgModalShow: true , msgModalHeader: 'Error', msgModalContent: data }))
     }})
-    .catch(err => console.log('Fail to call scheduleservant API: ' + err))
+    .catch(err => console.log('Fail to call addservantschedule API: ' + err))
   }
 
   handlePeriodChange = (e) => {

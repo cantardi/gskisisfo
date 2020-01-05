@@ -1,23 +1,26 @@
 import React, { Component } from 'react';
-import { Container, Row, Col, Tab, Nav, Button, Spinner } from "react-bootstrap";
-import ScheduleSong from './ScheduleSong';
-import ScheduleServant from './ScheduleServant';
+import { Container, Row, Col, Tab, Nav, Spinner } from 'react-bootstrap';
+import ScheduleSong from './R_ScheduleSong';
+import ScheduleServant from './R_ScheduleServant';
 import MessageModal from '../MessageModal';
 
-class ScheduleMstr extends Component {
+class MaintainSchedule extends Component {
   
   constructor(props) {
     super(props);
-    const period = this.props.location.state;
+    const period = this.props.location.state.period;
     
     window.scrollTo(0, 0);
-    this.PAGE_PARENT = './ScheduleLP'
     
     this.state = {
+      PAGE_PARENT: this.props.location.state.PAGE_PARENT,
       periodid: period.id,
       periodname: period.periodname,
       perioddescr: period.description,
+      editDisplayFlag: this.props.location.state.editFlag,
+      notifyDisplayFlag: this.props.location.state.notifyFlag,
       servantSchedule: [],
+      servantList: [],
       songSchedule: [], 
       selectedSongs: [],
       periodDates: [],
@@ -70,24 +73,22 @@ class ScheduleMstr extends Component {
 
   }
 
-  callGetSongScheduleAPI = (periodid) => {
-    
-    fetch(process.env.REACT_APP_BACKEND_URL + '/getsongschedule/'+periodid, {
+  callGetServantAPI = () => {
+    fetch(process.env.REACT_APP_BACKEND_URL + '/getservant', {
       method: 'get',
       headers: {'Content-Type': 'application/json'}
     })
     .then (response => {
       if (response.status === 200){
         return response.json()
-        .then(data => this.setState({ songSchedule: data, spinnerShow: false }))
+        .then(data => this.setState({ servantList: data }))
       }
-      else {
+      else { 
         return response.json()
-        .then(() => this.setState({ spinnerShow: false }))
+        .then(data => this.setState({ msgModalShow: true , msgModalHeader: 'Error', msgModalContent: data }))
       }
     }) 
-    .catch(err => console.log('Fail to call getsongschedule API: ' + err))
-
+    .catch(err => console.log('Fail to call getservant API: ' + err))
   }
 
   callGetServantScheduleAPI = (periodid) => {
@@ -110,29 +111,103 @@ class ScheduleMstr extends Component {
 
   }
 
+  callGetSongScheduleAPI = (periodid) => {
+    
+    fetch(process.env.REACT_APP_BACKEND_URL + '/getsongschedule/'+periodid, {
+      method: 'get',
+      headers: {'Content-Type': 'application/json'}
+    })
+    .then (response => {
+      if (response.status === 200){
+        return response.json()
+        .then(data => this.setState({ songSchedule: data, spinnerShow: false }))
+      }
+      else {
+        return response.json()
+        .then(() => this.setState({ spinnerShow: false }))
+      }
+    }) 
+    .catch(err => console.log('Fail to call getsongschedule API: ' + err))
+
+  }
+  
+  callGetServantByDateAPI = (dateid) => {
+
+    fetch(process.env.REACT_APP_BACKEND_URL + '/getservantbydate/'+dateid, {
+      method: 'get',
+      headers: {'Content-Type': 'application/json'}
+    })
+    .then (response => {
+      if (response.status === 200){
+        return response.json()
+        .then(data => this.setState({ servantSchedule: data, spinnerShow: false }))
+      }
+    }) 
+    .catch(err => console.log('Fail to call getservantbydate API --- ' + err))
+
+  }
+
+  callGetSongByDateAPI = (dateid) => {
+    
+    fetch(process.env.REACT_APP_BACKEND_URL + '/getsongbydate/'+dateid, {
+      method: 'get',
+      headers: {'Content-Type': 'application/json'}
+    })
+    .then (response => {
+      if (response.status === 200){
+        return response.json()
+        .then(data => this.setState({ songSchedule: data, spinnerShow: false}))
+      }
+    }) 
+    .catch(err => console.log('Fail to call getsongbydate API --- ' + err))
+  }
+
+  callGetSongSelectedByDateAPI = (dateid) => {
+
+    fetch(process.env.REACT_APP_BACKEND_URL + '/getsongselectedbydate/'+dateid, {
+      method: 'get',
+      headers: {'Content-Type': 'application/json'}
+    })
+    .then (response => {
+      if (response.status === 200){
+        return response.json()
+        .then(data => {
+          this.setState({ selectedSongs: data, spinnerShow: false })
+        })
+      }
+    }) 
+    .catch(err => console.log('Fail to call getsongselectedbydate API ---' + err))
+
+  }
+
   componentDidMount(){
-    this.callGetPeriodDateAPI(this.state.periodid);
+    this.callGetServantAPI();
     this.callGetChurchRoleAPI();
-    this.callGetSongScheduleAPI(this.state.periodid);
-    this.callGetServantScheduleAPI(this.state.periodid);
+    
+    let selectedDate = this.props.location.state.selectedDate;
+
+    if (typeof selectedDate === 'undefined'){  
+      this.callGetPeriodDateAPI(this.state.periodid);  
+      this.callGetSongScheduleAPI(this.state.periodid);
+      this.callGetServantScheduleAPI(this.state.periodid);
+    }
+    else {
+      this.state.periodDates.push(selectedDate);
+      this.callGetSongByDateAPI(selectedDate.id);
+      this.callGetSongSelectedByDateAPI(selectedDate.id);
+      this.callGetServantByDateAPI(selectedDate.id);
+    }
+    
   }
 
 	render(){
     
 		return (
-			<Container className="ma2">
+			<Container className="pa2">
 
         <h1>Maintain Schedule</h1>
         
         <br/>
-
-        <Row>
-          <Col className="tr">
-            <Button className="ma1 tr" onClick={ ()=>this.props.history.push(this.PAGE_PARENT) }>  
-              Return to Search
-            </Button>
-          </Col>
-        </Row>
 
         <Tab.Container id="left-tabs-example" defaultActiveKey="first" >
           <Row>
@@ -160,7 +235,9 @@ class ScheduleMstr extends Component {
                           periodDates = { this.state.periodDates }
                           periodName = { this.state.periodname }
                           periodDescr = { this.state.perioddescr }
-                          callGetSongScheduleAPI = { ()=>this.callGetSongScheduleAPI(this.state.periodid) }
+                          editDisplayFlag = { this.state.editDisplayFlag }
+                          reloadData = { this.callGetSongScheduleAPI }
+                          PAGE_PARENT = { this.state.PAGE_PARENT }
                         /> 
                       ):
                       (
@@ -185,11 +262,16 @@ class ScheduleMstr extends Component {
                       (
                         <ScheduleServant 
                           servantSchedule = { this.state.servantSchedule }
+                          servantList = { this.state.servantList }
                           periodid = { this.state.periodid }
                           periodDates = { this.state.periodDates }
                           periodName = { this.state.periodname }
                           periodDescr = { this.state.perioddescr }
                           churchRoles = { this.state.churchRoles }
+                          editDisplayFlag = { this.state.editDisplayFlag }
+                          notifyDisplayFlag = { this.state.notifyDisplayFlag }
+                          reloadData = { this.callGetServantScheduleAPI }
+                          PAGE_PARENT = { this.state.PAGE_PARENT }
                         />
                       ):
                       (
@@ -225,4 +307,4 @@ class ScheduleMstr extends Component {
 	
 }
 
-export default ScheduleMstr;
+export default MaintainSchedule;

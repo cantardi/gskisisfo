@@ -267,7 +267,7 @@ class SelectSong extends Component {
   render() {
     
     return ( 
-      <Container className="ma2">   
+      <Container className="pa2">   
         
         <h1>Select Song</h1>
         

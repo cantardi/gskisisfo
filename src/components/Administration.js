@@ -1,5 +1,6 @@
 import React , { Component } from 'react';
 import { Button, Container } from 'react-bootstrap'
+import {history} from '../helpers/function'
 
 class Administration extends Component {
 	
@@ -7,7 +8,7 @@ class Administration extends Component {
 		return (
 			<Container className='tc ma2'>
 
-				<Button onClick={()=> this.props.history.push('/MasterFieldList')} 
+				<Button onClick={()=> history.push('/MasterFieldList')} 
 								className='tc v-top dib br3 pa3 ma2 grow bw2 w5 h5 shadow-3'>
 					<div>
 						<h4>Master Field Management</h4>
@@ -15,7 +16,7 @@ class Administration extends Component {
 					</div>
 				</Button>
 
-				<Button onClick={()=> this.props.history.push('/MasterDataLP')} 
+				<Button onClick={()=> history.push('/MasterDataLP')} 
 								className='tc v-top dib br3 pa3 ma2 grow bw2 w5 h5 shadow-3'>
 					<div>
 						<h4>Master Data Management</h4>
@@ -23,7 +24,7 @@ class Administration extends Component {
 					</div>
 				</Button>
 
-				<Button onClick={()=> this.props.history.push('/PeriodLP')} 
+				<Button onClick={()=> history.push('/PeriodLP')} 
 								className='tc v-top dib br3 pa3 ma2 grow bw2 w5 h5 shadow-3'>
 					<div>
 						<h4>Period Management</h4>
@@ -31,7 +32,7 @@ class Administration extends Component {
 					</div>
 				</Button>
 
-				<Button onClick={()=> this.props.history.push('/SongLP')} 
+				<Button onClick={()=> history.push('/SongLP')} 
 								className='tc v-top dib br3 pa3 ma2 grow bw2 w5 h5 shadow-3'>
 					<div>
 						<h4>Song Management</h4>
@@ -39,7 +40,7 @@ class Administration extends Component {
 					</div>
 				</Button>
 				
-				<Button onClick={()=> this.props.history.push('/ServantLP')} 
+				<Button onClick={()=> history.push('/ServantLP')} 
 								className='tc v-top dib br3 pa3 ma2 grow bw2 w5 h5 shadow-3'>
 					<div>
 						<h4>Servant Management</h4>
@@ -47,7 +48,7 @@ class Administration extends Component {
 					</div>
 				</Button>
 				
-				<Button onClick={()=> this.props.history.push('/ScheduleLP')} 
+				<Button onClick={()=> history.push('/ScheduleLP')} 
 								className='tc v-top dib br3 pa3 ma2 grow bw2 w5 h5 shadow-3'>
 					<div>
 						<h4>Schedule Management</h4>
@@ -55,7 +56,7 @@ class Administration extends Component {
 					</div>
 				</Button>
 
-				<Button onClick={()=> this.props.history.push('/ServiceLP')} 
+				<Button onClick={()=> history.push('/ServiceLP')} 
 								className='tc v-top dib br3 pa3 ma2 grow bw2 w5 h5 shadow-3'>
 					<div>
 						<h4>Service Management</h4>

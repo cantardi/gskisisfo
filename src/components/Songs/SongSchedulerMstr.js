@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Form, Container, Button } from 'react-bootstrap';
+import {history} from '../../helpers/function'
 import MessageModal from '../MessageModal';
 import SongSchedulerStep1 from './SongSchedulerStep1';
 import SongSchedulerStep2 from './SongSchedulerStep2';
@@ -29,7 +30,7 @@ class SongSchedulerMstr extends Component {
 
   msgModalClose = () => {
     this.setState({ msgModalShow: false });
-    this.props.history.push('/SongLP')
+    history.push('/SongLP')
   }
 
   _next() {
@@ -156,7 +157,7 @@ class SongSchedulerMstr extends Component {
       method: 'post',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({
-        songschedule: songSchedule
+        songSchedule: songSchedule
       })
     })
     .then (response => {

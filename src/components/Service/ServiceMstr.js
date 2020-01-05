@@ -3,7 +3,7 @@ import { Container, Row, Col, Tab, Nav, Button } from "react-bootstrap";
 import ServiceSong from './ServiceSong';
 import ServiceServant from './ServiceServant';
 import ServiceSermon from './ServiceSermon';
-import { DateConvert } from '../../helpers/function';
+import { DateConvert, history } from '../../helpers/function';
 import MessageModal from '../MessageModal';
 
 class ServiceMstr extends Component {
@@ -185,7 +185,7 @@ class ServiceMstr extends Component {
             <Button className="ma1" onClick={ this.saveService }>
               Save
             </Button> 
-            <Button className="ma1" onClick={ ()=>this.props.history.push('/ServiceLP') }>  
+            <Button className="ma1" onClick={ ()=>history.push('/ServiceLP') }>  
               Return to Search
             </Button> 
           </Col>

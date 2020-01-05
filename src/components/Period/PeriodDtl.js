@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
 import { Form, Modal, Alert, Row, Col, Button, Container, ListGroup } from 'react-bootstrap';
 import DayPicker, {DateUtils} from 'react-day-picker';
-import 'react-day-picker/lib/style.css';
+import {history} from '../../helpers/function'
 import MessageModal from '../MessageModal';
+import 'react-day-picker/lib/style.css';
 
 class PeriodDtl extends Component {
   
@@ -84,7 +85,7 @@ class PeriodDtl extends Component {
 
   msgModalClose = () => {
     this.setState({ msgModalShow: false })
-    this.props.history.push(this.PAGE_PARENT)
+    history.push(this.PAGE_PARENT)
   }
   
   dateModalClose = () => {
@@ -204,7 +205,7 @@ class PeriodDtl extends Component {
             <Button className="ma1" onClick={ this.savePeriod }>
               Save
             </Button> 
-            <Button className="ma1" onClick={ ()=>this.props.history.push(this.PAGE_PARENT) }>  
+            <Button className="ma1" onClick={ ()=>history.push(this.PAGE_PARENT) }>  
               Cancel
             </Button> 
           </Col>

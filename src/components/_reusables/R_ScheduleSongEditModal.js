@@ -26,12 +26,23 @@ class ScheduleSongEditModal extends Component {
     this.setState({ msgModalShow: false })
   }
 
-  disableButton = (predefineddate) => {
+  disableSelectButton = (predefineddate) => {
     if (new Date(predefineddate).getTime() < new Date().getTime() ){
       return true
     }
     else {
       return false
+    }
+  }
+
+  disableSaveButton() {
+    const { addedSongs, deletedSongs } = this.state
+
+    if (addedSongs.length > 0 || deletedSongs.length > 0) {
+      return false
+    }
+    else {
+      return true
     }
   }
 
@@ -209,13 +220,14 @@ class ScheduleSongEditModal extends Component {
 
     if (addedSongs.length > 0){
       this.callAddSongSchedAPI();
-      
     }
 
     if (deletedSongs.length > 0){
       this.callDeleteSongSchedAPI();
     }
     
+    this.props.reloadData(this.props.periodid)
+    this.props.onHide()
   }
 
   callSearchSongAPI = () => {
@@ -258,17 +270,17 @@ class ScheduleSongEditModal extends Component {
       method: 'post',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({
-        songschedule: finalAddLists
+        songSchedule: finalAddLists
       })
     })
       .then (response => {
         if (response.status === 200){
           return response.json()
-          .then(data => this.setState({ msgModalShow: true , msgModalHeader: 'Information', msgModalContent: data, addedSongs: [] }, this.props.onHide() ))
+          .then(data => this.setState({ msgModalShow: true , msgModalHeader: 'Information', msgModalContent: data, addedSongs: [] }, this.props.onHide()))
         }
         else { 
           return response.json()
-          .then(data => this.setState({ msgModalShow: true , msgModalHeader: 'Error', msgModalContent: data, addedSongs: [] }, this.props.onHide() ))
+          .then(data => this.setState({ msgModalShow: true , msgModalHeader: 'Error', msgModalContent: data, addedSongs: [] }, this.props.onHide()))
         }
       }) 
       .catch(err => console.log('Fail to call addsongschedule API --- ' + err))
@@ -345,7 +357,7 @@ class ScheduleSongEditModal extends Component {
                       <Button key={ 'btn'+date.id } 
                         id={ date.id } 
                         onClick={ this.songModalOpen } 
-                        disabled={ this.disableButton(date.predefineddate) }
+                        disabled={ this.disableSelectButton(date.predefineddate) }
                       >Select Song</Button>
                     </th>
 
@@ -367,12 +379,12 @@ class ScheduleSongEditModal extends Component {
                               { selectedSong.songname }
 
                               {
-                                this.disableButton(date.predefineddate) === true?
+                                this.disableSelectButton(date.predefineddate) === true?
                                 null:
                                 (
                                   <MdClose 
                                     className="ml2 pointer dim"
-                                    disabled={ this.disableButton(date.predefineddate) }
+                                    disabled={ this.disableSelectButton(date.predefineddate) }
                                     onClick={ ()=>this.removeSong(selectedSong.id, 'div_' + date.id + '_' + selectedSong.songid) } />
                                 )
                               }
@@ -402,8 +414,8 @@ class ScheduleSongEditModal extends Component {
         </Modal.Body>
 
         <Modal.Footer>
-          <Button onClick={ this.saveEditedSchedule }>Save</Button>
-          <Button onClick={ this.closeParentSongSchedModal }>Cancel</Button>
+          <Button onClick={ this.saveEditedSchedule } disabled={ this.disableSaveButton() }>Save</Button>
+          <Button onClick={ this.props.onHide }>Cancel</Button>
         </Modal.Footer>
         
       </Modal>	

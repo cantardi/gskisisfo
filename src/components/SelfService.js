@@ -1,5 +1,6 @@
-import React , { Component } from 'react';
+import React, { Component } from 'react';
 import { Button, Container } from 'react-bootstrap'
+import {history} from '../helpers/function'
 
 class SelfService extends Component {
 	
@@ -7,7 +8,7 @@ class SelfService extends Component {
 		return (
 			<Container className='tc ma2'>
 
-				<Button onClick={()=> this.props.history.push('/ScheduleLP')} 
+				<Button onClick={()=> history.push('/ViewSchedule')} 
 								className='tc v-top dib br3 pa3 ma2 grow bw2 w5 h5 shadow-3'>
 					<div>
 						<h4>View Schedule</h4>
@@ -15,7 +16,7 @@ class SelfService extends Component {
 					</div>
 				</Button>
 
-				<Button onClick={()=> this.props.history.push('/SelectSong')} 
+				<Button onClick={()=> history.push('/SelectSong')} 
 								className='tc v-top dib br3 pa3 ma2 grow bw2 w5 h5 shadow-3'>
 					<div>
 						<h4>Select Songs</h4>

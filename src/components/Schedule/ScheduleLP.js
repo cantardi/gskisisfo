@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import { Container, Dropdown, DropdownButton } from 'react-bootstrap';
+import { Container } from 'react-bootstrap';
+import { history } from '../../helpers/function';
 import PeriodSearch from '../Period/PeriodSearch';
 import PeriodResult from '../Period/PeriodResult';
 import MessageModal from '../MessageModal';
@@ -8,8 +9,6 @@ class ScheduleLP extends Component {
   
   constructor(props){
     super(props);
-
-    this.PAGE_PARENT='./Administration'
 
     this.state = {
       periodList: [],
@@ -65,12 +64,8 @@ class ScheduleLP extends Component {
     })
   }
 
-  routeToPage = (pagename) => {
-    this.props.history.push(pagename);
-  }
-
   openEditMode = (period) => {
-    this.props.history.push('/ScheduleMstr', period);
+    history.push('MaintainSchedule', { period, PAGE_PARENT: 'ScheduleLP', editFlag: true, notifyFlag: true })
   }
 
   msgModalClose = () => {
@@ -80,16 +75,6 @@ class ScheduleLP extends Component {
   render() {
     return (
       <Container className="pa2">
-        
-        <DropdownButton 
-          className="ma2"
-          title="Action"
-          id="dropdown-secondary-button"
-          key="ScheduleAction"
-          align="right"
-        >
-          <Dropdown.Item onClick={ this.addPeriod }>Add New Period</Dropdown.Item>
-        </DropdownButton>
 
         <PeriodSearch 
           periodName={ this.state.searchPeriodName }
