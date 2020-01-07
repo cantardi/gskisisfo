@@ -4,7 +4,7 @@ import { DateConvert } from '../../helpers/function';
 
 const styles = StyleSheet.create({
   body: {
-    padding: 10
+    padding: 5
   },
   wrapper: {
     display: "flex",
@@ -13,8 +13,8 @@ const styles = StyleSheet.create({
     justifyContent: "center"
   },
   dateBlock: {
-    padding: 10,
-    margin: 8,
+    padding: 8,
+    margin: 5,
     flex: "1 0 30%",
     width: "30%",
     borderStyle: "solid",
@@ -41,8 +41,8 @@ const styles = StyleSheet.create({
     fontSize: 24,
   },
   dateTitle: {
-    fontSize: 18,
-    padding: 10,
+    fontSize: 12,
+    padding: 5,
     textAlign: "center",
     fontFamily: 'Helvetica'
   },
