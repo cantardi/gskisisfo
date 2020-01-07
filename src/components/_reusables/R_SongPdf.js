@@ -32,8 +32,8 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: 5,
     borderBottomLeftRadius: 5,
     textAlign: "center",
-    fontFamily: "Times-Roman",
-    fontSize: 24,
+    fontFamily: "Helvetica",
+    fontSize: 18,
   },
   dateTitle: {
     fontSize: 12,

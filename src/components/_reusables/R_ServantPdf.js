@@ -15,8 +15,8 @@ const styles = StyleSheet.create({
   dateBlock: {
     padding: 8,
     margin: 5,
-    flex: "1 0 30%",
-    width: "30%",
+    flex: "1 0 45%",
+    width: "45%",
     borderStyle: "solid",
     borderWidth: 1, 
     borderTopLeftRadius: 5,
@@ -37,8 +37,8 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: 5,
     borderBottomLeftRadius: 5,
     textAlign: "center",
-    fontFamily: "Times-Roman",
-    fontSize: 24,
+    fontFamily: "Helvetica",
+    fontSize: 18,
   },
   dateTitle: {
     fontSize: 12,
@@ -76,7 +76,7 @@ const ServantPdf = (props) => (
 
   <Document>
 
-    <Page style={styles.body} size="A4" orientation="landscape">
+    <Page style={styles.body} size="A4" orientation="portrait">
 
       <Text style={styles.periodTitle}>{ props.periodName } ({ props.periodDescr })</Text>
 
