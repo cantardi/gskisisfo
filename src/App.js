@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Nav, Navbar } from 'react-bootstrap';
-import { Route, NavLink, Link, Router } from "react-router-dom";
+import { Route, Link, Router } from "react-router-dom";
 import Home from "./components/Home";
 import Login from "./components/Login";
 import Calendar from "./components/Calendar";
@@ -83,7 +83,7 @@ class App extends Component {
                   { isAdmin && <Nav.Link as={Link} eventKey="4" className="nav-link" to="/Administration">Administration</Nav.Link> }
                 </Nav>
                 <Nav>
-                  <NavLink className="nav-link" to="/Account">Account</NavLink>
+                  <Nav.Link as={Link} eventKey="4" className="nav-link" to="/AccountSetup">Self Service</Nav.Link>
                   <div className="nav-link pointer" onClick={this.signOut}>Sign Out</div>
                 </Nav>
               </Navbar.Collapse>

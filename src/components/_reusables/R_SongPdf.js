@@ -3,44 +3,89 @@ import { Document, Page, View, Text, StyleSheet } from '@react-pdf/renderer';
 import { DateConvert } from '../../helpers/function';
 
 const styles = StyleSheet.create({
-  body: {
-    padding: 5
+  
+  titleWrapper: {
+    backgroundColor: "#004EA6",
+    padding: 10
   },
-  wrapper: {
+
+  periodTitle: {
+    color: "white",
+    textAlign: "center",
+    fontFamily: "Helvetica-Bold",
+    fontSize: 12,
+    marginBottom: 3,
+  },
+
+  summaryWrapper: {
+    padding: 15,
     display: "flex",
     flexDirection: "row",
     flexWrap: "wrap",
-    justifyContent: "center",
+    justifyContent: "left",
     alignItems: "flex-start"
   },
+
+  dateTitle: {
+    fontSize: 10,
+    color: "#985600",
+    marginBottom: 5,
+    textAlign: "left",
+    fontFamily: "Helvetica-Bold"
+  },
+
   dateBlock: {
-    padding: 8,
-    margin: 5,
-    flex: "1 0 45%",
+    marginBottom: 20,
+    marginLeft: 20,
+    flex: "1 0 auto",
     width: "45%"
   },
-  periodTitle: {
-    color: "#0c5460",
-    backgroundColor: "#d1ecf1",
-    borderColor: "#bee5eb",
-    padding: 10,
-    margin: 10,
+
+  dateTitleInDetail: {
+    color: "white",
+    textAlign: "center",
+    fontFamily: "Helvetica-Bold",
+    fontSize: 12,
+    marginBottom: 3,
+  },
+
+  detailWrapper: {
+    paddingTop: 15,
+    display: "flex",
+    flexDirection: "column",
+    flexFlow: "row",
+    maxHeight: "800px",
+    width: "100%",
+    flexWrap: "wrap",
+    alignItems: "flex-start"
+  },
+
+  songBlock: {
+    marginBottom: 10,
+    marginLeft: 10,
+    flex: "1 0 auto",
+    width: "31%",
     borderStyle: "solid",     
     borderWidth: 1, 
-    borderTopLeftRadius: 5,
-    borderTopRightRadius: 5,
-    borderBottomRightRadius: 5,
-    borderBottomLeftRadius: 5,
-    textAlign: "center",
-    fontFamily: "Helvetica",
-    fontSize: 18,
+    borderLeftWidth: 0, 
+    borderRightWidth: 0,
+    borderBottomWidth: 0
   },
-  dateTitle: {
-    fontSize: 12,
+
+  songTitle: {
+    fontSize: 9,
     padding: 5,
-    textAlign: "center",
+    textAlign: "left",
+    fontFamily: 'Helvetica-Bold',
+  },
+
+  songLyrics: {
+    fontSize: 8,
+    padding: 5,
+    textAlign: "left",
     fontFamily: 'Helvetica'
   },
+
   table: { 
     display: "table",
     borderStyle: "solid", 
@@ -49,9 +94,11 @@ const styles = StyleSheet.create({
     borderLeftWidth: 0, 
     borderTopWidth: 0
   }, 
+
   tableRow: { 
     flexDirection: "row",
   },
+
   tableCol1: {
     width: "5%", 
     borderStyle: "solid", 
@@ -60,6 +107,7 @@ const styles = StyleSheet.create({
     borderRightWidth: 0, 
     borderBottomWidth: 0
   },
+  
   tableCol2: {
     width: "60%", 
     borderStyle: "solid", 
@@ -68,6 +116,7 @@ const styles = StyleSheet.create({
     borderRightWidth: 0, 
     borderBottomWidth: 0
   },
+
   tableCol3: {
     width: "25%", 
     borderStyle: "solid", 
@@ -76,6 +125,7 @@ const styles = StyleSheet.create({
     borderRightWidth: 0, 
     borderBottomWidth: 0
   },
+
   tableCol4: {
     width: "10%", 
     borderStyle: "solid", 
@@ -84,29 +134,37 @@ const styles = StyleSheet.create({
     borderRightWidth: 0, 
     borderBottomWidth: 0
   },
+
   tableCell: { 
     textAlign: "center",
-    fontSize: 8,
+    fontSize: 9,
     padding: 2,
     fontFamily: 'Helvetica'
   },
+
   tableCellSmall: { 
     textAlign: "left",
-    fontSize: 5,
-    padding: 2,
+    fontSize: 7,
+    paddingLeft: 2,
+    paddingRight: 2,
+    paddingBottom: 2,
     fontFamily: 'Helvetica'
   }
+
 });
 
 const SongPdf = (props) => (
 
   <Document>
 
-    <Page style={styles.body} size="A4" orientation="portrait">
+    <Page size="A4" orientation="portrait">
+      
+      <View style={styles.titleWrapper}>
+        <Text style={styles.periodTitle} fixed>{"Praise and Worship"}</Text>
+        <Text style={styles.periodTitle} fixed>{props.periodDescr}</Text>
+      </View>   
 
-      <Text style={styles.periodTitle}>{ props.periodName } ({ props.periodDescr })</Text>
-
-      <View style={styles.wrapper}>
+      <View style={styles.summaryWrapper}>
         {
           props.periodDates.map(date => {
             return(
@@ -145,7 +203,7 @@ const SongPdf = (props) => (
                           </View>
                           <View style={styles.tableCol2}>  
                             <Text style={[styles.tableCell, {textAlign: "left"}]}> { song.songname } </Text>
-                            <Text style={styles.tableCellSmall}>{ song.lyric.split('\n')[0] }... </Text>
+                            <Text style={styles.tableCellSmall}>{ song.lyric.split('\n')[0] } </Text>
                           </View>
                           <View style={styles.tableCol3}>  
                             <Text style={styles.tableCell}>{ song.songtypedescr }</Text>
@@ -163,6 +221,39 @@ const SongPdf = (props) => (
           })
         }
       </View>
+
+      {
+        props.periodDates.map(date => {
+          return(
+            <View key={`hdr-${date.id}`} break>
+              
+              <View key={`dtl-${date.id}`} style={styles.titleWrapper} fixed>
+                <Text style={styles.dateTitleInDetail}>
+                  { DateConvert(new Date(date.predefineddate)) }
+                </Text>
+              </View>
+
+              <View key={`dtl-${date.id}`} style={styles.detailWrapper}>
+              {
+                props.songSchedule.length > 0 &&
+                props.songSchedule
+                .filter(song => Number(song.dateid)===date.id)
+                .map((song, i) => {
+                  return (
+                    <View key={`dtl-${date.id}-${song.id}`} style={styles.songBlock}>
+                      <Text style={styles.songTitle}>{`${song.songname} (Do=${song.songkeydescr})`}</Text>
+                      <Text style={styles.songLyrics}>{song.lyric}</Text>
+                    </View>
+                  )
+                })
+              }
+              </View>
+              
+            </View>
+          )
+        })
+      }
+
     </Page>
   </Document>
 );

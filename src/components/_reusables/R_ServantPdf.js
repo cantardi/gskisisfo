@@ -3,58 +3,55 @@ import { Document, Page, View, Text, StyleSheet } from '@react-pdf/renderer';
 import { DateConvert } from '../../helpers/function';
 
 const styles = StyleSheet.create({
-  body: {
-    padding: 5
+
+  titleWrapper: {
+    backgroundColor: "#004EA6",
+    padding: 10
   },
+
+  periodTitle: {
+    color: "white",
+    textAlign: "center",
+    fontFamily: "Helvetica-Bold",
+    fontSize: 12,
+    marginBottom: 3,
+  },
+
   wrapper: {
+    padding: 15,
     display: "flex",
     flexDirection: "row",
     flexWrap: "wrap",
-    justifyContent: "center"
+    justifyContent: "left",
+    alignItems: "flex-start"
   },
-  dateBlock: {
-    padding: 8,
-    margin: 5,
-    flex: "1 0 45%",
-    width: "45%",
-    borderStyle: "solid",
-    borderWidth: 1, 
-    borderTopLeftRadius: 5,
-    borderTopRightRadius: 5,
-    borderBottomRightRadius: 5,
-    borderBottomLeftRadius: 5,
-  },
-  periodTitle: {
-    color: "#0c5460",
-    backgroundColor: "#d1ecf1",
-    borderColor: "#bee5eb",
-    padding: 10,
-    margin: 10,
-    borderStyle: "solid",     
-    borderWidth: 1, 
-    borderTopLeftRadius: 5,
-    borderTopRightRadius: 5,
-    borderBottomRightRadius: 5,
-    borderBottomLeftRadius: 5,
-    textAlign: "center",
-    fontFamily: "Helvetica",
-    fontSize: 18,
-  },
+
   dateTitle: {
-    fontSize: 12,
-    marginBottom: 10,
-    padding: 5,
-    textAlign: "center",
-    fontFamily: 'Helvetica'
+    fontSize: 10,
+    color: "#985600",
+    marginBottom: 5,
+    textAlign: "left",
+    fontFamily: "Helvetica-Bold"
   },
+
+  dateBlock: {
+    marginBottom: 20,
+    marginLeft: 20,
+    flex: "1 0 auto",
+    width: "45%"
+  },
+
   table: { 
     display: "table", 
     width: "auto",
+    padding: 5
   }, 
+
   tableRow: { 
     margin: "auto", 
     flexDirection: "row",
   },
+
   tableCol: {
     width: "50%", 
     borderStyle: "solid", 
@@ -64,9 +61,10 @@ const styles = StyleSheet.create({
     borderRightWidth: 0, 
     borderBottomWidth: 0
   },
+
   tableCell: { 
     textAlign: "left",
-    fontSize: 10,
+    fontSize: 9,
     padding: 5,
     fontFamily: 'Helvetica'
   }
@@ -76,10 +74,13 @@ const ServantPdf = (props) => (
 
   <Document>
 
-    <Page style={styles.body} size="A4" orientation="portrait">
-
-      <Text style={styles.periodTitle}>{ props.periodName } ({ props.periodDescr })</Text>
-
+    <Page size="A4" orientation="portrait">
+          
+      <View style={styles.titleWrapper}>
+        <Text style={styles.periodTitle} fixed>{"Praise and Worship"}</Text>
+        <Text style={styles.periodTitle} fixed>{props.periodDescr}</Text>
+      </View>   
+      
       <View style={styles.wrapper}>
         {
           props.periodDates.map(date => {

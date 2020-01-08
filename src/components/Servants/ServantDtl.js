@@ -13,7 +13,6 @@ class ServantDtl extends Component {
     super(props);
     const servant = this.props.location.state;
 
-    window.scrollTo(0, 0);
     this.PAGE_PARENT = './ServantLP'
 
     if (typeof servant === 'undefined') {
@@ -155,6 +154,7 @@ class ServantDtl extends Component {
   }
 
   componentDidMount() {
+    window.scrollTo(0, 0);
     this.callGetMasterFieldValuesAPI();
   }
   

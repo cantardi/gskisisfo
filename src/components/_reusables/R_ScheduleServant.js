@@ -117,7 +117,8 @@ class ScheduleServant extends Component {
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({
         notifylist: finalnotifylist,
-        fileattachment: this.state.fileattachment
+        fileattachment: this.state.fileattachment,
+        period: this.props.periodDescr
       })
     })
     .then (response => {
