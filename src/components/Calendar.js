@@ -2,9 +2,9 @@ import React from "react";
 import { Calendar, momentLocalizer } from 'react-big-calendar';
 import moment from 'moment';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
-import { userContext } from '../helpers/userContext';
 import MessageModal from './MessageModal';
 import { DateConvert } from '../helpers/function';
+import {authenticationService} from '../services/authenticationService';
 
 const localizer = momentLocalizer(moment)
 
@@ -36,9 +36,9 @@ class MyCalendar extends React.Component {
 	}
 
 	componentDidMount() {
-		let user = this.context;
+		let user = authenticationService.currentUser;
 		
-		fetch(process.env.REACT_APP_BACKEND_URL + '/getschedulebyservant/' + user.id, {
+		fetch(process.env.REACT_APP_BACKEND_URL + '/getschedulebyservant/' + user.source._value.id, {
       method: 'get',
       headers: {'Content-Type': 'application/json'},
     })
@@ -108,5 +108,4 @@ class MyCalendar extends React.Component {
   
 }
 
-MyCalendar.contextType = userContext;
 export default MyCalendar;

@@ -23,7 +23,6 @@ import ScheduleLP from "./components/Schedule/ScheduleLP";
 import MaintainSchedule from "./components/_reusables/R_MaintainSchedule";
 import ServiceLP from "./components/Service/ServiceLP";
 import ServiceMstr from "./components/Service/ServiceMstr";
-import {userContext} from './helpers/userContext';
 import {PrivateRoute} from './components/PrivateRoute';
 import {authenticationService} from './services/authenticationService';
 import {history} from './helpers/function'
@@ -67,8 +66,6 @@ class App extends Component {
     const { currentUser, isAdmin } = this.state;
 
     return (
-      <userContext.Provider value={currentUser}>
-
         <Router history={history}>
           {currentUser &&
             <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark">
@@ -116,66 +113,8 @@ class App extends Component {
           </div>
 
         </Router>
-      </userContext.Provider>
+      
     );
-
-    /*
-    if (this.state.isSignedIn === false){
-      return (
-        <Login signInToSystem={this.signInToSystem}/>
-      )
-    }
-    else {
-      return (
-        <userContext.Provider value={this.state.user}>
-          <BrowserRouter>
-        
-            <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark">
-              <Navbar.Brand>
-                <Nav.Link as={Link} eventKey="1" className="nav-link" to="/">GSKI Rehuel</Nav.Link>
-              </Navbar.Brand> 
-              <Navbar.Toggle aria-controls="responsive-navbar-nav" />
-              <Navbar.Collapse id="responsive-navbar-nav">
-                <Nav className="mr-auto">
-                  <Nav.Link as={Link} eventKey="2" className="nav-link" to="/Calendar">Calendar</Nav.Link>
-                  <Nav.Link as={Link} eventKey="3" className="nav-link" to="/SelfService">Self Service</Nav.Link>
-                  <Nav.Link as={Link} eventKey="4" className="nav-link" to="/Administration">Administration</Nav.Link>
-                </Nav>
-                <Nav>
-                  <NavLink className="nav-link" to="/Account">Account</NavLink>
-                  <div className="nav-link pointer" onClick={this.signOut}>Sign Out</div>
-                </Nav>
-              </Navbar.Collapse>
-            </Navbar>
-
-            <div className="content">
-              <Route exact path="/" component={Home}/>
-              <Route path="/Calendar" component={Calendar}/>
-              <Route path="/SelfService" component={SelfService}/>
-              <Route path="/Administration" component={Administration}/>
-              <Route path="/AccountSetup" component={AccountSetup}/>
-              <Route path="/PeriodLP" component={PeriodLP}/>
-              <Route path="/PeriodDtl" component={PeriodDtl}/>
-              <Route path="/SongLP" component={SongLP}/>
-              <Route path="/SongDtl" component={SongDtl}/>
-              <Route path="/SongSchedulerMstr" component={SongSchedulerMstr}/>
-              <Route path="/ServantLP" component={ServantLP}/>
-              <Route path="/ServantDtl" component={ServantDtl}/>
-              <Route path="/ServantSchedulerMstr" component={ServantSchedulerMstr}/>
-              <Route path="/MasterFieldList" component={MasterFieldList}/>
-              <Route path="/ScheduleMstr" component={ScheduleMstr}/>
-              <Route path="/ScheduleLP" component={ScheduleLP}/>
-              <Route path="/SelectSong" component={SelectSong}/>
-              <Route path="/ServiceLP" component={ServiceLP}/>
-              <Route path="/ServiceMstr" component={ServiceMstr}/>
-              <Route path="/MasterDataLP" component={MasterDataLP}/>
-            </div>
-
-          </BrowserRouter>
-        </userContext.Provider>
-      );
-    }
-    */
   }
 }
 
