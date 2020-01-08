@@ -23,7 +23,6 @@ class SongLP extends Component {
       msgModalHeader: '',
     }
 
-    window.scrollTo(0, 0);
   }
   
   handleSongSearchChange = (e) => {
@@ -108,6 +107,7 @@ class SongLP extends Component {
   }
 
   componentDidMount() {
+    window.scrollTo(0, 0);
     this.callGetMasterFieldValuesAPI()
   }
   

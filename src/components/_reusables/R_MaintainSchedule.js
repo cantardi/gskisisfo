@@ -10,8 +10,6 @@ class MaintainSchedule extends Component {
     super(props);
     const period = this.props.location.state.period;
     
-    window.scrollTo(0, 0);
-    
     this.state = {
       PAGE_PARENT: this.props.location.state.PAGE_PARENT,
       periodid: period.id,
@@ -181,6 +179,9 @@ class MaintainSchedule extends Component {
   }
 
   componentDidMount(){
+    
+    window.scrollTo(0, 0);
+    
     this.callGetServantAPI();
     this.callGetChurchRoleAPI();
     

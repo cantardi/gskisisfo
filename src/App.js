@@ -83,7 +83,7 @@ class App extends Component {
                   { isAdmin && <Nav.Link as={Link} eventKey="4" className="nav-link" to="/Administration">Administration</Nav.Link> }
                 </Nav>
                 <Nav>
-                  <Nav.Link as={Link} eventKey="4" className="nav-link" to="/AccountSetup">Self Service</Nav.Link>
+                  <Nav.Link as={Link} eventKey="4" className="nav-link" to="/AccountSetup">Account</Nav.Link>
                   <div className="nav-link pointer" onClick={this.signOut}>Sign Out</div>
                 </Nav>
               </Navbar.Collapse>

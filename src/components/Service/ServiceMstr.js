@@ -10,7 +10,6 @@ class ServiceMstr extends Component {
   
   constructor(props) {
     super(props);
-    window.scrollTo(0, 0);
 
     const date = this.props.location.state
     
@@ -164,6 +163,8 @@ class ServiceMstr extends Component {
   }
 
   componentDidMount(){
+    window.scrollTo(0, 0);
+
     this.callGetChurchRoleAPI();
     this.callGetSongByDateAPI(this.state.dateid);
     this.callGetServantByDateAPI(this.state.dateid);

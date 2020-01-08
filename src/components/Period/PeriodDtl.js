@@ -11,7 +11,6 @@ class PeriodDtl extends Component {
     super(props);
     const period = this.props.location.state;
     
-    window.scrollTo(0, 0);
     this.PAGE_PARENT = './PeriodLP'
 
     if (typeof period === 'undefined') {
@@ -185,7 +184,8 @@ class PeriodDtl extends Component {
   }
 
   componentDidMount(){
-
+    window.scrollTo(0, 0);
+    
     if (this.state.periodid !== ''){
       this.callGetPeriodDateAPI(this.state.periodid);
     }

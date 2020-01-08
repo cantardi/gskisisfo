@@ -22,8 +22,6 @@ class PeriodLP extends Component {
       msgModalContent: '',
     }
 
-    window.scrollTo(0, 0);
-
   }
   
   handlePeriodSearchChange = (e) => {
@@ -79,6 +77,10 @@ class PeriodLP extends Component {
     this.setState({ msgModalShow: false })
   }
 
+  componentDidMount() {
+    window.scrollTo(0, 0);
+  }
+  
   render() {
     return (
       <Container className="pa2">

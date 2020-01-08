@@ -9,7 +9,6 @@ class SongDtl extends Component {
     super(props);
     const song = this.props.location.state;
 
-    window.scrollTo(0, 0);
     this.PAGE_PARENT = './SongLP'
     
     if (typeof song === 'undefined') {
@@ -192,6 +191,7 @@ class SongDtl extends Component {
   }
 
   componentDidMount() {
+    window.scrollTo(0, 0);
     this.callGetMasterFieldValuesAPI();
   }
   

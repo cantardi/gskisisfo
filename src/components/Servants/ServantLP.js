@@ -18,7 +18,6 @@ class ServantLP extends Component {
       msgModalContent: '',
       msgModalHeader: '',
     }
-    window.scrollTo(0, 0);
   }
   
   handleServantSearchChange = (e) => {
@@ -75,6 +74,10 @@ class ServantLP extends Component {
     this.setState({ msgModalShow: false }) 
   }
 
+  componentDidMount() {
+    window.scrollTo(0, 0);
+  }
+  
   render() {
 
     return(
