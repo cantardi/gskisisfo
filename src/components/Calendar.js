@@ -39,7 +39,7 @@ class MyCalendar extends React.Component {
 	componentDidMount() {
 		let user = authenticationService.currentUser;
 		
-		fetch(process.env.REACT_APP_BACKEND_URL + '/getschedulebyservant/' + user.source._value.id, {
+		fetch(process.env.REACT_APP_BACKEND_URL + '/getschedulebyservant/' + user.source._value.servantid, {
       method: 'get',
       headers: {'Content-Type': 'application/json'},
     })

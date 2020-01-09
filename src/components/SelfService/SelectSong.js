@@ -255,7 +255,7 @@ class SelectSong extends Component {
     .then (response => {
       if (response.status === 200){
         return response.json()
-        .then(data => data.filter(schedule => schedule.servantid === Number(user.source._value.id)))
+        .then(data => data.filter(schedule => schedule.servantid === Number(user.source._value.servantid)))
         .then(data => data.filter(schedule => schedule.rolename === 'Worship Leader'))
       }
     }) 
