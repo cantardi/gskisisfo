@@ -81,11 +81,24 @@ class SelectSong extends Component {
     let foundIndex = selectedSongs.findIndex(updatedItem => updatedItem.songid === songid)
 
     let updatedSong = Object.assign({}, selectedSongs[foundIndex])
-    updatedSong.songkey = Number(e.target.value);
+    updatedSong.songkey = Number(e.target.value)
+    updatedSong.songkeydescr = this.returnKeyName(e.target.value)
 
     selectedSongs.splice(foundIndex, 1, updatedSong)
     this.setState({ selectedSongs });
 
+  }
+
+  returnDateValue = (dateid) => {
+    return DateConvert(new Date(this.state.displayedDates.filter(date => date.id === Number(dateid))[0].predefineddate))
+  }
+
+  returnPeriodName = (periodid) => {
+    return this.state.allperiod.filter(period => period.id === Number(periodid))[0].description
+  }
+
+  returnKeyName = (keyid) => {
+    return this.state.songkeylists.filter(songkey => songkey.id === Number(keyid))[0].description
   }
 
   validateSong(song) {
@@ -145,7 +158,7 @@ class SelectSong extends Component {
 
   submitSongSelection = () => {
     if (window.confirm('Are you sure you wish to submit this schedule? All servants in charge will get notification for the song selection after you click OK.')) {
-      this.callSaveSongSelectionAPI();
+      //this.callSaveSongSelectionAPI();
       this.callNotifyServantAPI();
       this.setState({ selectedPeriod: '' });
       this.setState({ selectedDate: '' });
@@ -159,7 +172,7 @@ class SelectSong extends Component {
     
     const notifiedSongs = this.state.selectedSongs.map(song => ({
         songname: song.songname,
-        songkey: song.songkey,
+        songkey: song.songkeydescr,
         songurl: song.url1
       })
     ) 
@@ -169,15 +182,13 @@ class SelectSong extends Component {
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({
         servicedateid: this.state.selectedDate,
+        servicedate: this.returnDateValue(this.state.selectedDate),
+        periodname: this.returnPeriodName(this.state.selectedPeriod),
         selectedsongs: notifiedSongs
       })
     })
-    .then (response => {
-      if (response.status === 200){
-        response.json()
-        .then(data => alert(data))
-      }
-    }) 
+    .then (response => response.json())
+    .then(data => alert(data))
     .catch(err => console.log("Fail to call sendemailbyservice API --- " + err))     
   
   }
