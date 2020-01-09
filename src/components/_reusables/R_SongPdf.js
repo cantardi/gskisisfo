@@ -227,7 +227,7 @@ const SongPdf = (props) => (
           return(
             <View key={`hdr-${date.id}`} break>
               
-              <View key={`dtl-${date.id}`} style={styles.titleWrapper} fixed>
+              <View key={`title-${date.id}`} style={styles.titleWrapper} fixed>
                 <Text style={styles.dateTitleInDetail}>
                   { DateConvert(new Date(date.predefineddate)) }
                 </Text>

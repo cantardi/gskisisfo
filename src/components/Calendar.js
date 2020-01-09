@@ -19,9 +19,10 @@ class MyCalendar extends React.Component {
 	}
 
 	selectEvent = (e) => {
+		let msg = ["Your role in ", <strong key="1">{e.session}</strong>, " is as ", <strong key="2">{e.title}</strong>]
 		this.setState({ msgModalShow: true, 
 										msgModalHeader: DateConvert(new Date(e.startDate)), 
-										msgModalContent: "Anda melayani sebagai " + e.title + " di " + e.session })
+										msgModalContent: msg })
 	}
 
 	assessSize = (e) => {

@@ -4,6 +4,7 @@ import { DateConvert } from '../../helpers/function';
 import { MdAddCircleOutline, MdVideoLibrary, MdClose } from 'react-icons/md';
 import MessageModal from '../MessageModal';
 import SongModal from './SongModal';
+import {authenticationService} from '../../services/authenticationService';
 
 class SelectSong extends Component {
   
@@ -21,7 +22,7 @@ class SelectSong extends Component {
       msgModalShow: false, 
       msgModalHeader: '',
       msgModalContent: '',
-      songkeylists: []
+      songkeylists: [],
     }
     
   }
@@ -47,10 +48,30 @@ class SelectSong extends Component {
   }
 
   handleDateChange = (e) => {
-    this.setState({ selectedDate: e.target.value });
+    
+    var dateid = e.target.value
+
+    if (dateid !== ''){
+      this.callRoleValidationAPI(dateid)
+      .then(eligibleUser => {
+        if (eligibleUser.length === 0){
+          let msg = "You are not scheduled as worship leader on this date. Only eligible worship leader can select song for this date."
+          this.setState({ selectedDate: '', msgModalShow: true , msgModalHeader: 'Information', msgModalContent: msg })
+        }
+        else{
+          this.setState({ selectedDate: dateid });
+          this.callGetSongForSelectionAPI(dateid);
+        }
+      })
+      .catch(() => this.setState({ selectedDate: '', msgModalShow: true , msgModalHeader: 'Information', msgModalContent: "Worship Leader for this date is not available yet" }))
+    }
+    else {
+      this.setState({ selectedDate: '' });
+    }
+    
     this.setState({ selectedSongs: [] });
     this.setState({ displayedSongs: [] });
-    this.callGetSongForSelectionAPI(e.target.value);
+
   }
 
   handleKeyChange = (songid, e) => {
@@ -208,7 +229,25 @@ class SelectSong extends Component {
         .then(data => this.setState({ msgModalShow: true , msgModalHeader: 'Information', msgModalContent: data }))
       }
     }) 
-    .catch(err => console.log('Fail to call getperioddateapi --- ' + err))
+    .catch(err => console.log('Fail to call getperioddateforselection --- ' + err))
+  }
+
+  callRoleValidationAPI = (dateid) => {
+    let user = authenticationService.currentUser;
+    
+    return fetch(process.env.REACT_APP_BACKEND_URL + '/getservantbydate/' + dateid, {
+      method: 'get',
+      headers: {'Content-Type': 'application/json'},
+    })
+    .then (response => {
+      if (response.status === 200){
+        return response.json()
+        .then(data => data.filter(schedule => schedule.servantid === Number(user.source._value.id)))
+        .then(data => data.filter(schedule => schedule.rolename === 'Worship Leader'))
+      }
+    }) 
+    .catch(err => console.log("Fail to call getservantbydate api: " + err))
+		
   }
 
   callGetSongForSelectionAPI = (dateid) => {

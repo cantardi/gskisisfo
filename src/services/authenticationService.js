@@ -10,7 +10,6 @@ export const authenticationService = {
     get currentUserValue () { return currentUserSubject.value }
 };
 
-
 function login(username, password) {
   const requestOptions = {
       method: 'POST',
