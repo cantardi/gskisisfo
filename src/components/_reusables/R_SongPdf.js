@@ -74,9 +74,20 @@ const styles = StyleSheet.create({
 
   songTitle: {
     fontSize: 9,
-    padding: 5,
+    paddingLeft: 5,
+    paddingTop: 5,
+    paddingBottom: 3,
     textAlign: "left",
     fontFamily: 'Helvetica-Bold',
+  },
+
+  songWriter: {
+    fontSize: 7,
+    paddingLeft: 5,
+    color: "#985600",
+    marginBottom: 5,
+    textAlign: "left",
+    fontFamily: 'Helvetica-Oblique',
   },
 
   songLyrics: {
@@ -242,6 +253,7 @@ const SongPdf = (props) => (
                   return (
                     <View key={`dtl-${date.id}-${song.id}`} style={styles.songBlock}>
                       <Text style={styles.songTitle}>{`${song.songname} (Do=${song.songkeydescr})`}</Text>
+                      <Text style={styles.songWriter}>{song.composer}</Text>
                       <Text style={styles.songLyrics}>{song.lyric}</Text>
                     </View>
                   )

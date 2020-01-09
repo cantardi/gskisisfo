@@ -53,7 +53,6 @@ class ScheduleSong extends Component {
   }
 
 	render(){
-    
 		return (
 
       <Container>
