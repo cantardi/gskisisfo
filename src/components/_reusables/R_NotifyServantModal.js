@@ -22,7 +22,7 @@ class NotifyServantModal extends Component {
               this.props.notifyServantList.length > 0 &&
               this.props.notifyServantList.map(servant => {
                 return (
-                  <tr>
+                  <tr key={ "tr-"+servant.id }>
                     <td>
                       <Form.Check 
                         key={ servant.id }

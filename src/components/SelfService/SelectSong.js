@@ -125,7 +125,9 @@ class SelectSong extends Component {
       songid: song.id,
       songname: song.songname,
       songtype: song.songtype,
-      songkey: song.songkey
+      songkey: song.songkey,
+      songkeydescr: song.songkeydescr,
+      url1: song.url1
     })
   }
 
@@ -158,7 +160,7 @@ class SelectSong extends Component {
 
   submitSongSelection = () => {
     if (window.confirm('Are you sure you wish to submit this schedule? All servants in charge will get notification for the song selection after you click OK.')) {
-      //this.callSaveSongSelectionAPI();
+      this.callSaveSongSelectionAPI();
       this.callNotifyServantAPI();
       this.setState({ selectedPeriod: '' });
       this.setState({ selectedDate: '' });
