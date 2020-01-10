@@ -41,7 +41,7 @@ class Login extends React.Component {
     
     const { signInUsername, signInPassword } = this.state
      
-    authenticationService.login(signInUsername, signInPassword)
+    authenticationService.login(signInUsername.toLowerCase(), signInPassword)
       .then(
         user => {
           const { from } = this.props.location.state || { from: { pathname: "/" } };
