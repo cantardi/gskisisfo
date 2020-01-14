@@ -20,8 +20,12 @@ class Login extends React.Component {
     }
   }
 
-  handleLoginDetailChange = (e) => {
-    this.setState({ [e.target.name]: e.target.value });
+  handleUsernameChange = (e) => {
+    this.setState({ signInUsername: e.target.value.toLowerCase() });
+  }
+
+  handlePasswordChange = (e) => {
+    this.setState({ signInPassword: e.target.value });
   }
 
   handleLogin = () => {
@@ -37,11 +41,11 @@ class Login extends React.Component {
     
   }
 
-  callSignInAPI = () => {
+  callSignInAPI = () => { 
     
     const { signInUsername, signInPassword } = this.state
      
-    authenticationService.login(signInUsername.toLowerCase(), signInPassword)
+    authenticationService.login(signInUsername, signInPassword)
       .then(
         user => {
           const { from } = this.props.location.state || { from: { pathname: "/" } };
@@ -85,12 +89,12 @@ class Login extends React.Component {
 
             <Form.Group controlId="formBasicUsername">
               <Form.Label>Username</Form.Label>
-              <Form.Control type="username" name="signInUsername" placeholder="Enter username" onChange={this.handleLoginDetailChange} />
+              <Form.Control type="username" name="signInUsername" placeholder="Enter username" onChange={this.handleUsernameChange} />
             </Form.Group>
 
             <Form.Group controlId="formBasicPassword">
               <Form.Label>Password</Form.Label>
-              <Form.Control type="password" name="signInPassword" placeholder="Enter password" onChange={this.handleLoginDetailChange} />
+              <Form.Control type="password" name="signInPassword" placeholder="Enter password" onChange={this.handlePasswordChange} />
             </Form.Group>
 
             <Form.Row>

@@ -2,9 +2,11 @@ import React, { Component } from "react";
 import { Form, Container, Col, Button, Popover, OverlayTrigger } from 'react-bootstrap';
 import { DateConvert } from '../../helpers/function';
 import { MdAddCircleOutline, MdVideoLibrary, MdClose } from 'react-icons/md';
+import {authenticationService} from '../../services/authenticationService';
+import { pdf } from '@react-pdf/renderer';
 import MessageModal from '../MessageModal';
 import SongModal from './SongModal';
-import {authenticationService} from '../../services/authenticationService';
+import ServiceSongPdf from '../_reusables/R_ServiceSongPdf';
 
 class SelectSong extends Component {
   
@@ -127,6 +129,8 @@ class SelectSong extends Component {
       songtype: song.songtype,
       songkey: song.songkey,
       songkeydescr: song.songkeydescr,
+      composer: song.composer,
+      lyric: song.lyric,
       url1: song.url1
     })
   }
@@ -161,15 +165,31 @@ class SelectSong extends Component {
   submitSongSelection = () => {
     if (window.confirm('Are you sure you wish to submit this schedule? All servants in charge will get notification for the song selection after you click OK.')) {
       this.callSaveSongSelectionAPI();
-      this.callNotifyServantAPI();
-      this.setState({ selectedPeriod: '' });
-      this.setState({ selectedDate: '' });
-      this.setState({ displayedDates: [] });
-      this.setState({ selectedSongs: [] });
-      this.setState({ displayedSongs: [] });
+      this.sendNotification()
     }
   }
 
+  sendNotification = () => {
+    
+    pdf(<ServiceSongPdf
+      serviceDate={this.returnDateValue(this.state.selectedDate)}
+      periodName={this.returnPeriodName(this.state.selectedPeriod)}
+      selectedSongs={ this.state.selectedSongs } />)
+      .toBlob()
+      .then(data => {
+        var reader = new FileReader();
+        var base64data = ''
+        if (data.type === 'application/pdf') {
+          reader.readAsDataURL(data); 
+          reader.onloadend = () => {
+            base64data = reader.result.substr(reader.result.indexOf(',') + 1);           
+            this.setState({ fileattachment: base64data }, ()=>this.callNotifyServantAPI() )
+          }
+        }
+      });
+
+  }
+  
   callNotifyServantAPI = () => {
     
     const notifiedSongs = this.state.selectedSongs.map(song => ({
@@ -179,18 +199,26 @@ class SelectSong extends Component {
       })
     ) 
 
-    fetch(process.env.REACT_APP_BACKEND_URL + '/sendemailbyservice', {
+    fetch(process.env.REACT_APP_BACKEND_URL + '/sendsongselection', {
       method: 'post',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({
         servicedateid: this.state.selectedDate,
         servicedate: this.returnDateValue(this.state.selectedDate),
         periodname: this.returnPeriodName(this.state.selectedPeriod),
-        selectedsongs: notifiedSongs
+        selectedsongs: notifiedSongs,
+        fileattachment: this.state.fileattachment
       })
     })
     .then (response => response.json())
     .then(data => alert(data))
+    .then(() => {
+      this.setState({ selectedPeriod: '' });
+      this.setState({ selectedDate: '' });
+      this.setState({ displayedDates: [] });
+      this.setState({ selectedSongs: [] });
+      this.setState({ displayedSongs: [] });
+    })
     .catch(err => console.log("Fail to call sendemailbyservice API --- " + err))     
   
   }
@@ -338,7 +366,7 @@ class SelectSong extends Component {
                 this.state.allperiod.length > 0 &&
                 this.state.allperiod.map((period) => 
                   <option key={ period.id } value={ period.id }>
-                    { period.periodname }
+                    { period.description }
                   </option>
                 )
               }

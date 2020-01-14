@@ -104,7 +104,7 @@ class ServiceLP extends Component {
                 this.state.allperiod.length > 0 &&
                 this.state.allperiod.map((period) => 
                   <option key={ period.id } value={ period.id }>
-                    { period.periodname }
+                    { period.description }
                   </option>
                 )
               }

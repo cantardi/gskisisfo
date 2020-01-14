@@ -7,6 +7,7 @@ import Calendar from "./components/Calendar";
 import SelfService from "./components/SelfService";
 import ViewSchedule from "./components/SelfService/ViewSchedule";
 import SelectSong from "./components/SelfService/SelectSong";
+import ReqSubstitution from "./components/SelfService/ReqSubstitution";
 import Administration from "./components/Administration";
 import AccountSetup from "./components/AccountSetup";
 import MasterFieldList from "./components/Template/MasterFieldList";
@@ -93,6 +94,7 @@ class App extends Component {
             <PrivateRoute path="/ViewSchedule" component={ViewSchedule}/>
             <PrivateRoute path="/MaintainSchedule" component={MaintainSchedule}/>
             <PrivateRoute path="/SelectSong" component={SelectSong}/>
+            <PrivateRoute path="/ReqSubstitution" component={ReqSubstitution}/>
             <PrivateRoute path="/AccountSetup" component={AccountSetup}/>
             <PrivateRoute path="/Administration" roles="Admin" component={Administration} />
             <PrivateRoute path="/PeriodLP" roles="Admin" component={PeriodLP}/>
