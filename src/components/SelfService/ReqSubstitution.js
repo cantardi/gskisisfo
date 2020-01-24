@@ -44,7 +44,7 @@ class ReqSubstitution extends Component {
       this.callRoleValidationAPI(dateid)
       .then(eligibleUser => {
         if (eligibleUser.length === 0){
-          let msg = "You are not scheduled as any role on this date. Only eligible servant can request for substitution song for this date."
+          let msg = "You are not scheduled as any role on this date. Only eligible servant can request for substitution for this date."
           this.setState({ selectedDate: '', currentRole: '', msgModalShow: true , msgModalHeader: 'Information', msgModalContent: msg })
         }
         else{
@@ -89,7 +89,7 @@ class ReqSubstitution extends Component {
   
   submitRequest = () => {
     if (this.validateForm() === true){
-      if (window.confirm('Are you sure you wish to submit this substitution request? Scheduling administrator will get notification for your request after you click OK.')) {
+      if (window.confirm('Are you sure to submit this substitution request? Scheduling administrator will get notification for your request after you click OK.')) {
         this.callSubmitSubsitutionAPI();
         this.callNotifyAdminAPI();
       }
