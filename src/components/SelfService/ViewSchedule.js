@@ -85,14 +85,15 @@ class ViewSchedule extends Component {
     .catch(err => console.log('Fail to call getperioddate API --- ' + err))
   }
 
-  componentDidMount(){
-    this.callGetPeriodAPI();
-  }
-
   openServiceDate = (id, predefineddate) => {
     let dates = {id, predefineddate}
     let sentPeriod = this.state.allperiod.filter(period => period.id === this.state.selectedPeriod)
     history.push('MaintainSchedule', { selectedDate: dates, PAGE_PARENT: 'ViewSchedule', period: sentPeriod[0], editFlag: false, notifyFlag: false })
+  }
+  
+  componentDidMount(){
+    window.scrollTo(0, 0);
+    this.callGetPeriodAPI();
   }
 
   render() {

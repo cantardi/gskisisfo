@@ -1,16 +1,18 @@
 import React, { Component } from 'react';
+import DayPickerInput from 'react-day-picker/DayPickerInput';
+import MessageModal from '../MessageModal';
 import { Form, Row, Col, Button, Alert, Container } from 'react-bootstrap';
-import {history} from '../../helpers/function'
+import { history } from '../../helpers/function'
+import { callGetMasterFieldValuesAPI, callAddServantAPI, callUpdateServantAPI } from '../../helpers/apicall';
 import { formatDate, parseDate } from 'react-day-picker/moment';
 import 'moment/locale/it';
-import DayPickerInput from 'react-day-picker/DayPickerInput';
 import 'react-day-picker/lib/style.css';
-import MessageModal from '../MessageModal';
 
 class ServantDtl extends Component {
 
   constructor(props){
     super(props);
+    
     const servant = this.props.location.state;
 
     this.PAGE_PARENT = './ServantLP'
@@ -86,76 +88,49 @@ class ServantDtl extends Component {
     this.setState({ msgModalShow: false })
     history.push('/ServantLP')
   }
-
-  callGetMasterFieldValuesAPI = () => {
-    
-    fetch(process.env.REACT_APP_BACKEND_URL + '/getfieldvalues/Gender', {
-      method: 'get',
-      headers: {'Content-Type': 'application/json'},
-    })
-    .then(res => res.json())
-    .then(data => this.setState({ genderLists: data }))
-    .catch(err => console.log('Fail to call getfieldvalues API: ' + err)) 
-    
-  }
-
-  callAddServantAPI = () => {
-    
-    fetch(process.env.REACT_APP_BACKEND_URL + '/addservant', {
-      method: 'post',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({
-        servantname: this.state.servantname,
-        gender: this.state.gender,
-        birthdate: new Date(this.state.birthdate).toLocaleDateString(),
-        email: this.state.email,
-        mobile1: this.state.mobile1,
-        mobile2: this.state.mobile2,
-        schedulingflag: this.state.schedulingflag,
-      })
-    })
-    .then(response => response.json())
-    .then(data => this.setState({ msgModalShow: true , msgModalHeader: 'Information', msgModalContent: data }))     
-    .catch(err => console.log('Fail to call addservant API: ' + err))
-
-  }
-
-  callUpdateServantAPI = () => {
-
-    fetch(process.env.REACT_APP_BACKEND_URL + '/updateservant', {
-      method: 'put',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({
-        servantid: this.state.servantid,
-        servantname: this.state.servantname,
-        gender: this.state.gender,
-        birthdate: new Date(this.state.birthdate).toLocaleDateString(),
-        email: this.state.email,
-        mobile1: this.state.mobile1,
-        mobile2: this.state.mobile2,
-        schedulingflag: this.state.schedulingflag,
-      })
-    })
-    .then(response => response.json())
-    .then(data => this.setState({ msgModalShow: true , msgModalHeader: 'Information', msgModalContent: data }))     
-    .catch(err => console.log('Fail to call updateservant API: ' + err))
-
-  }
-
+  
   saveServant = () => {
     if (this.validateForm() === true){
-      if (this.state.servantid === ''){
-        this.callAddServantAPI();
+
+      const servantid = this.state.servantid
+
+      const servant = {
+        servantname: this.state.servantname,
+        gender: this.state.gender,
+        birthdate: new Date(this.state.birthdate).toLocaleDateString(),
+        email: this.state.email,
+        mobile1: this.state.mobile1,
+        mobile2: this.state.mobile2,
+        schedulingflag: this.state.schedulingflag
+      }
+
+      if (servantid === ''){
+        callAddServantAPI(servant)
+        .then(
+          data => this.setState({ msgModalShow: true , msgModalHeader: 'Information', msgModalContent: data }),
+          error => this.setState({ msgModalShow: true , msgModalHeader: 'Error', msgModalContent: error })
+        )
+        .catch(err => console.log("Fail to call API due to: " + err))
       }
       else {
-        this.callUpdateServantAPI();
-      } 
+        callUpdateServantAPI(servant, servantid)
+        .then(
+          data => this.setState({ msgModalShow: true , msgModalHeader: 'Information', msgModalContent: data }),
+          error => this.setState({ msgModalShow: true , msgModalHeader: 'Error', msgModalContent: error })
+        )
+        .catch(err => console.log("Fail to call API due to: " + err))
+      }
     }
   }
 
   componentDidMount() {
     window.scrollTo(0, 0);
-    this.callGetMasterFieldValuesAPI();
+    callGetMasterFieldValuesAPI("Gender")
+    .then(
+      data => this.setState({ genderLists: data }),
+      error => this.setState({ genderLists: [], msgModalShow: true , msgModalHeader: 'Information', msgModalContent: error })
+    )
+    .catch(err => console.log("Fail to call API due to: " + err))
   }
   
   render() {

@@ -14,6 +14,7 @@ class ReqSubstitution extends Component {
       allperiod: [],
       selectedPeriod: '',
       currentRole: '',
+      servantname: '',
       displayedDates: [],
       selectedDate: '',
       reasonDetail: '',
@@ -31,7 +32,7 @@ class ReqSubstitution extends Component {
   }
 
   handlePeriodChange = (e) => {
-    this.setState({ selectedPeriod: e.target.value, displayedDates: [], currentRole: '' });
+    this.setState({ selectedPeriod: e.target.value, displayedDates: [], currentRole: '', variant: '', formErrorMsg: '' });
     this.callGetPeriodDateAPI(e.target.value);
   }
 
@@ -50,16 +51,17 @@ class ReqSubstitution extends Component {
           this.setState({ selectedDate: dateid, currentRole: eligibleUser[0].rolename });
         }
       })
-      .catch(() => this.setState({ selectedDate: '', currentRole: '', msgModalShow: true , msgModalHeader: 'Information', msgModalContent: "Servant schedule for this date is not available yet" }))
+      .catch(() => this.setState({ selectedDate: '', currentRole: '', msgModalShow: true , msgModalHeader: 'Information', msgModalContent: 'Servant schedule for this date is not available yet. Please select other date' }))
     }
     else {
       this.setState({ selectedDate: '' });
     }
 
+    this.setState({ variant: '', formErrorMsg: '' })
   }
 
   handleReasonChange = (e) => {
-    this.setState({ reasonDetail: e.target.value })
+    this.setState({ reasonDetail: e.target.value, variant: '', formErrorMsg: '' })
   }
 
   returnDateValue = (dateid) => {
@@ -77,9 +79,9 @@ class ReqSubstitution extends Component {
     if (selectedPeriod === '' || selectedDate === '' || reasonDetail === '') {
       const text = "One or more input fields are not completed in the form. Please complete all fields with asterisk (*) in the form in order to save."
       this.setState({ variant: 'danger', formErrorMsg: text })
+      return false
     }
     else {
-      this.setState({ variant: '', formErrorMsg: '' })
       return true
     }
 
@@ -95,27 +97,26 @@ class ReqSubstitution extends Component {
   }
 
   callNotifyAdminAPI = () => {
-
-/*
-    fetch(process.env.REACT_APP_BACKEND_URL + '/sendemailbyservice', {
+    
+    fetch(process.env.REACT_APP_BACKEND_URL + '/sendadminemail', {
       method: 'post',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({
         servicedateid: this.state.selectedDate,
         servicedate: this.returnDateValue(this.state.selectedDate),
         periodname: this.returnPeriodName(this.state.selectedPeriod),
-
+        servantname: this.state.servantname,
+        rolename: this.state.currentRole,
+        reason: this.state.reasonDetail
       })
     })
     .then (response => response.json())
     .then(data => alert(data))
     .then(() => {
-      this.setState({ selectedPeriod: '' });
-      this.setState({ selectedDate: '' });
-      this.setState({ displayedDates: [] });
+      this.setState({ selectedPeriod: '', selectedDate: '', displayedDates: [], currentRole: '', reasonDetail: '' });
     })
     .catch(err => console.log("Fail to call sendemailbyservice API --- " + err))     
-  */
+
   }
 
   callGetPeriodAPI = () => {
@@ -146,7 +147,14 @@ class ReqSubstitution extends Component {
       if (response.status === 200){
         return response.json()
         .then(data => data.filter(date => new Date(date.predefineddate) > new Date()))
-        .then(finalDate => this.setState({ displayedDates: finalDate }))
+        .then(finalDate => {
+          if (finalDate.length > 0){
+            this.setState({ displayedDates: finalDate })
+          }
+          else {
+            this.setState({ selectedPeriod: '', msgModalShow: true , msgModalHeader: 'Information', msgModalContent: 'No dates available for substitution request. Please select other period.' })
+          }
+        })
       }
       else { 
         return response.json()
@@ -174,12 +182,20 @@ class ReqSubstitution extends Component {
   }
 
   callSubmitSubsitutionAPI = () => {
-/*
-    fetch(process.env.REACT_APP_BACKEND_URL + '/saveselectedsong', {
+
+    const requestDtl = {
+      periodid: Number(this.state.selectedPeriod),
+      dateid: Number(this.state.selectedDate),
+      servantid: authenticationService.currentUser.source._value.servantid,
+      rolename: this.state.currentRole,
+      reason: this.state.reasonDetail,
+    }
+
+    fetch(process.env.REACT_APP_BACKEND_URL + '/submitsubstitutionreq', {
       method: 'post',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({
-        selectedSongs: selectedSongs
+        requestDtl: requestDtl
       })
     })
     .then (response => {
@@ -191,12 +207,14 @@ class ReqSubstitution extends Component {
         return response.json()
         .then(data => this.setState({ msgModalShow: true , msgModalHeader: 'Error', msgModalContent: data }))
     }})
-    .catch(err => console.log('Fail to call saveselectedsong API: ' + err))
-*/
+    .catch(err => console.log('Fail to call submitsubstitutionreq API: ' + err))
+    
   }
 
   componentDidMount(){
+    window.scrollTo(0, 0);
     this.callGetPeriodAPI();
+    this.setState({servantname: authenticationService.currentUser.source._value.servantname})
   }
 
   render() {
@@ -261,9 +279,10 @@ class ReqSubstitution extends Component {
           <Form.Group>
             <Form.Label>Reason for your request*</Form.Label>
             <Form.Control 
-              type="text"
+              as="textarea"
               placeholder="e.g. Health issue, family matter, accident, etc" 
               name="reasonDetail"
+              rows="3"
               value={ this.state.reasonDetail } 
               onChange={ this.handleReasonChange }
               onBlur={ this.trimInputValue }

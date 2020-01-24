@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import { Form, Modal, Alert, Row, Col, Button, Container, ListGroup } from 'react-bootstrap';
-import DayPicker, {DateUtils} from 'react-day-picker';
-import {history} from '../../helpers/function'
+import DayPicker, { DateUtils } from 'react-day-picker';
+import { history } from '../../helpers/function'
+import { callGetPeriodDateAPI, callAddPeriodAPI, callUpdatePeriodDtlAPI, callUpdatePeriodWholeAPI } from '../../helpers/apicall';
 import MessageModal from '../MessageModal';
 import 'react-day-picker/lib/style.css';
 
@@ -11,12 +12,12 @@ class PeriodDtl extends Component {
     super(props);
     const period = this.props.location.state;
     
-    this.PAGE_PARENT = './PeriodLP'
+    this.PAGE_PARENT = 'PeriodLP'
 
     if (typeof period === 'undefined') {
       this.state = {
-        periodid: '',
-        periodname: '',
+        periodId: '',
+        periodName: '',
         status: 'A',
         description: '',
         selectedDays: [],
@@ -27,12 +28,14 @@ class PeriodDtl extends Component {
         variant: '',
         formErrorMsg: '',
         dateModalShow: false, 
+        dayChangeFlag: false,
+        overallChangeFlag: false
       }
     }
     else {
       this.state = {
-        periodid: period.id,
-        periodname: period.periodname,
+        periodId: period.id,
+        periodName: period.periodname,
         status: period.status,
         description: period.description,
         selectedDays: [], 
@@ -43,6 +46,8 @@ class PeriodDtl extends Component {
         variant: '',
         formErrorMsg: '',
         dateModalShow: false,
+        dayChangeFlag: false,
+        overallChangeFlag: false
       }
     }
 
@@ -52,17 +57,17 @@ class PeriodDtl extends Component {
     const { selectedDays } = this.state;
     
     if (selected) {
-      const selectedIndex = selectedDays.findIndex(selectedDay => DateUtils.isSameDay(selectedDay, day) )
+      const selectedIndex = selectedDays.findIndex(selectedDay => DateUtils.isSameDay(selectedDay, day))
       selectedDays.splice(selectedIndex, 1);
     } else {
       selectedDays.push(day);
     }
     
-    this.setState({ selectedDays });
+    this.setState({ selectedDays: selectedDays, dayChangeFlag: true, overallChangeFlag: true })
   }
   
   handlePeriodDetailChange = (e) => {
-    this.setState({ [e.target.name]: e.target.value });
+    this.setState({ [e.target.name]: e.target.value, overallChangeFlag: true, variant: '', formErrorMsg: '' });
   }
 
   trimInputValue = (e) => {
@@ -70,14 +75,14 @@ class PeriodDtl extends Component {
   }
 
   validateForm = () => {
-    const { periodname, description, selectedDays } = this.state
+    const { periodName, description, selectedDays } = this.state
 
-    if (periodname === '' || description === '' || selectedDays.length === 0) { 
+    if (periodName === '' || description === '' || selectedDays.length === 0) { 
       const text = "One or more input fields are not completed in the form. Please complete all fields with asterisk (*) in the form in order to save."
       this.setState({ variant: 'danger', formErrorMsg: text })
+      return false
     }
     else {
-      this.setState({ variant: '', formErrorMsg: '' })
       return true
     }
   }
@@ -88,96 +93,61 @@ class PeriodDtl extends Component {
   }
   
   dateModalClose = () => {
-    this.setState({ dateModalShow: false })
+    this.setState({ dateModalShow: false, variant: '', formErrorMsg: '' })
   }
   
-  callGetPeriodDateAPI = (periodid) => {
-    
-    fetch(process.env.REACT_APP_BACKEND_URL + '/getperioddate/' + periodid, {
-      method: 'get',
-      headers: {'Content-Type': 'application/json'}
-    })
-    .then (response => {
-      if (response.status === 200){
-        var result=[]
-        return response.json()
-        .then(data => {
-          for(var i in data){
-            result.push(new Date(data[i].predefineddate))
-          }
-          this.setState({ selectedDays: result })
-        })
-      }
-      else{
-        return response.json()
-        .then(data => console.log(data))
-      }
-    }) 
-    .catch(err => console.log('Fail to call getperioddate API: ' + err))
-
-  }
-
-  callAddPeriodAPI = (convertedDays) => {
-
-    fetch(process.env.REACT_APP_BACKEND_URL + '/addperiod', {
-      method: 'post',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({
-        periodname: this.state.periodname,
-        status: this.state.status,
-        description: this.state.description,
-        selectedDays: convertedDays
-      })
-    })
-    .then(response => response.json())
-    .then(data => this.setState({ msgModalShow: true , msgModalHeader: 'Information', msgModalContent1: data }))     
-    .catch(err => console.log('Fail to call addperiod API: ' + err))
-
-  }
-
-  callUpdatePeriodAPI = (convertedDays) => {
-    
-    Promise.all([
-      fetch(process.env.REACT_APP_BACKEND_URL + '/updateperioddtl', {
-        method: 'put',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({
-          periodid: this.state.periodid,
-          periodname: this.state.periodname,
-          status: this.state.status,
-          description: this.state.description,
-        })
-      }),
-      fetch(process.env.REACT_APP_BACKEND_URL + '/updateperioddate', {
-        method: 'put',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({
-          periodid: this.state.periodid,
-          selectedDays: convertedDays
-        })
-      })
-    ])
-    .then (async([dtlresponse, dateresponse]) => {
-      const dtlData = await dtlresponse.json()
-      const dateData = await dateresponse.json()
-      return [dtlData, dateData]
-    }) 
-    .then(data => this.setState({ msgModalShow: true , msgModalHeader: 'Information', msgModalContent1: data[0], msgModalContent2: data[1] }))
-    .catch(err => console.log('Fail to call updateperiod API: ' + err)) 
-  }
-
   savePeriod = () => {
     
     if (this.validateForm() === true){
-      if (this.state.periodid === ''){
-        const convertedDays =
-          this.state.selectedDays.map(selectedDay => new Date(selectedDay).toLocaleDateString());
-        this.callAddPeriodAPI(convertedDays);
+      if (this.state.periodId === ''){
+        const convertedDays = this.state.selectedDays
+                              .map(selectedDay => new Date(selectedDay).toLocaleDateString());
+        
+        const period = {
+          periodName: this.state.periodName,
+          status: this.state.status,
+          description: this.state.description
+        }
+
+        callAddPeriodAPI(period, convertedDays)
+        .then(
+          data => this.setState({ msgModalShow: true , msgModalHeader: 'Information', msgModalContent1: data }),
+          error => this.setState({ msgModalShow: true , msgModalHeader: 'Error', msgModalContent1: error })
+        )
+        .catch(err => console.log("Fail to call API due to: " + err))
       }
       else {
-        const convertedDays =
-          this.state.selectedDays.map(selectedDay => new Date(selectedDay).toLocaleDateString());
-        this.callUpdatePeriodAPI(convertedDays); 
+        const convertedDays = this.state.selectedDays
+                              .map(selectedDay => new Date(selectedDay).toLocaleDateString());
+        
+        const period = {
+          periodId: this.state.periodId,
+          periodName: this.state.periodName,
+          status: this.state.status,
+          description: this.state.description
+        }
+
+        if (this.state.dayChangeFlag === false){
+          callUpdatePeriodDtlAPI(period)
+          .then(
+            data => this.setState({ msgModalShow: true , msgModalHeader: 'Information', msgModalContent1: data }),
+            error => this.setState({ msgModalShow: true , msgModalHeader: 'Error', msgModalContent1: error })
+          )
+          .catch(err => console.log("Fail to call API due to: " + err))
+        }
+        else {
+          
+          const period = {
+            periodId: this.state.periodId,
+            periodName: this.state.periodName,
+            status: this.state.status,
+            description: this.state.description
+          }
+
+          callUpdatePeriodWholeAPI(period, convertedDays)
+          .then(data => this.setState({ msgModalShow: true , msgModalHeader: 'Information', msgModalContent1: data[0], msgModalContent2: data[1] }))
+          .catch(err => console.log("Fail to call API due to: " + err))
+        }
       } 
     }
     
@@ -186,14 +156,23 @@ class PeriodDtl extends Component {
   componentDidMount(){
     window.scrollTo(0, 0);
     
-    if (this.state.periodid !== ''){
-      this.callGetPeriodDateAPI(this.state.periodid);
+    if (this.state.periodId !== ''){
+      callGetPeriodDateAPI(this.state.periodId)
+      .then(
+        data => {
+          let result = []
+          data.map(dateList => result.push(new Date(dateList.predefineddate)) )
+          this.setState({ selectedDays: result })
+        },
+        error => this.setState({ selectedDays: [], msgModalShow: true , msgModalHeader: 'Information', msgModalContent1: error })
+      )
+      .catch(err => console.log("Fail to call API due to: " + err))
     }
 
   }
 
   render() {
-      
+    
     return (
         
       <Container className="pa2">
@@ -202,7 +181,7 @@ class PeriodDtl extends Component {
 
         <Row>
           <Col className="tr">
-            <Button className="ma1" onClick={ this.savePeriod }>
+            <Button className="ma1" onClick={ this.savePeriod } disabled={ !this.state.overallChangeFlag }>
               Save
             </Button> 
             <Button className="ma1" onClick={ ()=>history.push(this.PAGE_PARENT) }>  
@@ -220,8 +199,8 @@ class PeriodDtl extends Component {
               <Form.Control 
                 type="text"
                 placeholder="Enter period name" 
-                name="periodname" 
-                value={ this.state.periodname } 
+                name="periodName" 
+                value={ this.state.periodName } 
                 onChange={ this.handlePeriodDetailChange }
                 onBlur={ this.trimInputValue }
               />

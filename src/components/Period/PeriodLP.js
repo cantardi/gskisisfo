@@ -1,9 +1,11 @@
 import React, { Component } from 'react';
 import { Container, Dropdown, DropdownButton } from 'react-bootstrap';
-import {history} from '../../helpers/function'
+import { callSearchPeriodAPI } from '../../helpers/apicall';
+import { history } from '../../helpers/function';
 import PeriodSearch from './PeriodSearch';
 import PeriodResult from './PeriodResult';
 import MessageModal from '../MessageModal';
+
 
 class PeriodLP extends Component {
   
@@ -11,6 +13,7 @@ class PeriodLP extends Component {
     super(props);
 
     this.PAGE_CHILD = './PeriodDtl';
+    this.PAGE_PARENT = './Administration';
 
     this.state = {
       periodList: [],
@@ -28,32 +31,15 @@ class PeriodLP extends Component {
     this.setState({ [e.target.name]: e.target.value });
   }
 
-  callSearchPeriodAPI = () => {
-    fetch(process.env.REACT_APP_BACKEND_URL + '/searchPeriod', {
-      method: 'post',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({
-        periodname: this.state.searchPeriodName,
-        periodstatus: this.state.searchPeriodStatus,
-        description: this.state.searchDescription,
-      })
-    })
-    .then (response => {
-      if (response.status === 200){
-        return response.json()
-        .then(data => this.setState({ periodList: data }))
-      }
-      else { 
-        return response.json()
-        .then(data => this.setState({ msgModalShow: true , msgModalHeader: 'Information', msgModalContent: data }))
-      }
-    }) 
-    .catch(err => console.log("Fail to call searchperiod API: " + err)) 
-  }
-
   searchPeriod = () => {
-    this.setState({ periodList: [] })
-    this.callSearchPeriodAPI();
+    const { searchPeriodName, searchPeriodStatus, searchDescription } = this.state
+
+    callSearchPeriodAPI(searchPeriodName, searchPeriodStatus, searchDescription)
+    .then(
+      data => this.setState({ periodList: data }),
+      error => this.setState({ periodList: [], msgModalShow: true , msgModalHeader: 'Information', msgModalContent: error })
+    )
+    .catch(err => console.log("Fail to call API due to: " + err))
   }
 
   clearSearch = () => {
