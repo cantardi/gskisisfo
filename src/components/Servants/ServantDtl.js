@@ -12,10 +12,9 @@ class ServantDtl extends Component {
 
   constructor(props){
     super(props);
-    
     const servant = this.props.location.state;
 
-    this.PAGE_PARENT = './ServantLP'
+    this.PAGE_PARENT = 'ServantLP';
 
     if (typeof servant === 'undefined') {
       this.state = {
@@ -32,7 +31,8 @@ class ServantDtl extends Component {
         msgModalContent: '',
         msgModalHeader: '',
         variant: '',
-        formErrorMsg: ''
+        formErrorMsg: '',
+        overallChangeFlag: false
       }
     }
     else {
@@ -50,49 +50,51 @@ class ServantDtl extends Component {
         msgModalContent: '',
         msgModalHeader: '',
         variant: '',
-        formErrorMsg: ''
+        formErrorMsg: '',
+        overallChangeFlag: false
       }
     }
   }
 
   handleServantDetailChange = (e) => {
-    this.setState({ [e.target.name]: e.target.value });
+    this.setState({ [e.target.name]: e.target.value, overallChangeFlag: true, variant: '', formErrorMsg: '' });
   }
   
   handleChecked = (e) => {
-    this.setState({ [e.target.name]: e.target.checked });
+    this.setState({ [e.target.name]: e.target.checked, overallChangeFlag: true, variant: '', formErrorMsg: '' });
   }
 
   handleDayChange = (day) => {
-    this.setState({ birthdate: day });
+    this.setState({ birthdate: day, overallChangeFlag: true, variant: '', formErrorMsg: '' });
   }
 
   trimInputValue = (e) => {
-    this.setState({ [e.target.name]: e.target.value.trim() })
+    this.setState({ [e.target.name]: e.target.value.trim() });
   }
   
   validateForm = () => {
-    const { servantname, gender, birthdate, email, mobile1 } = this.state
+    const { servantname, gender, birthdate, email, mobile1 } = this.state;
 
     if (servantname === '' || gender === '' || birthdate === '' || email === '' || mobile1 === '') { 
       const text = "One or more input fields are not completed in the form. Please complete all fields with asterisk (*) in the form in order to save."
       this.setState({ variant: 'danger', formErrorMsg: text })
+      return false
     }
     else {
-      this.setState({ variant: '', formErrorMsg: '' })
       return true
     }
   }
 
   msgModalClose = () => {
-    this.setState({ msgModalShow: false })
-    history.push('/ServantLP')
+    this.setState({ msgModalShow: false });
+    history.push('ServantLP');
   }
   
   saveServant = () => {
+
     if (this.validateForm() === true){
 
-      const servantid = this.state.servantid
+      const servantid = this.state.servantid;
 
       const servant = {
         servantname: this.state.servantname,
@@ -125,6 +127,7 @@ class ServantDtl extends Component {
 
   componentDidMount() {
     window.scrollTo(0, 0);
+    
     callGetMasterFieldValuesAPI("Gender")
     .then(
       data => this.setState({ genderLists: data }),

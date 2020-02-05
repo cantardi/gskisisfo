@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Form, Container, Button } from 'react-bootstrap';
-import {history} from '../../helpers/function'
+import { history } from '../../helpers/function'
+import { callGetSchedulingPeriodAPI, callGetServantAPI, callAddServantSchedAPI, callGetSchedServantTemplateAPI, callGetPeriodDateAPI } from '../../helpers/apicall';
 import MessageModal from '../MessageModal';
 import ServantSchedulerStep1 from './ServantSchedulerStep1';
 import ServantSchedulerStep2 from './ServantSchedulerStep2';
@@ -13,29 +14,25 @@ class ServantSchedulerMstr extends Component {
     
     this.state = {
       currentStep: 1,
-      allperiod: [],
+      periodList: [],
       selectedPeriod: '',
       displayedDates: [],
       selectedServants: [],
-      churchRoles: [],
       servantList: [], 
       msgModalShow: false, 
       msgModalContent: '',
       msgModalHeader: '',
       isValidated: false,
     }
-    
-    this._next = this._next.bind(this)
-    this._prev = this._prev.bind(this)
-    this._submit = this._submit.bind(this)
+  
   }
 
   msgModalClose = () => {
     this.setState({ msgModalShow: false });
-    history.push('/ServantLP')
+    if (this.state.currentStep === 3) history.push('ServantLP');
   }
 
-  _next() {
+  _next = () => {
     let currentStep = this.state.currentStep
     // If the current step is 1 or 2, then add one on "next" button click
     currentStep = currentStep >= 2? 3: currentStep + 1
@@ -43,17 +40,34 @@ class ServantSchedulerMstr extends Component {
     this.validateServantCompletion();
   }
     
-  _prev() {
+  _prev = () => {
     let currentStep = this.state.currentStep
     // If the current step is 2 or 3, then subtract one on "previous" button click
     currentStep = currentStep <= 1? 1: currentStep - 1
     this.setState({ currentStep })
   }
 
-  _submit() {
+  _submit = () => {
 
-    if (window.confirm('Are you sure you wish to submit this schedule?')) {
-      this.callAddServantSchedAPI();
+    if (window.confirm('Are you sure to submit this schedule?')) {
+      
+      const servantSchedule = 
+        this.state.selectedServants
+        .filter(servant => servant.servantid !== '')
+        .map(servant => ({
+          periodid: Number(this.state.selectedPeriod),
+          dateid: servant.dateid,
+          roleid: servant.roleid,
+          servantid: Number(servant.servantid)
+        }))
+
+      callAddServantSchedAPI(servantSchedule)
+      .then(
+        data => this.setState({ msgModalShow: true , msgModalHeader: 'Information', msgModalContent: data }),
+        error => this.setState({ msgModalShow: true , msgModalHeader: 'Error', msgModalContent: error })
+      )
+      .catch(err => console.log("Fail to call API due to: " + err))
+
     }
 
   }
@@ -106,137 +120,24 @@ class ServantSchedulerMstr extends Component {
     return null;
   }
   
-  callGetPeriodAPI = () => {
-    
-    fetch(process.env.REACT_APP_BACKEND_URL + '/getschedulingperiod/servant', {
-      method: 'get',
-      headers: {'Content-Type': 'application/json'}
-    })
-    .then (response => {
-      if (response.status === 200){
-        return response.json()
-        .then(data => this.setState({ allperiod: data }))
-      }
-      else { 
-        return response.json()
-        .then(data => this.setState({ msgModalShow: true , msgModalHeader: 'Information', msgModalContent: data }))
-      }
-    }) 
-    .catch(err => console.log('Fail to call getperiod API: ' + err))
-
-  }
-
-  callGetPeriodDateAndGetRoleAPI = (periodid) => {
-    
-    fetch(process.env.REACT_APP_BACKEND_URL + '/getperioddate/'+periodid, {
-      method: 'get',
-      headers: {'Content-Type': 'application/json'}
-    })
-    .then (response => {
-      if (response.status === 200){
-        return response.json()
-        .then(data => {
-          let dateIdArray = [];
-          this.setState({ displayedDates: data })
-          data.map(dateId => dateIdArray.push(dateId.id))
-          return dateIdArray
-        })
-        .then(dateIdArray => {
-          fetch(process.env.REACT_APP_BACKEND_URL + '/getfieldvalues/Role List', {
-            method: 'get',
-            headers: {'Content-Type': 'application/json'}
-          })
-          .then (response => {
-            if (response.status === 200){
-              return response.json()
-              .then(data => {
-                
-                this.setState({ churchRoles: data })
-
-                let { selectedServants } = this.state
-                
-                dateIdArray.map(dateId => {
-                  return (
-                    data.map(data => {
-                      return (
-                        selectedServants.push({
-                          dateid: dateId,
-                          roleid: data.id,
-                          rolename: data.description,
-                          servantid: '',
-                          servantname: ''
-                        })
-                      )
-                    })
-                  )
-                })
-                
-                this.setState({ selectedServants })
-              })
-           }
-          })
-        }) 
-    .catch(err => console.log('Fail to call getperioddate/getchurchrole API: ' + err))
-      }
-    })
-  }
-
-  callGetServantAPI = () => {
-    fetch(process.env.REACT_APP_BACKEND_URL + '/getservant', {
-      method: 'get',
-      headers: {'Content-Type': 'application/json'}
-    })
-    .then (response => {
-      if (response.status === 200){
-        return response.json()
-        .then(data => this.setState({ servantList: data }))
-      }
-      else { 
-        return response.json()
-        .then(data => this.setState({ msgModalShow: true , msgModalHeader: 'Error', msgModalContent: data }))
-      }
-    }) 
-    .catch(err => console.log('Fail to call getservant API: ' + err))
-
-  }
-
-  callAddServantSchedAPI = () => {
-    const servantSchedule = this.state.selectedServants
-                            .filter(servant => servant.servantid !== '')
-                            .map(servant =>
-                              ({
-                                periodid: Number(this.state.selectedPeriod),
-                                dateid: servant.dateid,
-                                roleid: servant.roleid,
-                                servantid: Number(servant.servantid)
-                              })
-                            )
-
-    fetch(process.env.REACT_APP_BACKEND_URL + '/addservantschedule', {
-      method: 'post',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({
-        servantSchedule: servantSchedule
-      })
-    })
-    .then (response => {
-      if (response.status === 200){
-        return response.json()
-        .then(data => this.setState({ msgModalShow: true , msgModalHeader: 'Information', msgModalContent: data }))
-      }
-      else { 
-        return response.json()
-        .then(data => this.setState({ msgModalShow: true , msgModalHeader: 'Error', msgModalContent: data }))
-    }})
-    .catch(err => console.log('Fail to call addservantschedule API: ' + err))
-  }
-
   handlePeriodChange = (e) => {
-    this.setState({ selectedPeriod: e.target.value });
-    this.setState({ displayedDates: [] });
-    this.setState({ selectedServants: [] });
+    
+    this.setState({ selectedPeriod: Number(e.target.value), displayedDates: [], selectedServants: [] });
+    
     if (e.target.value !== '') {
-      this.callGetPeriodDateAndGetRoleAPI(e.target.value);
+      callGetPeriodDateAPI(Number(e.target.value))
+      .then(
+        data => this.setState({ displayedDates: data }),
+        error => this.setState({ msgModalShow: true , msgModalHeader: 'Information', msgModalContent: error })
+      )
+      .catch(err => console.log("Fail to call API due to: " + err))
+
+      callGetSchedServantTemplateAPI(Number(e.target.value))
+      .then(
+        data => this.setState({ selectedServants: data }),
+        error => this.setState({ msgModalShow: true , msgModalHeader: 'Information', msgModalContent: error })
+      )
+      .catch(err => console.log("Fail to call API due to: " + err))
     }
   }
 
@@ -267,7 +168,8 @@ class ServantSchedulerMstr extends Component {
     }
     
     if (this.validateServant(updatedServant).length > 0 && event.target.value !== ''){
-      alert('Servant is already tagged to other role. Please select another person')
+      let error = 'Servant is already tagged to other role. Please select another person';
+      this.setState({ msgModalShow: true , msgModalHeader: 'Error', msgModalContent: error })
     }
     else {
       let foundIndex = selectedServants.findIndex(updatedItem => updatedItem.dateid === dateid && updatedItem.roleid === roleid)
@@ -278,8 +180,20 @@ class ServantSchedulerMstr extends Component {
   }
 
   componentDidMount(){
-    this.callGetPeriodAPI();
-    this.callGetServantAPI();
+
+    callGetSchedulingPeriodAPI()
+    .then(
+      data => this.setState({ periodList: data }),
+      error => this.setState({ periodList: [], msgModalShow: true , msgModalHeader: 'Information', msgModalContent: error })
+    )
+    .catch(err => console.log("Fail to call API due to: " + err))
+
+    callGetServantAPI()
+    .then(
+      data => this.setState({ servantList: data }),
+      error => this.setState({ servantList: [], msgModalShow: true , msgModalHeader: 'Information', msgModalContent: error })
+    )
+    .catch(err => console.log("Fail to call API due to: " + err))
   }
 
   render() { 
@@ -296,7 +210,7 @@ class ServantSchedulerMstr extends Component {
               currentStep={ this.state.currentStep } 
               selectedPeriod={ this.state.selectedPeriod }
               handlePeriodChange={ this.handlePeriodChange }
-              allperiod={ this.state.allperiod }
+              periodList={ this.state.periodList }
               displayedDates={ this.state.displayedDates }
             />
 
@@ -311,7 +225,6 @@ class ServantSchedulerMstr extends Component {
             <ServantSchedulerStep3
               currentStep={ this.state.currentStep } 
               displayedDates={ this.state.displayedDates }
-              churchRoles={ this.state.churchRoles }
               selectedServants={ this.state.selectedServants }
               isValidated={ this.state.isValidated }
             />      

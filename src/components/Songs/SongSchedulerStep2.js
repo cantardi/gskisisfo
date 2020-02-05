@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Table, Button, OverlayTrigger, Modal, InputGroup, FormControl, Row, Col, Popover } from 'react-bootstrap';
 import { DateConvert } from '../../helpers/function';
+import { callSearchSongAPI } from '../../helpers/apicall';
 import MessageModal from '../MessageModal';
 import { MdSearch, MdAddCircleOutline, MdVideoLibrary, MdClose } from 'react-icons/md';
 
@@ -44,35 +45,18 @@ class SongSchedulerStep2 extends Component {
     }
   }
 
-  callSearchSongAPI = () => {
-
-    fetch(process.env.REACT_APP_BACKEND_URL + '/searchsong', {
-      method: 'post',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({
-        songname: this.state.searchSongName,
-        songtype: '',
-        composer: '',
-        limit: 10
-      })
-    })
-      .then (response => {
-        if (response.status === 200){
-          return response.json()
-          .then(data => this.setState({ filteredSongs: data }))
-        }
-        else { 
-          return response.json()
-          .then(data => this.setState({ msgModalShow: true , msgModalHeader: 'Error', msgModalContent: data }))
-        }
-      }) 
-      .catch(err => console.log('Fail to call searchsong API: ' + err))
-
-  }
-
   searchSong = () => {
-    this.setState({ filteredSongs: [] });
-    this.callSearchSongAPI();
+
+    const { searchSongName } = this.state
+    const maxLine = 10;
+
+    callSearchSongAPI(searchSongName, '', '', maxLine)
+    .then(
+      data => this.setState({ filteredSongs: data }),
+      error => this.setState({ filteredSongs: [], msgModalShow: true , msgModalHeader: 'Information', msgModalContent: error })
+    )
+    .catch(err => console.log("Fail to call API due to: " + err))
+
   }
 
   openVideo = (videourl) => {

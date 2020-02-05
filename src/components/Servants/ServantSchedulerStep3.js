@@ -29,24 +29,21 @@ class ServantSchedulerStep3 extends Component {
                 <Table size="sm" responsive className="f6 tl">
                   <tbody>
                   {
-                    this.props.churchRoles.length > 0 &&
-                    this.props.churchRoles.map(role => {
-                      return(
-                        <tr key={ "role-"+role.id }>
+                    this.props.selectedServants.length > 0 &&
+                    this.props.selectedServants
+                    .filter(servant => Number(servant.dateid) === date.id)
+                    .map(servant => {
+                      return (
+                        <tr key={`tr-${servant.dateid}-${servant.servantid}`}>
                           <th className="w-50">
-                            {role.description}
+                            {servant.rolename}
                           </th>
                           
                           <td className="w-50">
-                          {
-                            this.props.selectedServants.length > 0 &&
-                            this.props.selectedServants
-                            .filter(servant => Number(servant.dateid) === date.id)
-                            .filter(servant => Number(servant.roleid) === role.id)[0].servantname
-                          }
+                            {servant.servantname}
                           </td>
                         </tr>
-                      )   
+                      )
                     })
                   }
                   </tbody>

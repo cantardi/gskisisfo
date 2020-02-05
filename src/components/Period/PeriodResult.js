@@ -4,6 +4,7 @@ import { Container, Table } from 'react-bootstrap';
 class PeriodResult extends Component {
 
   render(){
+    
     return (
       <Container className="ma2">      
         <Table responsive>
@@ -24,7 +25,7 @@ class PeriodResult extends Component {
                   <td className="w-5">{ i+1 }</td>
                   <td 
                     className="fw6 blue no-underline underline-hover pointer w-30"
-                    onClick={ ()=>this.props.openEditMode(period) }
+                    onClick={ ()=>this.props.updatePeriod(period) }
                   >
                     { period.periodname }
                   </td>
@@ -39,6 +40,7 @@ class PeriodResult extends Component {
         
       </Container>
     )
+    
   }
 
 }

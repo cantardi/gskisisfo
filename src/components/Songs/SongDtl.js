@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Form, Col, Row, Button, Alert, Container } from 'react-bootstrap';
-import {history} from '../../helpers/function'
+import { callGetMasterFieldValuesAPI, callAddSongAPI, callUpdateSongAPI } from '../../helpers/apicall';
+import { history } from '../../helpers/function'
 import MessageModal from '../MessageModal';
 
 class SongDtl extends Component {
@@ -9,13 +10,13 @@ class SongDtl extends Component {
     super(props);
     const song = this.props.location.state;
 
-    this.PAGE_PARENT = './SongLP'
+    this.PAGE_PARENT = 'SongLP'
     
     if (typeof song === 'undefined') {
       this.state = {
-        songlanglists: [],
-        songtypelists: [],
-        songkeylists: [],
+        songLangLists: [],
+        songTypeLists: [],
+        songKeyLists: [],
         songid: '',
         songname: '',
         songlanguage: '',
@@ -33,13 +34,14 @@ class SongDtl extends Component {
         msgModalShow: false, 
         msgModalContent: '',
         msgModalHeader: '',
+        overallChangeFlag: false
       }
     }
     else {
       this.state = {
-        songlanglists: [],
-        songtypelists: [],
-        songkeylists: [],
+        songLangLists: [],
+        songTypeLists: [],
+        songKeyLists: [],
         songid: song.id,
         songname: song.songname,
         songlanguage: song.songlanguage,
@@ -57,16 +59,17 @@ class SongDtl extends Component {
         msgModalShow: false, 
         msgModalContent: '',
         msgModalHeader: '',
+        overallChangeFlag: false
       }
     }
   }
 
   handleSongDetailChange = (e) => {
-    this.setState({ [e.target.name]: e.target.value });
+    this.setState({ [e.target.name]: e.target.value, overallChangeFlag: true, variant: '', formErrorMsg: '' });
   }
   
   handleChecked = (e) => {
-    this.setState({ [e.target.name]: e.target.checked });
+    this.setState({ [e.target.name]: e.target.checked, overallChangeFlag: true, variant: '', formErrorMsg: '' });
   }
 
   trimInputValue = (e) => {
@@ -74,6 +77,7 @@ class SongDtl extends Component {
   }
 
   validateForm = () => {
+    
     const { songname, songlanguage, songtype } = this.state
 
     if (songname === '' || songlanguage === '' || songtype === '') { 
@@ -91,108 +95,58 @@ class SongDtl extends Component {
     history.push(this.PAGE_PARENT)
   }
 
-  callGetMasterFieldValuesAPI = () => {
-    
-    Promise.all([
-      fetch(process.env.REACT_APP_BACKEND_URL + '/getfieldvalues/Song Language', {
-        method: 'get',
-        headers: {'Content-Type': 'application/json'},
-      }),
-      fetch(process.env.REACT_APP_BACKEND_URL + '/getfieldvalues/Song Type', {
-        method: 'get',
-        headers: {'Content-Type': 'application/json'}
-      }),
-      fetch(process.env.REACT_APP_BACKEND_URL + '/getfieldvalues/Song Key', {
-        method: 'get',
-        headers: {'Content-Type': 'application/json'}
-      })
-    ])
-    .then (async([songlangresp, songtyperesp, songkeyresp]) => {
-      const songlangdata = await songlangresp.json()
-      const songtypedata = await songtyperesp.json()
-      const songkeydata = await songkeyresp.json()
-      return [songlangdata, songtypedata, songkeydata]
-    }) 
-    .then(data => this.setState({ songlanglists: data[0], songtypelists: data[1], songkeylists: data[2] }))
-    .catch(err => console.log('Fail to call getfieldvalues API: ' + err)) 
-    
-  }
-
-  callAddSongAPI = () => {
-
-    fetch(process.env.REACT_APP_BACKEND_URL + '/addsong', {
-      method: 'post',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({
-        songname: this.state.songname,
-        songlanguage: this.state.songlanguage,
-        songkey: this.state.songkey,
-        songtype: this.state.songtype,
-        composer: this.state.composer,
-        musicby: this.state.musicby,
-        lyricby: this.state.lyricby,
-        url1: this.state.url1,
-        url2: this.state.url2,
-        schedulingflag: this.state.schedulingflag,
-        lyric: this.state.lyric
-      })
-    })
-    .then(response => response.json())
-    .then(data => this.setState({ msgModalShow: true , msgModalHeader: 'Information', msgModalContent: data }))     
-    .catch(err => console.log('Fail to call insertsong API: ' + err))
-
-  }
-
-  callUpdateSongAPI = () => {
-
-    fetch(process.env.REACT_APP_BACKEND_URL + '/updatesong', {
-      method: 'put',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({
-        songid: this.state.songid,
-        songname: this.state.songname,
-        songlanguage: this.state.songlanguage,
-        songkey: this.state.songkey,
-        songtype: this.state.songtype,
-        composer: this.state.composer,
-        musicby: this.state.musicby,
-        lyricby: this.state.lyricby,
-        url1: this.state.url1,
-        url2: this.state.url2,
-        schedulingflag: this.state.schedulingflag,
-        lyric: this.state.lyric
-      })
-    })
-    .then (response => {
-      if (response.status === 200){
-        return response.json()
-        .then(data => this.setState({ msgModalShow: true , msgModalHeader: 'Information', msgModalContent: data }))
-      }
-      else { 
-        return response.json()
-        .then(data => this.setState({ msgModalShow: true , msgModalHeader: 'Error', msgModalContent: data }))
-      }
-    }) 
-    .catch(err => console.log('Fail to call updatesong API: ' + err))
-
-  }
-
   saveSong = () => {
     
+    const songObj = {
+      songname: this.state.songname,
+      songlanguage: this.state.songlanguage,
+      songkey: this.state.songkey,
+      songtype: this.state.songtype,
+      composer: this.state.composer,
+      musicby: this.state.musicby,
+      lyricby: this.state.lyricby,
+      url1: this.state.url1,
+      url2: this.state.url2,
+      schedulingflag: this.state.schedulingflag,
+      lyric: this.state.lyric 
+    }
+
     if (this.validateForm() === true){
       if (this.state.songid === ''){
-        this.callAddSongAPI();
+        callAddSongAPI(songObj)
+        .then(
+          data => this.setState({ msgModalShow: true , msgModalHeader: 'Information', msgModalContent: data }),
+          error => this.setState({ msgModalShow: true , msgModalHeader: 'Error', msgModalContent: error })
+        )
+        .catch(err => console.log("Fail to call API due to: " + err))
       }
       else {
-        this.callUpdateSongAPI();
+        callUpdateSongAPI(songObj, this.state.songid)
+        .then(
+          data => this.setState({ msgModalShow: true , msgModalHeader: 'Information', msgModalContent: data }),
+          error => this.setState({ msgModalShow: true , msgModalHeader: 'Error', msgModalContent: error })
+        )
+        .catch(err => console.log("Fail to call API due to: " + err))
       }  
     }
     
   }
 
   componentDidMount() {
+
     window.scrollTo(0, 0);
-    this.callGetMasterFieldValuesAPI();
+
+    Promise.all([
+      callGetMasterFieldValuesAPI('Song Language'),
+      callGetMasterFieldValuesAPI('Song Type'), 
+      callGetMasterFieldValuesAPI('Song Key'), 
+    ])
+    .then(
+      data => this.setState({ songLangLists: data[0], songTypeLists: data[1], songKeyLists: data[2] }),
+      //error => this.setState({ genderLists: [], msgModalShow: true , msgModalHeader: 'Information', msgModalContent: error })
+    )
+    .catch(err => console.log("Fail to call API due to: " + err))
+    
   }
   
   render() {
@@ -242,10 +196,10 @@ class SongDtl extends Component {
               >
                 <option value="">Choose...</option>
                 {
-                  this.state.songlanglists.length > 0 &&
-                  this.state.songlanglists.map(songlang => {
+                  this.state.songLangLists.length > 0 &&
+                  this.state.songLangLists.map(songLang => {
                     return (
-                      <option key={ songlang.id } value={ songlang.id }>{ songlang.description }</option> 
+                      <option key={ songLang.id } value={ songLang.id }>{ songLang.description }</option> 
                     )
                   })
                 }
@@ -263,8 +217,8 @@ class SongDtl extends Component {
               >
                 <option value="">Choose...</option>
                 {
-                  this.state.songtypelists.length > 0 &&
-                  this.state.songtypelists.map(songtype => {
+                  this.state.songTypeLists.length > 0 &&
+                  this.state.songTypeLists.map(songtype => {
                     return (
                       <option key={ songtype.id } value={ songtype.id }>{ songtype.description }</option> 
                     )
@@ -283,8 +237,8 @@ class SongDtl extends Component {
               >
                 <option value="">Choose...</option>
                 {
-                  this.state.songkeylists.length > 0 &&
-                  this.state.songkeylists.map(songkey => {
+                  this.state.songKeyLists.length > 0 &&
+                  this.state.songKeyLists.map(songkey => {
                     return (
                       <option key={ songkey.id } value={ songkey.id }>{ songkey.description }</option> 
                     )

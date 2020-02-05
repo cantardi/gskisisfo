@@ -55,26 +55,7 @@ class Login extends React.Component {
           this.setState({ errMsg: error, spinnerShow: false})
         }
     );
-/*
-    fetch(process.env.REACT_APP_BACKEND_URL + '/signin', {
-      method: 'post',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({
-        username: this.state.signInUsername,
-        password: this.state.signInPassword
-      })
-    })
-    .then (response => {
-      if (response.status === 200){
-        return response.json()
-        .then(data => this.props.signInToSystem(data))
-      }
-      else {
-        this.setState({ errMsg: 'Username or password is incorrect', spinnerShow: false})
-      }
-    }) 
-    .catch(err => console.log("Fail to call signin api: " + err))
-      */
+    
   }
 
   render(){

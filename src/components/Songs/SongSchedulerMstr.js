@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Form, Container, Button } from 'react-bootstrap';
-import {history} from '../../helpers/function'
+import { history } from '../../helpers/function'
+import { callGetSchedulingPeriodAPI, callAddSongSchedAPI, callGetPeriodDateAPI } from '../../helpers/apicall';
 import MessageModal from '../MessageModal';
 import SongSchedulerStep1 from './SongSchedulerStep1';
 import SongSchedulerStep2 from './SongSchedulerStep2';
@@ -13,7 +14,7 @@ class SongSchedulerMstr extends Component {
     
     this.state = {
       currentStep: 1,
-      allperiod: [],
+      periodList: [],
       selectedPeriod: '',
       displayedDates: [],
       selectedSongs: [],
@@ -23,17 +24,14 @@ class SongSchedulerMstr extends Component {
       isValidated: false,
     }
 
-    this._next = this._next.bind(this)
-    this._prev = this._prev.bind(this)
-    this._submit = this._submit.bind(this)
   }
 
   msgModalClose = () => {
     this.setState({ msgModalShow: false });
-    history.push('/SongLP')
+    if (this.state.currentStep === 3) history.push('SongLP');
   }
 
-  _next() {
+  _next = () => {
     let currentStep = this.state.currentStep
     // If the current step is 1 or 2, then add one on "next" button click
     currentStep = currentStep >= 2? 3: currentStep + 1
@@ -41,17 +39,31 @@ class SongSchedulerMstr extends Component {
     this.validateSongCompletion();
   }
     
-  _prev() {
+  _prev = () => {
     let currentStep = this.state.currentStep
     // If the current step is 2 or 3, then subtract one on "previous" button click
     currentStep = currentStep <= 1? 1: currentStep - 1
     this.setState({ currentStep })
   }
 
-  _submit() {
+  _submit = () => {
 
-    if (window.confirm('Are you sure you wish to submit this schedule?')) {
-      this.callAddSongSchedAPI();
+    if (window.confirm('Are you sure to submit this schedule?')) {
+      const songSchedule = this.state.selectedSongs.map(song =>
+        ({
+          periodid: this.state.selectedPeriod,
+          dateid: song.dateid,
+          songid: song.song.id
+        })
+      )
+  
+      
+      callAddSongSchedAPI(songSchedule)
+      .then(
+        data => this.setState({ msgModalShow: true , msgModalHeader: 'Information', msgModalContent: data }),
+        error => this.setState({ msgModalShow: true , msgModalHeader: 'Error', msgModalContent: error })
+      )
+      .catch(err => console.log("Fail to call API due to: " + err))
     }
 
   }
@@ -104,80 +116,31 @@ class SongSchedulerMstr extends Component {
     return null;
   }
 
-  callGetPeriodAPI = () => {
-    
-    fetch(process.env.REACT_APP_BACKEND_URL + '/getschedulingperiod/song', {
-      method: 'get',
-      headers: {'Content-Type': 'application/json'}
-    })
-    .then (response => {
-      if (response.status === 200){
-        return response.json()
-        .then(data => this.setState({ allperiod: data }))
-      }
-      else { 
-        return response.json()
-        .then(data => this.setState({ msgModalShow: true , msgModalHeader: 'Information', msgModalContent: data }))
-      }
-    }) 
-    .catch(err => console.log('Fail to call getperiod API: ' + err))
-
-  }
-  
-  callGetPeriodDateAPI = (periodid) => {
-    
-    fetch(process.env.REACT_APP_BACKEND_URL + '/getperioddate/' + periodid, {
-      method: 'get',
-      headers: {'Content-Type': 'application/json'}
-    })
-    .then (response => {
-      if (response.status === 200){
-        return response.json()
-        .then(data => this.setState({ displayedDates: data }))
-      }
-      else { 
-        return response.json()
-        .then(data => this.setState({ msgModalShow: true , msgModalHeader: 'Error', msgModalContent: data }))
-      }
-    }) 
-    .catch(err => console.log('Fail to call getperioddate API: ' + err))
-
-  }
-
-  callAddSongSchedAPI = () => {
-    const songSchedule = this.state.selectedSongs.map(song =>
-      ({
-        periodid: this.state.selectedPeriod,
-        dateid: song.dateid,
-        songid: song.song.id
-      })
-    )
-
-    fetch(process.env.REACT_APP_BACKEND_URL + '/addsongschedule', {
-      method: 'post',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({
-        songSchedule: songSchedule
-      })
-    })
-    .then (response => {
-      if (response.status === 200){
-        return response.json()
-        .then(data => this.setState({ msgModalShow: true , msgModalHeader: 'Information', msgModalContent: data }))
-      }
-      else { 
-        return response.json()
-        .then(data => this.setState({ msgModalShow: true , msgModalHeader: 'Error', msgModalContent: data }))
-    }})
-    .catch(err => console.log('Fail to call addsongschedule API: ' + err))
-
-  }
-  
   handlePeriodChange = (e) => {
-    this.setState({ selectedPeriod: e.target.value });
-    this.setState({ displayedDates: [] });
-    this.setState({ selectedSongs: [] });
-    if (e.target.value !== '') this.callGetPeriodDateAPI(e.target.value);
+    
+    this.setState({ selectedPeriod: Number(e.target.value), displayedDates: [], selectedSongs: [] });
+    
+    if (e.target.value !== '') {
+      callGetPeriodDateAPI(Number(e.target.value))
+      .then(
+        data => this.setState({ displayedDates: data }),
+        error => this.setState({ msgModalShow: true , msgModalHeader: 'Information', msgModalContent: error })
+      )
+      .catch(err => console.log("Fail to call API due to: " + err))
+    }
+
+  }
+
+  validateSong(song) {
+    return this.state.selectedSongs
+      .filter(selectedSong => selectedSong.reactobjid===song.reactobjid)
+  }
+  
+  validateSongCompletion = () => {
+    let dateIdList = this.state.displayedDates.map(date => date.id)
+    let selectedIdList = this.state.selectedSongs.map(date => Number(date.dateid))
+    let isValidated = dateIdList.every(val => selectedIdList.includes(val))
+    this.setState({ isValidated })
   }
 
   addSong = (dateid, song) => {
@@ -202,20 +165,15 @@ class SongSchedulerMstr extends Component {
     this.setState({ selectedSongs: newSelectedSongs });
   }
 
-  validateSong(song) {
-    return this.state.selectedSongs
-      .filter(selectedSong => selectedSong.reactobjid===song.reactobjid)
-  }
-  
-  validateSongCompletion = () => {
-    let dateIdList = this.state.displayedDates.map(date => date.id)
-    let selectedIdList = this.state.selectedSongs.map(date => Number(date.dateid))
-    let isValidated = dateIdList.every(val => selectedIdList.includes(val))
-    this.setState({ isValidated })
-  }
+  componentDidMount(){
 
-  componentDidMount() {
-    this.callGetPeriodAPI();
+    callGetSchedulingPeriodAPI()
+    .then(
+      data => this.setState({ periodList: data }),
+      error => this.setState({ periodList: [], msgModalShow: true , msgModalHeader: 'Information', msgModalContent: error })
+    )
+    .catch(err => console.log("Fail to call API due to: " + err))
+
   }
 
   render() {
@@ -233,7 +191,7 @@ class SongSchedulerMstr extends Component {
               currentStep={ this.state.currentStep } 
               selectedPeriod={ this.state.selectedPeriod }
               handlePeriodChange={ this.handlePeriodChange }
-              allperiod={ this.state.allperiod }
+              periodList={ this.state.periodList }
               displayedDates={ this.state.displayedDates }
             />
 

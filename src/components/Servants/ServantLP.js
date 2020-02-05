@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { Container, Dropdown, DropdownButton } from 'react-bootstrap';
-import {history} from '../../helpers/function'
+import { callSearchServantAPI } from '../../helpers/apicall';
+import { history } from '../../helpers/function'
 import ServantSearch from './ServantSearch';
 import ServantResult from './ServantResult';
 import MessageModal from '../MessageModal';
@@ -9,6 +10,10 @@ class ServantLP extends Component {
   
   constructor(props){
     super(props);
+
+    this.PAGE_CHILD = 'ServantDtl';
+    this.PAGE_PARENT = 'Administration';
+
     this.state = {
       servantList: [],
       searchServantName: '',
@@ -24,54 +29,33 @@ class ServantLP extends Component {
     this.setState({ [e.target.name]: e.target.value });
   }
 
-  callSearchServantAPI = () => {
-    fetch(process.env.REACT_APP_BACKEND_URL + '/searchservant', {
-      method: 'post',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({
-        name: this.state.searchServantName,
-        email: this.state.searchServantEmail,
-        mobile: this.state.searchServantMobile,
-        limit: 20
-      })
-    })
-    .then (response => {
-      if (response.status === 200){
-        return response.json()
-        .then(data => this.setState({ servantList: data }))
-      }
-      else { 
-        return response.json()
-        .then(data => this.setState({ msgModalShow: true , msgModalHeader: 'Information', msgModalContent: data }))
-      }
-    }) 
-    .catch(err => console.log("Fail to call searchservant API: " + err)) 
-  }
-
   searchServant = () => {
-    this.setState({ servantList: [] });
-    this.callSearchServantAPI();
+
+    const { searchServantName, searchServantEmail, searchServantMobile } = this.state;
+
+    callSearchServantAPI(searchServantName, searchServantEmail, searchServantMobile)
+    .then(
+      data => this.setState({ servantList: data }),
+      error => this.setState({ servantList: [], msgModalShow: true , msgModalHeader: 'Information', msgModalContent: error })
+    )
+    .catch(err => console.log("Fail to call API due to: " + err))
+
   }
 
   clearSearch = () => {
-    this.setState({
-      searchServantName: '',
-      searchServantEmail: '',
-      searchServantMobile: '',
-      servantList: []
-    })
+    this.setState({ searchServantName: '', searchServantEmail: '', searchServantMobile: '', servantList: [] });
   }
 
-  routeToPage = (pagename) => {
-    history.push(pagename);
+  addServant = () => {
+    history.push(this.PAGE_CHILD);
   }
 
-  openEditMode = (servant) => {
-    history.push('/ServantDtl', servant);
+  updateServant = (servant) => {
+    history.push(this.PAGE_CHILD, servant);
   }
 
   msgModalClose = () => {
-    this.setState({ msgModalShow: false }) 
+    this.setState({ msgModalShow: false });
   }
 
   componentDidMount() {
@@ -89,12 +73,8 @@ class ServantLP extends Component {
           key="servantAction"
           align="right"
         >          
-          <Dropdown.Item onClick={ ()=> this.routeToPage('/ServantDtl') }>
-            Add New Servant
-          </Dropdown.Item>
-          <Dropdown.Item onClick={ ()=> this.routeToPage('/ServantSchedulerMstr') }>
-            Schedule Servant
-          </Dropdown.Item>
+          <Dropdown.Item onClick={ this.addServant }>Add New Servant</Dropdown.Item>
+          <Dropdown.Item onClick={ ()=> history.push('ServantSchedulerMstr') }>Schedule Servant</Dropdown.Item>
         </DropdownButton>
 
         <ServantSearch 
@@ -115,7 +95,7 @@ class ServantLP extends Component {
             </div>
             <ServantResult 
               servantList={ this.state.servantList } 
-              openEditMode={ this.openEditMode }
+              updateServant={ this.updateServant }
             />
           </div>
         }

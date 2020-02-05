@@ -4,6 +4,7 @@ import { Container, Table } from 'react-bootstrap';
 class SongResult extends Component {
 
   render(){
+
     return (
       <Container className="ma2">
         <Table responsive>
@@ -25,7 +26,7 @@ class SongResult extends Component {
                   <td className="w-10">{ i+1 }</td>
                   <td
                     className="fw6 blue no-underline underline-hover pointer w-30"
-                    onClick={ ()=>this.props.openEditMode(song) }
+                    onClick={ ()=>this.props.updateSong(song) }
                   >
                     { song.songname }
                   </td>
@@ -41,6 +42,7 @@ class SongResult extends Component {
         
       </Container>
     )
+    
   }
 
 }

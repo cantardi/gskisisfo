@@ -22,7 +22,7 @@ class SongSchedulerStep1 extends Component {
           >
             <option key="0" value="">Select Period</option>
             {
-              this.props.allperiod.map((period) => 
+              this.props.periodList.map((period) => 
                 <option key={ period.id } value={ period.id }>
                   { period.periodname }
                 </option>

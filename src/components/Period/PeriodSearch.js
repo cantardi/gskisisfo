@@ -10,6 +10,7 @@ class PeriodSearch extends Component {
 	}
 	
 	render(){
+
 		return (
 			<Container className="ma2">
 				<Form>
@@ -60,7 +61,8 @@ class PeriodSearch extends Component {
 
 				</Form>
 			</Container>					
-		);
+		)
+		
 	}
 	
 }

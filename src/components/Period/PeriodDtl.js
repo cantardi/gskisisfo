@@ -12,7 +12,7 @@ class PeriodDtl extends Component {
     super(props);
     const period = this.props.location.state;
     
-    this.PAGE_PARENT = 'PeriodLP'
+    this.PAGE_PARENT = 'PeriodLP';
 
     if (typeof period === 'undefined') {
       this.state = {
@@ -98,11 +98,13 @@ class PeriodDtl extends Component {
   
   savePeriod = () => {
     
+    const convertedDays = this.state.selectedDays
+    .map(selectedDay => new Date(selectedDay).toLocaleDateString());
+
     if (this.validateForm() === true){
+      
       if (this.state.periodId === ''){
-        const convertedDays = this.state.selectedDays
-                              .map(selectedDay => new Date(selectedDay).toLocaleDateString());
-        
+    
         const period = {
           periodName: this.state.periodName,
           status: this.state.status,
@@ -117,8 +119,6 @@ class PeriodDtl extends Component {
         .catch(err => console.log("Fail to call API due to: " + err))
       }
       else {
-        const convertedDays = this.state.selectedDays
-                              .map(selectedDay => new Date(selectedDay).toLocaleDateString());
         
         const period = {
           periodId: this.state.periodId,
@@ -136,14 +136,6 @@ class PeriodDtl extends Component {
           .catch(err => console.log("Fail to call API due to: " + err))
         }
         else {
-          
-          const period = {
-            periodId: this.state.periodId,
-            periodName: this.state.periodName,
-            status: this.state.status,
-            description: this.state.description
-          }
-
           callUpdatePeriodWholeAPI(period, convertedDays)
           .then(data => this.setState({ msgModalShow: true , msgModalHeader: 'Information', msgModalContent1: data[0], msgModalContent2: data[1] }))
           .catch(err => console.log("Fail to call API due to: " + err))
@@ -195,7 +187,7 @@ class PeriodDtl extends Component {
         <Form>
           <Form.Row>
             <Form.Group as={Col} controlId="formPeriodName">
-              <Form.Label>Period Name*</Form.Label>
+              <Form.Label>Period Name *</Form.Label>
               <Form.Control 
                 type="text"
                 placeholder="Enter period name" 
@@ -222,7 +214,7 @@ class PeriodDtl extends Component {
           </Form.Row>
 
           <Form.Group controlId="formPeriodDescr">
-            <Form.Label>Description*</Form.Label>
+            <Form.Label>Description *</Form.Label>
             <Form.Control 
               type="text"
               placeholder="Enter period description" 
@@ -247,7 +239,7 @@ class PeriodDtl extends Component {
           </Modal>
             
           <Form.Row>
-            <Col>Selected dates*</Col>
+            <Col>Selected dates *</Col>
             <Col className="tr">
               <Button 
                 variant="primary"

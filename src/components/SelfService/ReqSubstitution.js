@@ -102,7 +102,6 @@ class ReqSubstitution extends Component {
       method: 'post',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({
-        servicedateid: this.state.selectedDate,
         servicedate: this.returnDateValue(this.state.selectedDate),
         periodname: this.returnPeriodName(this.state.selectedPeriod),
         servantname: this.state.servantname,
@@ -110,7 +109,7 @@ class ReqSubstitution extends Component {
         reason: this.state.reasonDetail
       })
     })
-    .then (response => response.json())
+    .then(response => response.json())
     .then(data => alert(data))
     .then(() => {
       this.setState({ selectedPeriod: '', selectedDate: '', displayedDates: [], currentRole: '', reasonDetail: '' });

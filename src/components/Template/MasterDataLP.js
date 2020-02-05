@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Container, Form, Row, Col, Button, Table, FormControl, InputGroup, Modal } from 'react-bootstrap';
-import {history} from '../../helpers/function'
+import { callGetMasterFieldAPI, callGetFieldDetailsAPI, callAddFieldValueAPI, callDeleteFieldValueAPI, callUpdateFieldValueAPI } from '../../helpers/apicall';
+import { history } from '../../helpers/function'
 import MessageModal from '../MessageModal';
 
 class MasterDataLP extends Component {
@@ -40,12 +41,12 @@ class MasterDataLP extends Component {
     if (this.state.addedFieldValues.length > 0 || this.state.deletedFieldValues.length > 0 || this.state.updateFlag){
       if (window.confirm('Are you sure you wish to change the field. You have unsaved items currently. Changes will be removed once you click OK')){
         this.setState({ fieldDetails: [], addedFieldValues: [], deletedFieldValues: [], updateFlag: false })
-        this.setState({ fieldId: e.target.value, addFor: e.target.options[e.target.selectedIndex].text }, () => this.callGetFieldDetailsAPI() );
+        this.setState({ fieldId: e.target.value, addFor: e.target.options[e.target.selectedIndex].text }, () => this.getMasterFieldValue(this.state.fieldId) );
       }
     }
     else {
       this.setState({ fieldDetails: [] })
-      this.setState({ fieldId: e.target.value, addFor: e.target.options[e.target.selectedIndex].text }, () => this.callGetFieldDetailsAPI() );
+      this.setState({ fieldId: e.target.value, addFor: e.target.options[e.target.selectedIndex].text }, () => this.getMasterFieldValue(this.state.fieldId) );
     }
   }
 
@@ -135,124 +136,60 @@ class MasterDataLP extends Component {
 
     }
   }
-  
-  callAddFieldValueAPI = () => {
-    const { addedFieldValues } = this.state;
-    
-    let newFieldValue = []
-    addedFieldValues.map(newvalue => newFieldValue.push(Object ({fieldid: newvalue.fieldid, status: newvalue.status, description: newvalue.description, shortdescr: newvalue.shortdescr}) ))
-    
-    fetch(process.env.REACT_APP_BACKEND_URL + '/addfieldvalue', {
-      method: 'post',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({
-        newvalues: newFieldValue
-      })
-    })
-    .then(response => {
-      if (response.status === 200){
-        return response.json()
-        .then(data => this.setState({ msgModalShow: true , msgModalHeader: 'Information', msgModalContent: data }))
-        .then(this.callGetFieldDetailsAPI)
-      }
-      else { 
-        return response.json()
-        .then(data => this.setState({ msgModalShow: true , msgModalHeader: 'Error', msgModalContent: data }))
-      }
-    })
-    .catch(err => console.log("Fail to call addfieldvalue API: " + err))
-  }
-
-  callDeleteFieldValueAPI = () => {
-
-    fetch(process.env.REACT_APP_BACKEND_URL + '/deletefieldvalue', {
-      method: 'delete',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({
-        deletedvalues: this.state.deletedFieldValues
-      })
-    })
-    .then(response => {
-      if (response.status === 200){
-        return response.json()
-        .then(data => this.setState({ msgModalShow: true , msgModalHeader: 'Information', msgModalContent: data }))
-        .then(this.callGetFieldDetailsAPI)
-      }
-      else { 
-        return response.json()
-        .then(data => this.setState({ msgModalShow: true , msgModalHeader: 'Error', msgModalContent: data }))
-      }
-    })
-    .catch(err => console.log("Fail to call deletefieldvalue API: " + err))
-  }
-
-  callUpdateFieldValueAPI = () => {
-    
-    const { fieldDetails } = this.state
-    const updatedFieldRows = fieldDetails.filter(field => field.flag === true)
-
-    fetch(process.env.REACT_APP_BACKEND_URL + '/updatefieldvalue', {
-      method: 'put',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({
-        updatedfields: updatedFieldRows,
-      })
-    })
-    .then(response => {
-      if (response.status === 200){
-        return response.json()
-        .then(data => this.setState({ msgModalShow: true , msgModalHeader: 'Information', msgModalContent: data }))
-        .then(this.callGetFieldDetailsAPI)
-      }
-      else { 
-        return response.json()
-        .then(data => this.setState({ msgModalShow: true , msgModalHeader: 'Error', msgModalContent: data }))
-      }
-    })
-    .catch(err => console.log("Fail to call updatefieldvalue API: " + err))
-    
-    fieldDetails.map(field => field.flag = false)
-    this.setState({ fieldDetails })
-  }
-
-  callGetFieldDetailsAPI = () => {
-    
-    fetch(process.env.REACT_APP_BACKEND_URL + '/getfielddetails/' + this.state.fieldId, {
-      method: 'get',
-      headers: {'Content-Type': 'application/json'},
-    })
-    .then (response => {
-      if (response.status === 200){
-        return response.json()
-        .then(data => this.setState({ fieldDetails: data }))
-      }
-      else { 
-        return response.json()
-        .then(data => this.setState({ msgModalShow: true , msgModalHeader: 'Information', msgModalContent: data }))
-      }
-    }) 
-    .catch(err => console.log("Fail to call getfielddetails API: " + err))
-
-  }
 
   saveMasterFieldValue = () => {
 
     if (this.state.addedFieldValues.length > 0){
-      this.callAddFieldValueAPI();
-      this.setState({ addedFieldValues: [] })
+
+      const { addedFieldValues } = this.state;
+  
+      let newFieldValue = []
+      addedFieldValues.map(newvalue => newFieldValue.push(Object ({fieldid: newvalue.fieldid, status: newvalue.status, description: newvalue.description, shortdescr: newvalue.shortdescr}) ))
+  
+      callAddFieldValueAPI(newFieldValue)
+      .then(
+        data => this.setState({ msgModalShow: true , msgModalHeader: 'Information', msgModalContent: data, addedFieldValues: [] }),
+        error => this.setState({ msgModalShow: true , msgModalHeader: 'Error', msgModalContent: error, addedFieldValues: [] })
+      )
+      .then(() => this.getMasterFieldValue(this.state.fieldId) )
+      .catch(err => console.log("Fail to call API due to: " + err))
+
     }
 
     if (this.state.deletedFieldValues.length > 0){
-      this.callDeleteFieldValueAPI();
-      this.setState({ deletedFieldValues: [] })
+
+      const { deletedFieldValues } = this.state
+
+      callDeleteFieldValueAPI(deletedFieldValues)
+      .then(
+        data => this.setState({ msgModalShow: true , msgModalHeader: 'Information', msgModalContent: data, deletedFieldValues: [] }),
+        error => this.setState({ msgModalShow: true , msgModalHeader: 'Error', msgModalContent: error, deletedFieldValues: [] })
+      )
+      .then(() => this.getMasterFieldValue(this.state.fieldId) )
+      .catch(err => console.log("Fail to call API due to: " + err))
+
     }
     
     if (this.state.updateFlag){
-      this.callUpdateFieldValueAPI();
-      this.setState({ updateFlag: false })
+      
+      const { fieldDetails } = this.state
+      const updatedFieldRows = fieldDetails.filter(field => field.flag === true)
+
+      callUpdateFieldValueAPI(updatedFieldRows)
+      .then(
+        data => this.setState({ msgModalShow: true , msgModalHeader: 'Information', msgModalContent: data, updateFlag: false }),
+        error => this.setState({ msgModalShow: true , msgModalHeader: 'Error', msgModalContent: error, updateFlag: false })
+      )
+      .then(() => this.getMasterFieldValue(this.state.fieldId) )
+      .catch(err => console.log("Fail to call API due to: " + err))
+      
+      fieldDetails.map(field => field.flag = false)
+      this.setState({ fieldDetails })
+
     }
 
     this.setState({ btnSaveDisabled: true })
+
   }
 
   msgModalClose = () => {
@@ -263,23 +200,26 @@ class MasterDataLP extends Component {
     this.setState({ fieldModalShow: false })
   }
 
+  getMasterFieldValue = (fieldId) => {
+
+    callGetFieldDetailsAPI(fieldId)
+    .then(
+      data => this.setState({ fieldDetails: data }),
+      error => this.setState({ fidleDetails: [], msgModalShow: true , msgModalHeader: 'Information', msgModalContent: error })
+    )
+    .catch(err => console.log("Fail to call API due to: " + err))
+
+  }
+
   componentDidMount(){
 
-    fetch(process.env.REACT_APP_BACKEND_URL + '/getmasterfield', {
-      method: 'get',
-      headers: {'Content-Type': 'application/json'}
-    })
-    .then (response => {
-      if (response.status === 200){
-        return response.json()
-        .then(data => this.setState({ masterFields: data }))
-      }
-      else { 
-        return response.json()
-        .then(data => this.setState({ msgModalShow: true , msgModalHeader: 'Information', msgModalContent: data }))
-      }
-    }) 
-    .catch(err => console.log('Fail to call getmasterfield API: ' + err))
+    callGetMasterFieldAPI()
+    .then(
+      data => this.setState({ masterFields: data }),
+      error => this.setState({ msgModalShow: true , msgModalHeader: 'Information', msgModalContent: error })
+    )
+    .catch(err => console.log("Fail to call API due to: " + err))
+
   }
 
   render() {

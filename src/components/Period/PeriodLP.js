@@ -6,14 +6,13 @@ import PeriodSearch from './PeriodSearch';
 import PeriodResult from './PeriodResult';
 import MessageModal from '../MessageModal';
 
-
 class PeriodLP extends Component {
   
   constructor(props){
     super(props);
 
-    this.PAGE_CHILD = './PeriodDtl';
-    this.PAGE_PARENT = './Administration';
+    this.PAGE_CHILD = 'PeriodDtl';
+    this.PAGE_PARENT = 'Administration';
 
     this.state = {
       periodList: [],
@@ -32,7 +31,7 @@ class PeriodLP extends Component {
   }
 
   searchPeriod = () => {
-    const { searchPeriodName, searchPeriodStatus, searchDescription } = this.state
+    const { searchPeriodName, searchPeriodStatus, searchDescription } = this.state;
 
     callSearchPeriodAPI(searchPeriodName, searchPeriodStatus, searchDescription)
     .then(
@@ -43,12 +42,7 @@ class PeriodLP extends Component {
   }
 
   clearSearch = () => {
-    this.setState({
-      searchPeriodName: '',
-      searchPeriodStatus: 'A',
-      searchDescription: '',
-      periodList: []
-    })
+    this.setState({ searchPeriodName: '', searchPeriodStatus: 'A', searchDescription: '', periodList: []});
   }
 
   addPeriod = () => {
@@ -60,7 +54,7 @@ class PeriodLP extends Component {
   }
 
   msgModalClose = () => {
-    this.setState({ msgModalShow: false })
+    this.setState({ msgModalShow: false });
   }
 
   componentDidMount() {
@@ -68,6 +62,7 @@ class PeriodLP extends Component {
   }
   
   render() {
+    
     return (
       <Container className="pa2">
         
@@ -99,7 +94,7 @@ class PeriodLP extends Component {
             </div>
             <PeriodResult 
               periodList={ this.state.periodList } 
-              openEditMode={ this.updatePeriod }
+              updatePeriod={ this.updatePeriod }
             />
           </div>
         }

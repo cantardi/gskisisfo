@@ -1,7 +1,12 @@
 import React, { Component } from 'react';
 import { Container, Row, Form, Col, Button } from 'react-bootstrap';
+import { callGetMasterFieldValuesAPI } from '../../helpers/apicall';
 
 class SongSearch extends Component {
+
+	state = {
+		songTypeLists: []
+	}
 
 	handleKeyPress = (e) => {
     if (e.key === 'Enter') {
@@ -9,7 +14,19 @@ class SongSearch extends Component {
     }
 	}
 	
+	componentDidMount() {
+
+		callGetMasterFieldValuesAPI('Song Type')
+		.then(
+      data => this.setState({ songTypeLists: data }),
+      error => this.setState({ songTypeLists: [], msgModalShow: true , msgModalHeader: 'Information', msgModalContent: error })
+    )
+    .catch(err => console.log("Fail to call API due to: " + err))
+
+	}
+
 	render(){
+
 		return (
 			<Container className="ma2">
 				<Form>
@@ -38,8 +55,8 @@ class SongSearch extends Component {
 							>
 								<option value="">All</option>
 								{
-									this.props.songTypeLists.length > 0 &&
-									this.props.songTypeLists.map(songtype => {
+									this.state.songTypeLists.length > 0 &&
+									this.state.songTypeLists.map(songtype => {
 										return <option key={songtype.id} value={songtype.id}>{songtype.description}</option>	
 									})
 								}
@@ -65,7 +82,8 @@ class SongSearch extends Component {
 
 				</Form>
 			</Container>					
-		);
+		)
+
 	}
 	
 }

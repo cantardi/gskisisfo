@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Container, Dropdown, DropdownButton } from 'react-bootstrap';
-import {history} from '../../helpers/function'
+import { callSearchSongAPI } from '../../helpers/apicall';
+import { history } from '../../helpers/function'
 import SongSearch from './SongSearch';
 import SongResult from './SongResult';
 import MessageModal from '../MessageModal';
@@ -10,11 +11,11 @@ class SongLP extends Component {
   constructor(props){
     super(props);
     
+    this.PAGE_CHILD = 'SongDtl';
+    this.PAGE_PARENT = 'Administration';
+
     this.state = {
       songList: [],
-      songlanglists: [],
-      songtypelists: [],
-      songkeylists: [],
       searchSongName: '',
       searchSongType: '',
       searchComposer: '',
@@ -28,61 +29,19 @@ class SongLP extends Component {
   handleSongSearchChange = (e) => {
     this.setState({ [e.target.name]: e.target.value });
   }
-
-  callSearchSongAPI = () => {
-    
-    fetch(process.env.REACT_APP_BACKEND_URL + '/searchsong', {
-      method: 'post',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({
-        songname: this.state.searchSongName,
-        songtype: this.state.searchSongType,
-        composer: this.state.searchComposer,
-        limit: 20
-      })
-    })
-      .then (response => {
-        if (response.status === 200){
-          return response.json()
-          .then(data => this.setState({ songList: data }))
-        }
-        else { 
-          return response.json()
-          .then(data => this.setState({ msgModalShow: true , msgModalHeader: 'Information', msgModalContent: data }))
-        }
-      }) 
-      .catch(err => console.log("Fail to call searchsong API: " + err)) 
-  }
   
-  callGetMasterFieldValuesAPI = () => {
-    
-    Promise.all([
-      fetch(process.env.REACT_APP_BACKEND_URL + '/getfieldvalues/Song Language', {
-        method: 'get',
-        headers: {'Content-Type': 'application/json'},
-      }),
-      fetch(process.env.REACT_APP_BACKEND_URL + '/getfieldvalues/Song Type', {
-        method: 'get',
-        headers: {'Content-Type': 'application/json'}
-      }),
-      fetch(process.env.REACT_APP_BACKEND_URL + '/getfieldvalues/Song Key', {
-        method: 'get',
-        headers: {'Content-Type': 'application/json'}
-      })
-    ])
-    .then (async([songlangresp, songtyperesp, songkeyresp]) => {
-      const songlangdata = await songlangresp.json()
-      const songtypedata = await songtyperesp.json()
-      const songkeydata = await songkeyresp.json()
-      return [songlangdata, songtypedata, songkeydata]
-    }) 
-    .then(data => this.setState({ songlanglists: data[0], songtypelists: data[1], songkeylists: data[2] }))
-    .catch(err => console.log('Fail to call getfieldvalues API: ' + err))  
-  }
-
   searchSong = () => {
-    this.setState({ songList: [] });
-    this.callSearchSongAPI();
+    
+    const { searchSongName, searchSongType, searchComposer } = this.state;
+    const maxLine = 20;
+
+    callSearchSongAPI(searchSongName, searchSongType, searchComposer, maxLine)
+    .then(
+      data => this.setState({ songList: data }),
+      error => this.setState({ songList: [], msgModalShow: true , msgModalHeader: 'Information', msgModalContent: error })
+    )
+    .catch(err => console.log("Fail to call API due to: " + err))
+
   }
 
   clearSearch = () => {
@@ -94,21 +53,20 @@ class SongLP extends Component {
     })
   }
 
-  routeToPage = (pagename) => {
-    history.push(pagename);
+  addSong = () => {
+    history.push(this.PAGE_CHILD);
   }
 
-  openEditMode = (song) => {
-    history.push('/SongDtl', song);
+  updateSong = (song) => {
+    history.push(this.PAGE_CHILD, song);
   }
-  
+
   msgModalClose = () => {
     this.setState({ msgModalShow: false }) 
   }
 
   componentDidMount() {
     window.scrollTo(0, 0);
-    this.callGetMasterFieldValuesAPI()
   }
   
   render() {
@@ -122,16 +80,15 @@ class SongLP extends Component {
           key="songAction"
           align="right"
         >               
-          <Dropdown.Item onClick={ ()=>this.routeToPage('/SongDtl') }>
+          <Dropdown.Item onClick={ this.addSong }>
             Add New Song
           </Dropdown.Item>
-          <Dropdown.Item onClick={ ()=>this.routeToPage('/SongSchedulerMstr') }>
+          <Dropdown.Item onClick={ ()=>history.push('/SongSchedulerMstr') }>
             Schedule Song
           </Dropdown.Item>
         </DropdownButton>
 
         <SongSearch 
-          songTypeLists={ this.state.songtypelists }
           songName={ this.state.searchSongName }
           songType={ this.state.searchSongType }
           songComposer={ this.state.searchComposer }
@@ -149,7 +106,7 @@ class SongLP extends Component {
             </div>
             <SongResult 
               songList={ this.state.songList } 
-              openEditMode={ this.openEditMode }
+              updateSong={ this.updateSong }
             />
           </div>
         }

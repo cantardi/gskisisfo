@@ -4,6 +4,7 @@ import { Container, Table } from 'react-bootstrap';
 class ServantResult extends Component {
 
   render(){
+
     return (
       <Container className="ma2">
         <Table responsive>
@@ -24,7 +25,7 @@ class ServantResult extends Component {
                   <td className="w-10">{ i+1 }</td>
                   <td 
                     className="fw6 blue no-underline underline-hover pointer w-30"
-                    onClick={ ()=>this.props.openEditMode(servant) }
+                    onClick={ ()=>this.props.updateServant(servant) }
                   >
                     { servant.servantname }
                   </td>
@@ -39,6 +40,7 @@ class ServantResult extends Component {
       
       </Container>
     )
+    
   }
   
 }

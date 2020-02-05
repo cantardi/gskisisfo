@@ -10,6 +10,7 @@ class ServantSearch extends Component {
   }
   
 	render(){
+
     return (
 			<Container className="ma2">
 				<Form>
@@ -57,7 +58,8 @@ class ServantSearch extends Component {
 
 				</Form>
 			</Container>   
-    )      
+		)      
+		
 	}
 	
 }
