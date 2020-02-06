@@ -64,7 +64,7 @@ class ScheduleLP extends Component {
     })
   }
 
-  openEditMode = (period) => {
+  updatePeriod = (period) => {
     history.push('MaintainSchedule', { period, PAGE_PARENT: 'ScheduleLP', editFlag: true, notifyFlag: true })
   }
 
@@ -94,7 +94,7 @@ class ScheduleLP extends Component {
             </div>
             <PeriodResult 
               periodList={ this.state.periodList } 
-              openEditMode={ this.openEditMode }
+              updatePeriod={ this.updatePeriod }
             />
           </div>
         }
