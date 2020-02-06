@@ -161,10 +161,11 @@ class MasterFieldList extends Component {
             <Button className="ma1" 
                     onClick={ this.saveField }
                     disabled={ this.state.btnSaveDisabled }
+                    bsPrefix="btn-custom"
             >  
               Save
             </Button> 
-            <Button className="ma1" onClick={ ()=>history.push('Administration') }>  
+            <Button className="ma1" bsPrefix="btn-custom" onClick={ ()=>history.push('Administration') }>  
               Cancel
             </Button> 
           </Col>

@@ -79,6 +79,7 @@ class SongLP extends Component {
           id="dropdown-secondary-button"
           key="songAction"
           align="right"
+          bsPrefix="btn-custom"
         >               
           <Dropdown.Item onClick={ this.addSong }>
             Add New Song

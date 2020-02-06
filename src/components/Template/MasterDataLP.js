@@ -231,10 +231,10 @@ class MasterDataLP extends Component {
         
         <Row>
           <Col className="tr">
-            <Button className="ma1" onClick={ this.saveMasterFieldValue } disabled={ this.state.btnSaveDisabled }>
+            <Button className="ma1" bsPrefix="btn-custom" onClick={ this.saveMasterFieldValue } disabled={ this.state.btnSaveDisabled }>
               Save
             </Button> 
-            <Button className="ma1" onClick={ ()=>history.push('./Administration') }>  
+            <Button className="ma1" bsPrefix="btn-custom" onClick={ ()=>history.push('./Administration') }>  
               Cancel
             </Button> 
           </Col>

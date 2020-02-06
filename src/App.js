@@ -26,7 +26,8 @@ import ServiceLP from "./components/Service/ServiceLP";
 import ServiceMstr from "./components/Service/ServiceMstr";
 import {PrivateRoute} from './components/PrivateRoute';
 import {authenticationService} from './services/authenticationService';
-import {history} from './helpers/function'
+import {history} from './helpers/function';
+import './App.css';
 
 class App extends Component {
   
@@ -69,20 +70,27 @@ class App extends Component {
     return (
         <Router history={history}>
           {currentUser &&
-            <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark">
-              <Navbar.Brand>
-                <Nav.Link as={Link} eventKey="1" className="nav-link" to="/">GSKI Rehuel</Nav.Link>
+            <Navbar collapseOnSelect expand="lg" variant="dark" style={{backgroundColor: '#10389e'}}>
+              <Navbar.Brand as={Link} eventKey="1" to="/" style={{color: '#ffd700'}}>
+                <img
+                  alt="ft"
+                  src={require('./assets/logo.png')}
+                  width="30"
+                  height="30"
+                  className="d-inline-block align-top"
+                />{' '}
+                GSKI Rehuel
               </Navbar.Brand> 
               <Navbar.Toggle aria-controls="responsive-navbar-nav" />
               <Navbar.Collapse id="responsive-navbar-nav">
                 <Nav className="mr-auto">
-                  <Nav.Link as={Link} eventKey="2" className="nav-link" to="/Calendar">Calendar</Nav.Link>
-                  <Nav.Link as={Link} eventKey="3" className="nav-link" to="/SelfService">Self Service</Nav.Link>
-                  { isAdmin && <Nav.Link as={Link} eventKey="4" className="nav-link" to="/Administration">Administration</Nav.Link> }
+                  <Nav.Link as={Link} eventKey="2" className="nav-link dim" style={{color: '#ffd700'}} to="/Calendar">Calendar</Nav.Link>
+                  <Nav.Link as={Link} eventKey="3" className="nav-link dim" style={{color: '#ffd700'}} to="/SelfService">Self Service</Nav.Link>
+                  { isAdmin && <Nav.Link as={Link} eventKey="4" className="nav-link dim" style={{color: '#ffd700'}} to="/Administration">Administration</Nav.Link> }
                 </Nav>
                 <Nav>
-                  <Nav.Link as={Link} eventKey="4" className="nav-link" to="/AccountSetup">Account</Nav.Link>
-                  <div className="nav-link pointer" onClick={this.signOut}>Sign Out</div>
+                  <Nav.Link as={Link} eventKey="4" className="nav-link dim" style={{color: '#ffd700'}} to="/AccountSetup">Account</Nav.Link>
+                  <div className="nav-link pointer dim" style={{color: '#ffd700'}} onClick={this.signOut}>Sign Out</div>
                 </Nav>
               </Navbar.Collapse>
             </Navbar>

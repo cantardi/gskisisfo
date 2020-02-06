@@ -74,7 +74,7 @@ class SongSchedulerMstr extends Component {
     if(currentStep !==1){
       return (
         <Button 
-          className="btn btn-secondary" 
+          bsPrefix="btn-custom"
           onClick={this._prev}>
         Previous
         </Button>
@@ -90,7 +90,8 @@ class SongSchedulerMstr extends Component {
     if(currentStep < 3 && this.state.displayedDates.length > 0){
       return (
         <Button 
-          className="btn btn-primary float-right" 
+          bsPrefix="btn-custom"
+          className="float-right" 
           onClick={this._next}>
         Next
         </Button>        
@@ -106,7 +107,8 @@ class SongSchedulerMstr extends Component {
     if(currentStep === 3 && this.state.isValidated){
       return (
         <Button 
-          className="btn btn-primary float-right" 
+          bsPrefix="btn-custom"
+          className="float-right" 
           onClick={this._submit}>
         Submit
         </Button>        

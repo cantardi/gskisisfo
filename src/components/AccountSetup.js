@@ -40,7 +40,7 @@ class AccountSetup extends Component {
         <div className="dtc v-mid">
           
           <Form className="br2 pa4 bw2 center mw6-ns shadow-2">
-            <h3 className="tc pa2">Hello, {this.state.servantname}</h3>
+            <h3 className="tc pa1">Hello, {this.state.servantname}</h3>
 
             <Form.Group as={Col} controlId="formServantName">
               <Form.Label>Username</Form.Label>
@@ -73,12 +73,10 @@ class AccountSetup extends Component {
                 value={ this.state.mobile }
               />
             </Form.Group>
-
-            <Form.Row>
-              <Button className="w-100" variant="primary" onClick={this.changePassword}>
-                Change Password
-              </Button>
-            </Form.Row>
+            
+            <Button bsPrefix="btn-custom" className="w-100" onClick={this.changePassword}>
+              Change Password
+            </Button>
 
           </Form>
         </div>

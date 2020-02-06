@@ -79,7 +79,7 @@ class Login extends React.Component {
             </Form.Group>
 
             <Form.Row>
-              <Button className="w-100" disabled={this.state.spinnerShow} variant="primary" onClick={this.handleLogin}>
+              <Button className="w-100" disabled={this.state.spinnerShow} bsPrefix="btn-custom" onClick={this.handleLogin}>
               {
                 this.state.spinnerShow === false? (
                   <div>Login</div>

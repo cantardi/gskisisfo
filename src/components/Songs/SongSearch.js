@@ -77,8 +77,8 @@ class SongSearch extends Component {
 						</Col>
 					</Form.Group>
 
-					<Button className="ma1" onClick={ this.props.searchSong }>Search</Button>
-					<Button className="ma1" onClick={ this.props.clearSearch }>Clear</Button>
+					<Button className="ma1" bsPrefix="btn-custom" onClick={ this.props.searchSong }>Search</Button>
+					<Button className="ma1" bsPrefix="btn-custom" onClick={ this.props.clearSearch }>Clear</Button>
 
 				</Form>
 			</Container>					

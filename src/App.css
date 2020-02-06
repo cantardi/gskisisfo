@@ -22,6 +22,28 @@
 .App-link {
   color: #61dafb;
 }
+.app-default-blue {
+  background-color: #10389e;
+  border-color: #10389e;
+  color: white;
+}
+
+.btn-custom {
+  background-color: #10389e;
+  border-color: #10389e;
+  color: white;
+  display: inline-block;
+  text-align: center;
+  vertical-align: middle;
+  user-select: none;
+  border: 1px solid transparent;
+  line-height: 1.5;
+  border-radius: .25rem;
+  padding-bottom: 8px;
+  padding-top: 8px;
+  padding-left: 15px;
+  padding-right: 15px;
+}
 
 @keyframes App-logo-spin {
   from {
@@ -31,3 +53,4 @@
     transform: rotate(360deg);
   }
 }
+

@@ -159,10 +159,10 @@ class SongDtl extends Component {
 
         <Row>
           <Col className="tr">
-            <Button className="ma1" onClick={ this.saveSong }>
+            <Button className="ma1" bsPrefix="btn-custom" onClick={ this.saveSong }>
               Save
             </Button> 
-            <Button className="ma1" onClick={ ()=>history.push(this.PAGE_PARENT) }>  
+            <Button className="ma1" bsPrefix="btn-custom" onClick={ ()=>history.push(this.PAGE_PARENT) }>  
               Cancel
             </Button> 
           </Col>

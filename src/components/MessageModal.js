@@ -13,7 +13,7 @@ class MessageModal extends Component {
             <div className="ma1 red">{ this.props.errorText }</div>
           </Modal.Body>
           <Modal.Footer>
-            <Button onClick={this.props.onHide} >Close</Button>
+            <Button bsPrefix="btn-custom" onClick={this.props.onHide} >Close</Button>
           </Modal.Footer>
         </Modal>
     )

@@ -133,7 +133,7 @@ class SongSchedulerStep2 extends Component {
         </Modal.Body>
 
         <Modal.Footer>
-          <Button onClick={this.songModalClose}>OK</Button>
+          <Button bsPrefix="btn-custom" onClick={this.songModalClose}>OK</Button>
         </Modal.Footer>
         
       </Modal>
@@ -160,7 +160,9 @@ class SongSchedulerStep2 extends Component {
                   </th>
                   
                   <th>
-                    <Button key={ 'btn'+date.id } id={ date.id } onClick={ this.songModalOpen }>Select Song</Button>
+                    <Button key={ 'btn'+date.id } id={ date.id } 
+                            bsPrefix="btn-custom"
+                            onClick={ this.songModalOpen }>Select Song</Button>
                   </th>
 
                 </tr>

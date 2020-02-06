@@ -25,6 +25,15 @@ class MyCalendar extends React.Component {
 										msgModalContent: msg })
 	}
 
+	eventStyleGetter = () => {
+		return {
+			style: {
+				backgroundColor: '#10389e',
+  			borderColor: '#10389e'
+			}
+		}
+	}
+
 	assessSize = (e) => {
 		if (this.state.width <= 760)
 			return e.shortTitle;
@@ -87,6 +96,7 @@ class MyCalendar extends React.Component {
 			<div>
 				<Calendar
 					 style={{height: 500}}
+					 eventPropGetter={(this.eventStyleGetter)}
 					 culture='en-GB'
 					 localizer={localizer}
 					 events={this.state.schedule}
