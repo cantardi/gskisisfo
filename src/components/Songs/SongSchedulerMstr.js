@@ -61,7 +61,7 @@ class SongSchedulerMstr extends Component {
       callAddSongSchedAPI(songSchedule)
       .then(
         data => this.setState({ msgModalShow: true , msgModalHeader: 'Information', msgModalContent: data }),
-        error => this.setState({ msgModalShow: true , msgModalHeader: 'Error', msgModalContent: error })
+        error => this.setState({ msgModalShow: true , msgModalHeader: 'Error', msgModalContent: error.message })
       )
       .catch(err => console.log("Fail to call API due to: " + err))
     }
@@ -124,7 +124,7 @@ class SongSchedulerMstr extends Component {
       callGetPeriodDateAPI(Number(e.target.value))
       .then(
         data => this.setState({ displayedDates: data }),
-        error => this.setState({ msgModalShow: true , msgModalHeader: 'Information', msgModalContent: error })
+        error => this.setState({ msgModalShow: true , msgModalHeader: 'Information', msgModalContent: error.message })
       )
       .catch(err => console.log("Fail to call API due to: " + err))
     }
@@ -170,7 +170,7 @@ class SongSchedulerMstr extends Component {
     callGetSchedulingPeriodAPI()
     .then(
       data => this.setState({ periodList: data }),
-      error => this.setState({ periodList: [], msgModalShow: true , msgModalHeader: 'Information', msgModalContent: error })
+      error => this.setState({ periodList: [], msgModalShow: true , msgModalHeader: 'Information', msgModalContent: error.message })
     )
     .catch(err => console.log("Fail to call API due to: " + err))
 

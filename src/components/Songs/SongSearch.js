@@ -19,7 +19,7 @@ class SongSearch extends Component {
 		callGetMasterFieldValuesAPI('Song Type')
 		.then(
       data => this.setState({ songTypeLists: data }),
-      error => this.setState({ songTypeLists: [], msgModalShow: true , msgModalHeader: 'Information', msgModalContent: error })
+      error => this.setState({ songTypeLists: [], msgModalShow: true , msgModalHeader: 'Information', msgModalContent: error.message })
     )
     .catch(err => console.log("Fail to call API due to: " + err))
 

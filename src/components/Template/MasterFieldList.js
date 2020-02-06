@@ -112,7 +112,7 @@ class MasterFieldList extends Component {
       callAddFieldAPI(newFieldName)
       .then(
         data => this.setState({ msgModalShow: true , msgModalHeader: 'Information', msgModalContent: data, addedField: [], newFieldName: [] }),
-        error => this.setState({ msgModalShow: true , msgModalHeader: 'Error', msgModalContent: error, addedField: [], newFieldName: [] })
+        error => this.setState({ msgModalShow: true , msgModalHeader: 'Error', msgModalContent: error.message, addedField: [], newFieldName: [] })
       )
       .then(() => this.getMasterField() )
       .catch(err => console.log("Fail to call API due to: " + err))
@@ -124,7 +124,7 @@ class MasterFieldList extends Component {
       callDeleteFieldAPI(deletedField)
       .then(
         data => this.setState({ msgModalShow: true , msgModalHeader: 'Information', msgModalContent: data, deletedField: [] }),
-        error => this.setState({ msgModalShow: true , msgModalHeader: 'Error', msgModalContent: error, deletedField: [] })
+        error => this.setState({ msgModalShow: true , msgModalHeader: 'Error', msgModalContent: error.message, deletedField: [] })
       )
       .then(() => this.getMasterField() )
       .catch(err => console.log("Fail to call API due to: " + err))
@@ -139,7 +139,7 @@ class MasterFieldList extends Component {
     callGetMasterFieldAPI()
     .then(
       data => this.setState({ masterFields: data }),
-      error => this.setState({ msgModalShow: true , msgModalHeader: 'Information', msgModalContent: error })
+      error => this.setState({ msgModalShow: true , msgModalHeader: 'Information', msgModalContent: error.message })
     )
     .catch(err => console.log("Fail to call API due to: " + err))
 

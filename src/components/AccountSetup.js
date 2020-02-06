@@ -27,7 +27,7 @@ class AccountSetup extends Component {
     callGetServantByIdAPI(servantid)
     .then(
       data => this.setState({ servantname: data[0].servantname, gender: data[0].genderdesc, email: data[0].email, mobile: data[0].mobile1 }),
-      error => this.setState({ msgModalShow: true , msgModalHeader: 'Information', msgModalContent: error })
+      error => this.setState({ msgModalShow: true , msgModalHeader: 'Information', msgModalContent: error.message })
     )
     .catch(err => console.log("Fail to call API due to: " + err))
   }

@@ -2,7 +2,8 @@ import React, { Component } from "react";
 import { Form, Container, Col, Button, Popover, OverlayTrigger } from 'react-bootstrap';
 import { DateConvert } from '../../helpers/function';
 import { MdAddCircleOutline, MdVideoLibrary, MdClose } from 'react-icons/md';
-import {authenticationService} from '../../services/authenticationService';
+import { authenticationService } from '../../services/authenticationService';
+import { callGetPeriodAPI, callGetSSPeriodDateAPI, callGetMasterFieldValuesAPI } from '../../helpers/apicall';
 import { pdf } from '@react-pdf/renderer';
 import MessageModal from '../MessageModal';
 import SongModal from './SongModal';
@@ -14,7 +15,7 @@ class SelectSong extends Component {
     super(props);
 
     this.state = {
-      allperiod: [],
+      periodList: [],
       selectedPeriod: '',
       displayedDates: [],
       selectedDate: '',
@@ -40,13 +41,18 @@ class SelectSong extends Component {
   closeSongModal = () => {
     this.setState({ songModalShow: false })
   }
-
+  
   handlePeriodChange = (e) => {
-    this.setState({ selectedPeriod: e.target.value });
-    this.setState({ displayedDates: [] });
-    this.setState({ selectedSongs: [] });
-    this.setState({ displayedSongs: [] });
-    this.callGetPeriodDateAPI(e.target.value);
+
+    this.setState({ selectedPeriod: e.target.value, displayedDates: [], selectedSongs: [], displayedSongs: [] })
+
+    callGetSSPeriodDateAPI(Number(e.target.value))
+    .then(
+      data => this.setState({ displayedDates: data }),
+      error => this.setState({ selectedPeriod: '', displayedDates: [], msgModalShow: true , msgModalHeader: 'Information', msgModalContent: error.message })
+    )
+    .catch(err => console.log("Fail to call API due to: " + err))
+
   }
 
   handleDateChange = (e) => {
@@ -96,7 +102,7 @@ class SelectSong extends Component {
   }
 
   returnPeriodName = (periodid) => {
-    return this.state.allperiod.filter(period => period.id === Number(periodid))[0].description
+    return this.state.periodList.filter(period => period.id === Number(periodid))[0].description
   }
 
   returnKeyName = (keyid) => {
@@ -222,56 +228,6 @@ class SelectSong extends Component {
     .catch(err => console.log("Fail to call sendemailbyservice API --- " + err))     
   
   }
-  
-  callGetMasterFieldValuesAPI = () => {
-    fetch(process.env.REACT_APP_BACKEND_URL + '/getfieldvalues/Song Key', {
-      method: 'get',
-      headers: {'Content-Type': 'application/json'}
-    })
-    .then (response => {
-      if (response.status === 200){
-        return response.json()
-        .then(data => this.setState({ songkeylists: data }))
-      }
-    })
-    .catch(err => console.log('Fail to call getfieldvalues API: ' + err))     
-  }
-
-  callGetPeriodAPI = () => {
-    fetch(process.env.REACT_APP_BACKEND_URL + '/getperiod', {
-      method: 'get',
-      headers: {'Content-Type': 'application/json'}
-    })
-    .then (response => {
-      if (response.status === 200){
-        return response.json()
-        .then(data => this.setState({ allperiod: data }))
-      }
-      else { 
-        return response.json()
-        .then(data => this.setState({ msgModalShow: true , msgModalHeader: 'Error', msgModalContent: data }))
-      }
-    }) 
-    .catch(err => console.log('Fail to call getperiodapi: ' + err))
-  }
-
-  callGetPeriodDateAPI = (periodid) => {
-    fetch(process.env.REACT_APP_BACKEND_URL + '/getperioddateforselection/'+periodid, {
-      method: 'get',
-      headers: {'Content-Type': 'application/json'}
-    })
-    .then (response => {
-      if (response.status === 200){
-        return response.json()
-        .then(data => this.setState({ displayedDates: data }))
-      }
-      else { 
-        return response.json()
-        .then(data => this.setState({ msgModalShow: true , msgModalHeader: 'Information', msgModalContent: data }))
-      }
-    }) 
-    .catch(err => console.log('Fail to call getperioddateforselection --- ' + err))
-  }
 
   callRoleValidationAPI = (dateid) => {
     let user = authenticationService.currentUser;
@@ -340,9 +296,23 @@ class SelectSong extends Component {
   }
 
   componentDidMount(){
+
     window.scrollTo(0, 0);
-    this.callGetPeriodAPI();
-    this.callGetMasterFieldValuesAPI();
+    
+    callGetPeriodAPI()
+    .then(
+      data => this.setState({ periodList: data }),
+      error => this.setState({ periodList: [], msgModalShow: true , msgModalHeader: 'Information', msgModalContent: error.message })
+    )
+    .catch(err => console.log("Fail to call API due to: " + err))
+
+    callGetMasterFieldValuesAPI('Song Key')
+    .then(
+      data => this.setState({ songkeylists: data }),
+      error => this.setState({ songkeylists: [], msgModalShow: true , msgModalHeader: 'Information', msgModalContent: error.message })
+    )
+    .catch(err => console.log("Fail to call API due to: " + err))
+
   }
 
   render() {
@@ -364,8 +334,8 @@ class SelectSong extends Component {
             >
               <option key="0" value="">Select Period</option>
               {
-                this.state.allperiod.length > 0 &&
-                this.state.allperiod.map((period) => 
+                this.state.periodList.length > 0 &&
+                this.state.periodList.map((period) => 
                   <option key={ period.id } value={ period.id }>
                     { period.description }
                   </option>

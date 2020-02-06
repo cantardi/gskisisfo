@@ -116,7 +116,7 @@ class SongDtl extends Component {
         callAddSongAPI(songObj)
         .then(
           data => this.setState({ msgModalShow: true , msgModalHeader: 'Information', msgModalContent: data }),
-          error => this.setState({ msgModalShow: true , msgModalHeader: 'Error', msgModalContent: error })
+          error => this.setState({ msgModalShow: true , msgModalHeader: 'Error', msgModalContent: error.message })
         )
         .catch(err => console.log("Fail to call API due to: " + err))
       }
@@ -124,7 +124,7 @@ class SongDtl extends Component {
         callUpdateSongAPI(songObj, this.state.songid)
         .then(
           data => this.setState({ msgModalShow: true , msgModalHeader: 'Information', msgModalContent: data }),
-          error => this.setState({ msgModalShow: true , msgModalHeader: 'Error', msgModalContent: error })
+          error => this.setState({ msgModalShow: true , msgModalHeader: 'Error', msgModalContent: error.message })
         )
         .catch(err => console.log("Fail to call API due to: " + err))
       }  
@@ -143,7 +143,7 @@ class SongDtl extends Component {
     ])
     .then(
       data => this.setState({ songLangLists: data[0], songTypeLists: data[1], songKeyLists: data[2] }),
-      //error => this.setState({ genderLists: [], msgModalShow: true , msgModalHeader: 'Information', msgModalContent: error })
+      //error => this.setState({ genderLists: [], msgModalShow: true , msgModalHeader: 'Information', msgModalContent: error.message })
     )
     .catch(err => console.log("Fail to call API due to: " + err))
     

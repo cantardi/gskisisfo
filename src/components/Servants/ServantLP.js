@@ -36,7 +36,7 @@ class ServantLP extends Component {
     callSearchServantAPI(searchServantName, searchServantEmail, searchServantMobile)
     .then(
       data => this.setState({ servantList: data }),
-      error => this.setState({ servantList: [], msgModalShow: true , msgModalHeader: 'Information', msgModalContent: error })
+      error => this.setState({ servantList: [], msgModalShow: true , msgModalHeader: 'Information', msgModalContent: error.message })
     )
     .catch(err => console.log("Fail to call API due to: " + err))
 

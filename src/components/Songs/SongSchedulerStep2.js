@@ -53,7 +53,7 @@ class SongSchedulerStep2 extends Component {
     callSearchSongAPI(searchSongName, '', '', maxLine)
     .then(
       data => this.setState({ filteredSongs: data }),
-      error => this.setState({ filteredSongs: [], msgModalShow: true , msgModalHeader: 'Information', msgModalContent: error })
+      error => this.setState({ filteredSongs: [], msgModalShow: true , msgModalHeader: 'Information', msgModalContent: error.message })
     )
     .catch(err => console.log("Fail to call API due to: " + err))
 

@@ -1,9 +1,10 @@
 import React, { Component } from "react";
 import { Form, Container, Row, Col, Button, Alert } from 'react-bootstrap';
 import { DateConvert } from '../../helpers/function';
+import { authenticationService } from '../../services/authenticationService';
+import { callGetPeriodAPI, callGetSSPeriodDateAPI } from '../../helpers/apicall';
+import { history } from '../../helpers/function'
 import MessageModal from '../MessageModal';
-import {authenticationService} from '../../services/authenticationService';
-import {history} from '../../helpers/function'
 
 class ReqSubstitution extends Component {
   
@@ -11,7 +12,7 @@ class ReqSubstitution extends Component {
     super(props);
 
     this.state = {
-      allperiod: [],
+      periodList: [],
       selectedPeriod: '',
       currentRole: '',
       servantname: '',
@@ -32,15 +33,24 @@ class ReqSubstitution extends Component {
   }
 
   handlePeriodChange = (e) => {
+
     this.setState({ selectedPeriod: e.target.value, displayedDates: [], currentRole: '', variant: '', formErrorMsg: '' });
-    this.callGetPeriodDateAPI(e.target.value);
+
+    callGetSSPeriodDateAPI(Number(e.target.value))
+    .then(
+      data => this.setState({ displayedDates: data }),
+      error => this.setState({ selectedPeriod: '', displayedDates: [], msgModalShow: true , msgModalHeader: 'Information', msgModalContent: error.message })
+    )
+    .catch(err => console.log("Fail to call API due to: " + err))
+
   }
 
   handleDateChange = (e) => {
     
-    var dateid = e.target.value
+    var dateid = Number(e.target.value)
 
     if (dateid !== ''){
+
       this.callRoleValidationAPI(dateid)
       .then(eligibleUser => {
         if (eligibleUser.length === 0){
@@ -69,7 +79,7 @@ class ReqSubstitution extends Component {
   }
 
   returnPeriodName = (periodid) => {
-    return this.state.allperiod.filter(period => period.id === Number(periodid))[0].description
+    return this.state.periodList.filter(period => period.id === Number(periodid))[0].description
   }
 
   validateForm = () => {
@@ -118,52 +128,8 @@ class ReqSubstitution extends Component {
 
   }
 
-  callGetPeriodAPI = () => {
-    fetch(process.env.REACT_APP_BACKEND_URL + '/getperiod', {
-      method: 'get',
-      headers: {'Content-Type': 'application/json'}
-    })
-    .then (response => {
-      if (response.status === 200){
-        return response.json()
-        .then(data => this.setState({ allperiod: data }))
-      }
-      else { 
-        return response.json()
-        .then(data => this.setState({ msgModalShow: true , msgModalHeader: 'Error', msgModalContent: data }))
-      }
-    }) 
-    .catch(err => console.log('Fail to call getperiodapi: ' + err))
-  }
-
-  callGetPeriodDateAPI = (periodid) => {
-    
-    fetch(process.env.REACT_APP_BACKEND_URL + '/getperioddate/'+periodid, {
-      method: 'get',
-      headers: {'Content-Type': 'application/json'}
-    })
-    .then (response => {
-      if (response.status === 200){
-        return response.json()
-        .then(data => data.filter(date => new Date(date.predefineddate) > new Date()))
-        .then(finalDate => {
-          if (finalDate.length > 0){
-            this.setState({ displayedDates: finalDate })
-          }
-          else {
-            this.setState({ selectedPeriod: '', msgModalShow: true , msgModalHeader: 'Information', msgModalContent: 'No dates available for substitution request. Please select other period.' })
-          }
-        })
-      }
-      else { 
-        return response.json()
-        .then(data => this.setState({ msgModalShow: true , msgModalHeader: 'Information', msgModalContent: data }))
-      }
-    }) 
-    .catch(err => console.log('Fail to call getperioddateforselection --- ' + err))
-  }
-
   callRoleValidationAPI = (dateid) => {
+
     let user = authenticationService.currentUser;
     
     return fetch(process.env.REACT_APP_BACKEND_URL + '/getservantbydate/' + dateid, {
@@ -211,9 +177,18 @@ class ReqSubstitution extends Component {
   }
 
   componentDidMount(){
+
     window.scrollTo(0, 0);
-    this.callGetPeriodAPI();
+
+    callGetPeriodAPI()
+    .then(
+      data => this.setState({ periodList: data }),
+      error => this.setState({ periodList: [], msgModalShow: true , msgModalHeader: 'Information', msgModalContent: error.message })
+    )
+    .catch(err => console.log("Fail to call API due to: " + err))
+
     this.setState({servantname: authenticationService.currentUser.source._value.servantname})
+
   }
 
   render() {
@@ -235,8 +210,8 @@ class ReqSubstitution extends Component {
             >
               <option key="0" value="">Select Period</option>
               {
-                this.state.allperiod.length > 0 &&
-                this.state.allperiod.map((period) => 
+                this.state.periodList.length > 0 &&
+                this.state.periodList.map((period) => 
                   <option key={ period.id } value={ period.id }>
                     { period.description }
                   </option>
@@ -311,6 +286,7 @@ class ReqSubstitution extends Component {
         </Container> 
       )
   }
+  
 }
  
 export default ReqSubstitution;

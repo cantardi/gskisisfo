@@ -1,7 +1,7 @@
 export function handleHttpResponse(response) {
   return response.text().then(text => {
       const data = text && JSON.parse(text);
-      
+
       if (!response.ok) {
         const error = data || data.message || response.statusText;
           return Promise.reject(error);
@@ -131,14 +131,34 @@ export function callSearchPeriodAPI(periodname, periodstatus, description) {
 
 }
 
+export function callGetPeriodAPI() {
+  
+  const requestOptions = {
+    method: 'GET',
+    headers: {'Content-Type': 'application/json'}
+  }
+
+  return fetch(process.env.REACT_APP_BACKEND_URL + '/getperiod', requestOptions).then(handleHttpResponse)
+}
+
 export function callGetPeriodDateAPI(periodId) {
   
   const requestOptions = {
-    method: 'get',
+    method: 'GET',
     headers: {'Content-Type': 'application/json'}
   }
 
   return fetch(process.env.REACT_APP_BACKEND_URL + '/getperioddate/' + periodId, requestOptions).then(handleHttpResponse)
+}
+
+export function callGetSSPeriodDateAPI(periodId) {
+  
+  const requestOptions = {
+    method: 'GET',
+    headers: {'Content-Type': 'application/json'}
+  }
+
+  return fetch(process.env.REACT_APP_BACKEND_URL + '/getperioddateforss/' + periodId, requestOptions).then(handleHttpResponse)
 }
 
 export function callAddPeriodAPI(period, convertedDays) {

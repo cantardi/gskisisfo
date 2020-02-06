@@ -38,7 +38,7 @@ class SongLP extends Component {
     callSearchSongAPI(searchSongName, searchSongType, searchComposer, maxLine)
     .then(
       data => this.setState({ songList: data }),
-      error => this.setState({ songList: [], msgModalShow: true , msgModalHeader: 'Information', msgModalContent: error })
+      error => this.setState({ songList: [], msgModalShow: true , msgModalHeader: 'Information', msgModalContent: error.message })
     )
     .catch(err => console.log("Fail to call API due to: " + err))
 

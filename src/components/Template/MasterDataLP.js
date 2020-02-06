@@ -149,7 +149,7 @@ class MasterDataLP extends Component {
       callAddFieldValueAPI(newFieldValue)
       .then(
         data => this.setState({ msgModalShow: true , msgModalHeader: 'Information', msgModalContent: data, addedFieldValues: [] }),
-        error => this.setState({ msgModalShow: true , msgModalHeader: 'Error', msgModalContent: error, addedFieldValues: [] })
+        error => this.setState({ msgModalShow: true , msgModalHeader: 'Error', msgModalContent: error.message, addedFieldValues: [] })
       )
       .then(() => this.getMasterFieldValue(this.state.fieldId) )
       .catch(err => console.log("Fail to call API due to: " + err))
@@ -163,7 +163,7 @@ class MasterDataLP extends Component {
       callDeleteFieldValueAPI(deletedFieldValues)
       .then(
         data => this.setState({ msgModalShow: true , msgModalHeader: 'Information', msgModalContent: data, deletedFieldValues: [] }),
-        error => this.setState({ msgModalShow: true , msgModalHeader: 'Error', msgModalContent: error, deletedFieldValues: [] })
+        error => this.setState({ msgModalShow: true , msgModalHeader: 'Error', msgModalContent: error.message, deletedFieldValues: [] })
       )
       .then(() => this.getMasterFieldValue(this.state.fieldId) )
       .catch(err => console.log("Fail to call API due to: " + err))
@@ -178,7 +178,7 @@ class MasterDataLP extends Component {
       callUpdateFieldValueAPI(updatedFieldRows)
       .then(
         data => this.setState({ msgModalShow: true , msgModalHeader: 'Information', msgModalContent: data, updateFlag: false }),
-        error => this.setState({ msgModalShow: true , msgModalHeader: 'Error', msgModalContent: error, updateFlag: false })
+        error => this.setState({ msgModalShow: true , msgModalHeader: 'Error', msgModalContent: error.message, updateFlag: false })
       )
       .then(() => this.getMasterFieldValue(this.state.fieldId) )
       .catch(err => console.log("Fail to call API due to: " + err))
@@ -205,7 +205,7 @@ class MasterDataLP extends Component {
     callGetFieldDetailsAPI(fieldId)
     .then(
       data => this.setState({ fieldDetails: data }),
-      error => this.setState({ fidleDetails: [], msgModalShow: true , msgModalHeader: 'Information', msgModalContent: error })
+      error => this.setState({ fidleDetails: [], msgModalShow: true , msgModalHeader: 'Information', msgModalContent: error.message })
     )
     .catch(err => console.log("Fail to call API due to: " + err))
 
@@ -216,7 +216,7 @@ class MasterDataLP extends Component {
     callGetMasterFieldAPI()
     .then(
       data => this.setState({ masterFields: data }),
-      error => this.setState({ msgModalShow: true , msgModalHeader: 'Information', msgModalContent: error })
+      error => this.setState({ msgModalShow: true , msgModalHeader: 'Information', msgModalContent: error.message })
     )
     .catch(err => console.log("Fail to call API due to: " + err))
 

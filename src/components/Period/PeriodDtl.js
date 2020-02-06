@@ -114,7 +114,7 @@ class PeriodDtl extends Component {
         callAddPeriodAPI(period, convertedDays)
         .then(
           data => this.setState({ msgModalShow: true , msgModalHeader: 'Information', msgModalContent1: data }),
-          error => this.setState({ msgModalShow: true , msgModalHeader: 'Error', msgModalContent1: error })
+          error => this.setState({ msgModalShow: true , msgModalHeader: 'Error', msgModalContent1: error.message })
         )
         .catch(err => console.log("Fail to call API due to: " + err))
       }
@@ -131,7 +131,7 @@ class PeriodDtl extends Component {
           callUpdatePeriodDtlAPI(period)
           .then(
             data => this.setState({ msgModalShow: true , msgModalHeader: 'Information', msgModalContent1: data }),
-            error => this.setState({ msgModalShow: true , msgModalHeader: 'Error', msgModalContent1: error })
+            error => this.setState({ msgModalShow: true , msgModalHeader: 'Error', msgModalContent1: error.message })
           )
           .catch(err => console.log("Fail to call API due to: " + err))
         }
@@ -156,7 +156,7 @@ class PeriodDtl extends Component {
           data.map(dateList => result.push(new Date(dateList.predefineddate)) )
           this.setState({ selectedDays: result })
         },
-        error => this.setState({ selectedDays: [], msgModalShow: true , msgModalHeader: 'Information', msgModalContent1: error })
+        error => this.setState({ selectedDays: [], msgModalShow: true , msgModalHeader: 'Information', msgModalContent1: error.message })
       )
       .catch(err => console.log("Fail to call API due to: " + err))
     }

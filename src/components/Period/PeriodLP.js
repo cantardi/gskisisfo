@@ -36,7 +36,7 @@ class PeriodLP extends Component {
     callSearchPeriodAPI(searchPeriodName, searchPeriodStatus, searchDescription)
     .then(
       data => this.setState({ periodList: data }),
-      error => this.setState({ periodList: [], msgModalShow: true , msgModalHeader: 'Information', msgModalContent: error })
+      error => this.setState({ periodList: [], msgModalShow: true , msgModalHeader: 'Information', msgModalContent: error.message })
     )
     .catch(err => console.log("Fail to call API due to: " + err))
   }
