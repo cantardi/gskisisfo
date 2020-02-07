@@ -68,6 +68,7 @@ class PeriodLP extends Component {
         
         <DropdownButton 
           className="ma2"
+          bsPrefix="btn-custom"
           title="Action"
           id="dropdown-secondary-button"
           key="PeriodAction"

@@ -267,10 +267,10 @@ class ReqSubstitution extends Component {
 
           <Row>
             <Col className="tr">
-              <Button className="ma1" onClick={ this.submitRequest }> 
+              <Button bsPrefix="btn-custom" className="ma1" onClick={ this.submitRequest }> 
                 Submit
               </Button> 
-              <Button className="ma1" onClick={ ()=>history.push('/SelfService') }>
+              <Button bsPrefix="btn-custom" className="ma1" onClick={ ()=>history.push('/SelfService') }>
                 Cancel
               </Button> 
             </Col>

@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Form, Container, Col } from 'react-bootstrap';
 import { DateConvert } from '../../helpers/function';
+import { callGetPeriodAPI, callGetPeriodDateAPI } from '../../helpers/apicall';
 import { history } from '../../helpers/function';
 import MessageModal from '../MessageModal';
 
@@ -10,7 +11,7 @@ class ViewSchedule extends Component {
     super(props);
 
     this.state = {
-      allperiod: [],
+      periodList: [],
       selectedPeriod: 0,
       displayedDates: [],
       selectedDate: '',
@@ -34,66 +35,39 @@ class ViewSchedule extends Component {
     this.setState({ displayedDates: [] });
     this.setState({ selectedSongs: [] });
     this.setState({ displayedSongs: [] });
-    this.callGetPeriodDateAPI(e.target.value);
+    
+    callGetPeriodDateAPI(Number(e.target.value))
+    .then(
+      data => this.setState({ displayedDates: data }),
+      error => this.setState({ selectedPeriod: '', displayedDates: [], msgModalShow: true , msgModalHeader: 'Information', msgModalContent: error.message })
+    )
+    .catch(err => console.log("Fail to call API due to: " + err))
   }
 
   handleViewTypeChange = (e) => {
     this.setState({ viewType: e.target.value })
 
     if (e.target.value === '1'){
-      let sentPeriod = this.state.allperiod.filter(period => period.id === this.state.selectedPeriod)
+      let sentPeriod = this.state.periodList.filter(period => period.id === this.state.selectedPeriod)
       history.push('MaintainSchedule', { period: sentPeriod[0], PAGE_PARENT: 'ViewSchedule', editFlag: false, notifyFlag: false })
     }
-  }
-  
-  callGetPeriodAPI = () => {
-
-    fetch(process.env.REACT_APP_BACKEND_URL + '/getperiod', {
-      method: 'get',
-      headers: {'Content-Type': 'application/json'}
-    })
-    .then (response => {
-      if (response.status === 200){
-        return response.json()
-        .then(data => this.setState({ allperiod: data }))
-      }
-      else { 
-        return response.json()
-        .then(data => this.setState({ msgModalShow: true , msgModalHeader: 'Information', msgModalContent: data }))
-      }
-    }) 
-    .catch(err => console.log('Fail to call getperiod API --- ' + err))
-
-  }
-  
-  callGetPeriodDateAPI = (id) => {
-
-    fetch(process.env.REACT_APP_BACKEND_URL + '/getperioddate/'+id, {
-      method: 'get',
-      headers: {'Content-Type': 'application/json'}
-    })
-    .then (response => {
-      if (response.status === 200){
-        return response.json()
-        .then(data => this.setState({ displayedDates: data }))
-      }
-      else { 
-        return response.json()
-        .then(data => this.setState({ msgModalShow: true , msgModalHeader: 'Information', msgModalContent: data }))
-      }
-    }) 
-    .catch(err => console.log('Fail to call getperioddate API --- ' + err))
   }
 
   openServiceDate = (id, predefineddate) => {
     let dates = {id, predefineddate}
-    let sentPeriod = this.state.allperiod.filter(period => period.id === this.state.selectedPeriod)
+    let sentPeriod = this.state.periodList.filter(period => period.id === this.state.selectedPeriod)
     history.push('MaintainSchedule', { selectedDate: dates, PAGE_PARENT: 'ViewSchedule', period: sentPeriod[0], editFlag: false, notifyFlag: false })
   }
   
   componentDidMount(){
     window.scrollTo(0, 0);
-    this.callGetPeriodAPI();
+        
+    callGetPeriodAPI()
+    .then(
+      data => this.setState({ periodList: data }),
+      error => this.setState({ periodList: [], msgModalShow: true , msgModalHeader: 'Information', msgModalContent: error.message })
+    )
+    .catch(err => console.log("Fail to call API due to: " + err))
   }
 
   render() {
@@ -115,8 +89,8 @@ class ViewSchedule extends Component {
             >
               <option key="0" value="0">--Select Period--</option>
               {
-                this.state.allperiod.length > 0 &&
-                this.state.allperiod.map((period) => 
+                this.state.periodList.length > 0 &&
+                this.state.periodList.map((period) => 
                   <option key={ period.id } value={ period.id }>
                     { period.description }
                   </option>

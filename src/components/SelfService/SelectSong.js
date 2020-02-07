@@ -458,7 +458,7 @@ class SelectSong extends Component {
               {
                 this.state.selectedDate !== ''? 
                 (
-                  <Button className="ma1" onClick={ this.openSongModal }> 
+                  <Button bsPrefix="btn-custom" className="ma1" onClick={ this.openSongModal }> 
                     Add from Master List
                   </Button> 
                 ):
@@ -470,7 +470,7 @@ class SelectSong extends Component {
               {
                 this.state.selectedSongs.length > 0?
                 (
-                  <Button className="ma1" onClick={ this.submitSongSelection }>
+                  <Button bsPrefix="btn-custom" className="ma1" onClick={ this.submitSongSelection }>
                     Submit
                   </Button> 
                 ):

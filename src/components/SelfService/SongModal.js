@@ -135,7 +135,7 @@ class SongModal extends Component {
         </Modal.Body>
 
         <Modal.Footer>
-          <Button onClick={this.closeSongModal}>OK</Button>
+          <Button bsPrefix="btn-custom" onClick={this.closeSongModal}>OK</Button>
         </Modal.Footer>
         
       </Modal>	

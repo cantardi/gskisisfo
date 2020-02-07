@@ -53,8 +53,8 @@ class ServantSearch extends Component {
 						</Col>
 					</Form.Group>
 
-					<Button className="ma1" onClick={ this.props.searchServant }>Search</Button>
-					<Button className="ma1" onClick={ this.props.clearSearch }>Clear</Button>
+					<Button bsPrefix="btn-custom" className="ma1" onClick={ this.props.searchServant }>Search</Button>
+					<Button bsPrefix="btn-custom" className="ma1" onClick={ this.props.clearSearch }>Clear</Button>
 
 				</Form>
 			</Container>   

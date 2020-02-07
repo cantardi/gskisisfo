@@ -173,10 +173,10 @@ class PeriodDtl extends Component {
 
         <Row>
           <Col className="tr">
-            <Button className="ma1" onClick={ this.savePeriod } disabled={ !this.state.overallChangeFlag }>
+            <Button className="ma1" bsPrefix="btn-custom" onClick={ this.savePeriod } disabled={ !this.state.overallChangeFlag }>
               Save
             </Button> 
-            <Button className="ma1" onClick={ ()=>history.push(this.PAGE_PARENT) }>  
+            <Button className="ma1" bsPrefix="btn-custom" onClick={ ()=>history.push(this.PAGE_PARENT) }>  
               Cancel
             </Button> 
           </Col>
@@ -234,7 +234,7 @@ class PeriodDtl extends Component {
               />
             </Modal.Body>
             <Modal.Footer>
-              <Button onClick={ this.dateModalClose }>OK</Button>
+              <Button bsPrefix="btn-custom" onClick={ this.dateModalClose }>OK</Button>
             </Modal.Footer>
           </Modal>
             
@@ -242,7 +242,7 @@ class PeriodDtl extends Component {
             <Col>Selected dates *</Col>
             <Col className="tr">
               <Button 
-                variant="primary"
+                bsPrefix="btn-custom"
                 onClick={ ()=>this.setState({ dateModalShow: true }) }
               >
                 Select dates

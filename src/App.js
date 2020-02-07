@@ -71,7 +71,7 @@ class App extends Component {
         <Router history={history}>
           {currentUser &&
             <Navbar collapseOnSelect expand="lg" variant="dark" style={{backgroundColor: '#10389e'}}>
-              <Navbar.Brand as={Link} eventKey="1" to="/" style={{color: '#ffd700'}}>
+              <Navbar.Brand as={Link} to="/" style={{color: '#ffd700'}}>
                 <img
                   alt="ft"
                   src={require('./assets/logo.png')}
@@ -84,12 +84,12 @@ class App extends Component {
               <Navbar.Toggle aria-controls="responsive-navbar-nav" />
               <Navbar.Collapse id="responsive-navbar-nav">
                 <Nav className="mr-auto">
-                  <Nav.Link as={Link} eventKey="2" className="nav-link dim" style={{color: '#ffd700'}} to="/Calendar">Calendar</Nav.Link>
-                  <Nav.Link as={Link} eventKey="3" className="nav-link dim" style={{color: '#ffd700'}} to="/SelfService">Self Service</Nav.Link>
+                  <Nav.Link as={Link} eventKey="1" className="nav-link dim" style={{color: '#ffd700'}} to="/Calendar">Calendar</Nav.Link>
+                  <Nav.Link as={Link} eventKey="2" className="nav-link dim" style={{color: '#ffd700'}} to="/SelfService">Self Service</Nav.Link>
                   { isAdmin && <Nav.Link as={Link} eventKey="4" className="nav-link dim" style={{color: '#ffd700'}} to="/Administration">Administration</Nav.Link> }
                 </Nav>
                 <Nav>
-                  <Nav.Link as={Link} eventKey="4" className="nav-link dim" style={{color: '#ffd700'}} to="/AccountSetup">Account</Nav.Link>
+                  <Nav.Link as={Link} eventKey="3" className="nav-link dim" style={{color: '#ffd700'}} to="/AccountSetup">Account</Nav.Link>
                   <div className="nav-link pointer dim" style={{color: '#ffd700'}} onClick={this.signOut}>Sign Out</div>
                 </Nav>
               </Navbar.Collapse>

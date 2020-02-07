@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Container, Form, Row, Col, Button, Table, FormControl, InputGroup, Modal } from 'react-bootstrap';
+import { Container, Form, Row, Col, Alert, Button, Table, FormControl, InputGroup, Modal } from 'react-bootstrap';
 import { callGetMasterFieldAPI, callGetFieldDetailsAPI, callAddFieldValueAPI, callDeleteFieldValueAPI, callUpdateFieldValueAPI } from '../../helpers/apicall';
 import { history } from '../../helpers/function'
 import MessageModal from '../MessageModal';
@@ -24,6 +24,8 @@ class MasterDataLP extends Component {
       msgModalHeader: '',
       msgModalContent: '',
       btnSaveDisabled: true,
+      errorText: '',
+      variant: '',
     }
   }
 
@@ -34,7 +36,7 @@ class MasterDataLP extends Component {
   }
 
   handleInputChange = (e) => {
-    this.setState({ [e.target.name]: e.target.value });
+    this.setState({ [e.target.name]: e.target.value, variant: '', errorText: '' });
   }
 
   handleFieldChange = (e) => {
@@ -77,45 +79,55 @@ class MasterDataLP extends Component {
     const updatedIndex = fieldDetails.map(field => field.id).indexOf(fieldid);
     fieldDetails.splice(updatedIndex , 1, updatedfield)
     
-    this.setState({ fieldDetails, updateFlag: true })
+    this.setState({ fieldDetails, updateFlag: true, variant: '', errorText: '' })
+    
     this.enableSaveButton();
   }
 
   addFieldValue = () => {
-    const { fieldDetails, addedFieldValues } = this.state;
 
-    let existingIdArray = []
-    let maxId = ''
+    const { fieldDetails, addedFieldValues, newDescription, newShortDescr } = this.state;
 
-    let prevAddedFieldValue = fieldDetails.filter(field => field.id.toString().includes('n'))
+    if (newDescription !== '' && newShortDescr !== ''){
+      
+      let existingIdArray = []
+      let maxId = ''
 
-    if (prevAddedFieldValue.length === 0) {
-      existingIdArray.push(0)
-    }          
-    else {
-      prevAddedFieldValue.map(field => existingIdArray.push( Number(field.id.toString().substring(1, field.id.length)) ))
-    }        
+      let prevAddedFieldValue = fieldDetails.filter(field => field.id.toString().includes('n'))
 
-    maxId = Math.max(...existingIdArray)
+      if (prevAddedFieldValue.length === 0) {
+        existingIdArray.push(0)
+      }          
+      else {
+        prevAddedFieldValue.map(field => existingIdArray.push( Number(field.id.toString().substring(1, field.id.length)) ))
+      }        
 
-    let newFieldValue = { 
-      fieldname: this.state.addFor,
-      id: 'n'+(maxId+1), 
-      fieldid: this.state.fieldId,
-      status: 'A',
-      description: this.state.newDescription,
-      shortdescr: this.state.newShortDescr,
-      flag: false
+      maxId = Math.max(...existingIdArray)
+
+      let newFieldValue = { 
+        fieldname: this.state.addFor,
+        id: 'n'+(maxId+1), 
+        fieldid: this.state.fieldId,
+        status: 'A',
+        description: this.state.newDescription,
+        shortdescr: this.state.newShortDescr,
+        flag: false
+      }
+
+      fieldDetails.push(newFieldValue);
+      addedFieldValues.push(newFieldValue);
+
+      this.setState({ fieldDetails });
+      this.setState({ addedFieldValues });
+      this.setState({ newDescription: '', newShortDescr: '' })
+      this.setState({ fieldModalShow: false })  
+      this.enableSaveButton();
+
     }
-
-    fieldDetails.push(newFieldValue);
-    addedFieldValues.push(newFieldValue);
-
-    this.setState({ fieldDetails });
-    this.setState({ addedFieldValues });
-    this.setState({ newDescription: '', newShortDescr: '' })
-    this.setState({ fieldModalShow: false })  
-    this.enableSaveButton();
+    else {
+      this.setState({ variant: 'danger', errorText: "Field description/short description is empty. Please fill in the name to proceed." })
+    }
+    
   }
 
   removeFieldValue = (objid) => {
@@ -145,7 +157,7 @@ class MasterDataLP extends Component {
   
       let newFieldValue = []
       addedFieldValues.map(newvalue => newFieldValue.push(Object ({fieldid: newvalue.fieldid, status: newvalue.status, description: newvalue.description, shortdescr: newvalue.shortdescr}) ))
-  
+      
       callAddFieldValueAPI(newFieldValue)
       .then(
         data => this.setState({ msgModalShow: true , msgModalHeader: 'Information', msgModalContent: data, addedFieldValues: [] }),
@@ -177,14 +189,11 @@ class MasterDataLP extends Component {
 
       callUpdateFieldValueAPI(updatedFieldRows)
       .then(
-        data => this.setState({ msgModalShow: true , msgModalHeader: 'Information', msgModalContent: data, updateFlag: false }),
+        data => this.setState({ msgModalShow: true , msgModalHeader: 'Information', msgModalContent: data, updateFlag: false, fieldDetails: [] }),
         error => this.setState({ msgModalShow: true , msgModalHeader: 'Error', msgModalContent: error.message, updateFlag: false })
       )
       .then(() => this.getMasterFieldValue(this.state.fieldId) )
       .catch(err => console.log("Fail to call API due to: " + err))
-      
-      fieldDetails.map(field => field.flag = false)
-      this.setState({ fieldDetails })
 
     }
 
@@ -271,7 +280,7 @@ class MasterDataLP extends Component {
             {
               this.state.fieldId !== ''
               ?
-              <Button className="ma1" onClick={ ()=>this.setState({ fieldModalShow: true }) } >
+              <Button bsPrefix="btn-custom" className="ma1" onClick={ ()=>this.setState({ fieldModalShow: true }) } >
                 Add
               </Button>
               :
@@ -315,7 +324,7 @@ class MasterDataLP extends Component {
                     </FormControl>
                   </td>
                   <td className="w-10">
-                  <Button className="ma1" onClick={ ()=>this.removeFieldValue(fieldDetail.id) } >
+                  <Button bsPrefix="btn-custom" className="ma1" onClick={ ()=>this.removeFieldValue(fieldDetail.id) } >
                     Remove
                   </Button>              
                   </td>
@@ -349,9 +358,10 @@ class MasterDataLP extends Component {
 								onChange={ this.handleInputChange } 
               />
             </InputGroup>
+            <Alert variant={this.state.variant}>{ this.state.errorText }</Alert>
           </Modal.Body>
           <Modal.Footer>
-            <Button onClick={ this.addFieldValue }>OK</Button>
+            <Button bsPrefix="btn-custom" onClick={ this.addFieldValue }>OK</Button>
           </Modal.Footer>
         </Modal>
 

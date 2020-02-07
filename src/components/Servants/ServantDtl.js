@@ -145,10 +145,10 @@ class ServantDtl extends Component {
 
         <Row>
           <Col className="tr">
-            <Button className="ma1" onClick={ this.saveServant }> 
+            <Button bsPrefix="btn-custom" className="ma1" onClick={ this.saveServant }> 
               Save
             </Button> 
-            <Button className="ma1" onClick={ ()=>history.push(this.PAGE_PARENT) }>
+            <Button bsPrefix="btn-custom" className="ma1" onClick={ ()=>history.push(this.PAGE_PARENT) }>
               Cancel
             </Button> 
           </Col>

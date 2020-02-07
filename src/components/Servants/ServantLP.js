@@ -72,6 +72,7 @@ class ServantLP extends Component {
           id="dropdown-secondary-button"
           key="servantAction"
           align="right"
+          bsPrefix="btn-custom"
         >          
           <Dropdown.Item onClick={ this.addServant }>Add New Servant</Dropdown.Item>
           <Dropdown.Item onClick={ ()=> history.push('ServantSchedulerMstr') }>Schedule Servant</Dropdown.Item>

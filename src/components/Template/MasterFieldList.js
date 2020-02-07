@@ -27,7 +27,7 @@ class MasterFieldList extends Component {
   }
   
   handleChange = (e) => {
-    this.setState({ [e.target.name]: e.target.value });
+    this.setState({ [e.target.name]: e.target.value, variant: '', errorText: '' });
   }
 
   msgModalClose = () => {
@@ -46,8 +46,9 @@ class MasterFieldList extends Component {
 
   addField = () => {
     
-    if (this.state.newFieldName !== ''){
-      const { masterFields, addedField } = this.state;
+    const { masterFields, addedField, newFieldName } = this.state;
+
+    if (newFieldName !== ''){
 
       let existingIdArray = []
       let maxId = ''
@@ -165,7 +166,9 @@ class MasterFieldList extends Component {
             >  
               Save
             </Button> 
-            <Button className="ma1" bsPrefix="btn-custom" onClick={ ()=>history.push('Administration') }>  
+            <Button className="ma1" 
+                    bsPrefix="btn-custom" 
+                    onClick={ ()=>history.push('Administration') }>  
               Cancel
             </Button> 
           </Col>
@@ -213,7 +216,7 @@ class MasterFieldList extends Component {
             <Alert variant={this.state.variant}>{ this.state.errorText }</Alert>
           </Modal.Body>
           <Modal.Footer>
-            <Button onClick={ this.addField }>OK</Button>
+            <Button bsPrefix="btn-custom" onClick={ this.addField }>OK</Button>
           </Modal.Footer>
         </Modal>
 
