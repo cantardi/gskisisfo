@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
 import { Table, Button, OverlayTrigger, Modal, InputGroup, FormControl, Row, Col, Popover } from 'react-bootstrap';
-import { DateConvert } from '../../helpers/function';
-import MessageModal from '../MessageModal';
 import { MdSearch, MdAddCircleOutline, MdVideoLibrary, MdClose } from 'react-icons/md';
+import { DateConvert } from '../../helpers/function';
+import { callSearchSongAPI, callAddSongSchedAPI, callDeleteSongSchedAPI } from '../../helpers/apicall';
+import MessageModal from '../MessageModal';
 
 class ScheduleSongEditModal extends Component {
 
@@ -136,7 +137,7 @@ class ScheduleSongEditModal extends Component {
         </Modal.Body>
 
         <Modal.Footer>
-          <Button onClick={this.songModalClose}>OK</Button>
+          <Button bsPrefix="btn-custom" onClick={this.songModalClose}>OK</Button>
         </Modal.Footer>
         
       </Modal>
@@ -144,8 +145,17 @@ class ScheduleSongEditModal extends Component {
   }
 
   searchSong = () => {
-    this.setState({ filteredSongs: [] });
-    this.callSearchSongAPI();
+    
+    const { searchSongName } = this.state
+    const maxLine = 10;
+
+    callSearchSongAPI(searchSongName, '', '', maxLine)
+    .then(
+      data => this.setState({ filteredSongs: data }),
+      error => this.setState({ filteredSongs: [], msgModalShow: true , msgModalHeader: 'Information', msgModalContent: error.message })
+    )
+    .catch(err => console.log("Fail to call API due to: " + err))
+    
   }
 
   openVideo = (videourl) => {
@@ -192,7 +202,7 @@ class ScheduleSongEditModal extends Component {
 
   removeSong = (id, reactobjid) => {
  
-    if (window.confirm('Are you sure you wish to delete this item?')) {
+    if (window.confirm('Are you sure to delete this item?')) {
       const { selectedSongs, addedSongs, deletedSongs } = this.state;
 
       if (id !== '') {
@@ -219,96 +229,37 @@ class ScheduleSongEditModal extends Component {
     const { addedSongs, deletedSongs } = this.state
 
     if (addedSongs.length > 0){
-      this.callAddSongSchedAPI();
-    }
 
-    if (deletedSongs.length > 0){
-      this.callDeleteSongSchedAPI();
-    }
-    
-    this.props.reloadData(this.props.periodid)
-    this.props.onHide()
-  }
-
-  callSearchSongAPI = () => {
-
-    fetch(process.env.REACT_APP_BACKEND_URL + '/searchsong', {
-      method: 'post',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({
-        songname: this.state.searchSongName,
-        songtype: '',
-        composer: '',
-        limit: 10
-      })
-    })
-      .then (response => {
-        if (response.status === 200){
-          return response.json()
-          .then(data => this.setState({ filteredSongs: data }))
-        }
-        else { 
-          return response.json()
-          .then(data => this.setState({ msgModalShow: true , msgModalHeader: 'Error', msgModalContent: data }))
-        }
-      }) 
-      .catch(err => console.log('Fail to call searchsong API: ' + err))
-
-  }
-
-  callAddSongSchedAPI = () => {
-    
-    const finalAddLists = this.state.addedSongs.map(song =>
-      ({
+      const finalAddLists = this.state.addedSongs.map(song => ({
         periodid: this.props.periodid,
         dateid: song.dateid,
         songid: song.songid
-      })
-    )
+      }))
+      
+      callAddSongSchedAPI(finalAddLists)
+      .then(
+        data => this.setState({ msgModalShow: true , msgModalHeader: 'Information', msgModalContent: data, addedSongs: [] }),
+        error => this.setState({ msgModalShow: true , msgModalHeader: 'Error', msgModalContent: error.message, addedSongs: [] })
+      )
+      .catch(err => console.log("Fail to call API due to: " + err))
+      
+    }
 
-    fetch(process.env.REACT_APP_BACKEND_URL + '/addsongschedule', {
-      method: 'post',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({
-        songSchedule: finalAddLists
-      })
-    })
-      .then (response => {
-        if (response.status === 200){
-          return response.json()
-          .then(data => this.setState({ msgModalShow: true , msgModalHeader: 'Information', msgModalContent: data, addedSongs: [] }, this.props.onHide()))
-        }
-        else { 
-          return response.json()
-          .then(data => this.setState({ msgModalShow: true , msgModalHeader: 'Error', msgModalContent: data, addedSongs: [] }, this.props.onHide()))
-        }
-      }) 
-      .catch(err => console.log('Fail to call addsongschedule API --- ' + err))
+    if (deletedSongs.length > 0){
+      
+      const finalDeleteLists = this.state.deletedSongs.map(song => song.id)
 
-  }
-
-  callDeleteSongSchedAPI = () => {
+      callDeleteSongSchedAPI(finalDeleteLists)
+      .then(
+        data => this.setState({ msgModalShow: true , msgModalHeader: 'Information', msgModalContent: data, deletedSongs: [] }),
+        error => this.setState({ msgModalShow: true , msgModalHeader: 'Error', msgModalContent: error.message, deletedSongs: [] })
+      )
+      .catch(err => console.log("Fail to call API due to: " + err))
+      
+    }
     
-    const finalDeleteLists = this.state.deletedSongs.map(song => song.id)
-
-    fetch(process.env.REACT_APP_BACKEND_URL + '/deletesongschedule', {
-      method: 'delete',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({
-        deletedLists: finalDeleteLists
-      })
-    })
-      .then (response => {
-        if (response.status === 200){
-          return response.json()
-          .then(data => this.setState({ msgModalShow: true , msgModalHeader: 'Information', msgModalContent: data, deletedSongs: [] }, this.props.onHide()))
-        }
-        else { 
-          return response.json()
-          .then(data => this.setState({ msgModalShow: true , msgModalHeader: 'Error', msgModalContent: data, deletedSongs: [] }, this.props.onHide()))
-        }
-      }) 
-      .catch(err => console.log('Fail to call deletesongschedule API --- ' + err))
+    //this.props.reloadData(this.props.periodid)
+    //this.props.onHide()
   }
 
   componentDidMount() {
@@ -355,6 +306,7 @@ class ScheduleSongEditModal extends Component {
                     
                     <th>
                       <Button key={ 'btn'+date.id } 
+                        bsPrefix="btn-custom" 
                         id={ date.id } 
                         onClick={ this.songModalOpen } 
                         disabled={ this.disableSelectButton(date.predefineddate) }
@@ -414,8 +366,8 @@ class ScheduleSongEditModal extends Component {
         </Modal.Body>
 
         <Modal.Footer>
-          <Button onClick={ this.saveEditedSchedule } disabled={ this.disableSaveButton() }>Save</Button>
-          <Button onClick={ this.props.onHide }>Cancel</Button>
+          <Button bsPrefix="btn-custom" onClick={ this.saveEditedSchedule } disabled={ this.disableSaveButton() }>Save</Button>
+          <Button bsPrefix="btn-custom" onClick={ this.props.onHide }>Cancel</Button>
         </Modal.Footer>
         
       </Modal>	

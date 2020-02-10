@@ -3,7 +3,6 @@ import { Container, Table, Button, Row, Col, Alert } from 'react-bootstrap';
 import { DateConvert } from '../../helpers/function';
 import { PDFDownloadLink } from '@react-pdf/renderer';
 import { MdVideoLibrary } from 'react-icons/md';
-import { history } from '../../helpers/function'
 import SongPdf from './R_SongPdf';
 import ScheduleSongEditModal from './R_ScheduleSongEditModal';
 
@@ -63,7 +62,7 @@ class ScheduleSong extends Component {
             {
               this.props.editDisplayFlag === true?
               (
-                <Button className="ma1" onClick={ this.editSchedule }>
+                <Button bsPrefix="btn-custom" className="ma1" onClick={ this.editSchedule }>
                   Edit
                 </Button>
               ): 
@@ -71,22 +70,18 @@ class ScheduleSong extends Component {
                 null
               )
             }
-      
-            <PDFDownloadLink className="btn btn-primary ma1" 
+            
+            <PDFDownloadLink className="btn-custom ma1"
               document={ <SongPdf periodDates={ this.props.periodDates } 
                           periodName={ this.props.periodName }
                           periodDescr={ this.props.periodDescr }
                           songSchedule={ this.props.songSchedule }
-                        />} 
+                      />} 
               fileName={`Song_${this.props.periodName}.pdf`}
             >
               {({ blob, url, loading, error }) => (loading ? 'Loading document...' : 'Download')}
             </PDFDownloadLink>
-
-            <Button className="ma1" onClick={ ()=>history.push(this.props.PAGE_PARENT) }>  
-              Return to Search
-            </Button>
-
+            
           </Col>
         </Row>
         

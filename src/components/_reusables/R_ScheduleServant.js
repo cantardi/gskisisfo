@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { Container, Table, Button, Row, Col, Alert } from 'react-bootstrap';
 import { DateConvert } from '../../helpers/function';
+import { callGetServantAPI, callGetMasterFieldValuesAPI } from '../../helpers/apicall';
 import { pdf, PDFDownloadLink } from '@react-pdf/renderer';
-import { history } from '../../helpers/function';
 import ServantPdf from './R_ServantPdf';
 import ScheduleServantEditModal from './R_ScheduleServantEditModal';
 import NotifyServantModal from './R_NotifyServantModal';
@@ -12,6 +12,8 @@ class ScheduleServant extends Component {
   constructor(props){
     super(props)
     this.state = {
+      roleList: [],
+      servantList: [],
       notifyModalShow: false,
       notifyServantList: [],
       fileattachment: '',
@@ -57,11 +59,11 @@ class ScheduleServant extends Component {
   }
 
   sendNotification = () => {
-    
+
     pdf(<ServantPdf periodDates={this.props.periodDates} 
       periodName={this.props.periodName}
       periodDescr={this.props.periodDescr}
-      churchRoles={this.props.churchRoles}
+      churchRoles={this.state.roleList}
       returnServantName={this.returnServantName} />)
       .toBlob()
       .then(data => {
@@ -74,9 +76,10 @@ class ScheduleServant extends Component {
             this.setState({ fileattachment: base64data }, ()=>this.callNotifyServantAPI() )
           }
         }
-      });
-
+    });
+    
     this.notifyModalClose();
+
   }
 
   notifyModalClose = () => {
@@ -131,6 +134,26 @@ class ScheduleServant extends Component {
   
   }
 
+  componentDidMount() {
+    
+    window.scrollTo(0, 0);
+
+    callGetServantAPI()
+    .then(
+      data => this.setState({ servantList: data }),
+      error => console.log(error.message)
+    )
+    .catch(err => console.log("Fail to call API due to: " + err))
+
+    callGetMasterFieldValuesAPI('Role List')
+    .then(
+      data => this.setState({ roleList: data }),
+      error => console.log(error.message)
+    )
+    .catch(err => console.log("Fail to call API due to: " + err))
+
+  }
+
 	render(){
     
 		return (
@@ -142,7 +165,7 @@ class ScheduleServant extends Component {
             {
               this.props.editDisplayFlag === true? 
               (
-                <Button className="ma1" onClick={ this.editSchedule }>
+                <Button bsPrefix="btn-custom" className="ma1" onClick={ this.editSchedule }>
                   Edit
                 </Button> 
               ):
@@ -151,22 +174,22 @@ class ScheduleServant extends Component {
               )
             }
             
-            <PDFDownloadLink className="btn btn-primary ma1" 
+            <PDFDownloadLink className="btn-custom ma1"
               document={ <ServantPdf periodDates={ this.props.periodDates } 
                           periodName={ this.props.periodName }
                           periodDescr={ this.props.periodDescr }
-                          churchRoles={ this.props.churchRoles }
+                          churchRoles={ this.state.roleList }
                           returnServantName={ this.returnServantName }
-                        />} 
+                      />} 
               fileName={`Servant_${this.props.periodName}.pdf`} 
             >
               {({ blob, url, loading, error }) => (loading ? 'Loading document...' : 'Download')}
             </PDFDownloadLink>
-
+          
             {
               this.props.notifyDisplayFlag === true?
               (
-                <Button className="ma1" onClick={ this.loadServantToNotify }>
+                <Button bsPrefix="btn-custom" className="ma1" onClick={ this.loadServantToNotify }>
                   Notify
                 </Button> 
               ):
@@ -174,10 +197,6 @@ class ScheduleServant extends Component {
                 null
               )
             }
-            
-            <Button className="ma1" onClick={ ()=>history.push(this.props.PAGE_PARENT) }>  
-              Return to Search
-            </Button>
 
           </Col>
         </Row>
@@ -203,8 +222,8 @@ class ScheduleServant extends Component {
                   <Table size="sm" responsive className="f6 tl">
                     <tbody>
                     {
-                      this.props.churchRoles.length > 0 &&
-                      this.props.churchRoles.map(role => {
+                      this.state.roleList.length > 0 &&
+                      this.state.roleList.map(role => {
                         return(
                           <tr key={ "role-"+role.id }>
                             <th className="w-50">
@@ -233,9 +252,9 @@ class ScheduleServant extends Component {
           onHide={ this.editServantSchedModalClose }
           displayedDates={ this.props.periodDates }
           selectedServants={ this.props.servantSchedule }
-          servantList = { this.props.servantList }
+          servantList = { this.state.servantList }
           periodid = { this.props.periodid }
-          churchRoles = { this.props.churchRoles }
+          churchRoles = { this.state.roleList }
           reloadData = { this.props.reloadData }
         />
 

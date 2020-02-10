@@ -42,7 +42,7 @@ class NotifyServantModal extends Component {
           
         </Modal.Body>
         <Modal.Footer>
-          <Button onClick={ this.props.sendNotification }>Submit</Button>
+          <Button bsPrefix="btn-custom" onClick={ this.props.sendNotification }>Submit</Button>
         </Modal.Footer>
       </Modal>
     )

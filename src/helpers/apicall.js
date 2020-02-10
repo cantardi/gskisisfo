@@ -399,8 +399,20 @@ export function callAddServantSchedAPI(servantSchedule)
   
 }
 
-export function callAddSongSchedAPI(songSchedule) 
-{
+export function callDeleteServantSchedAPI(deletedSchedule) {
+    
+  const requestOptions = {
+    method: 'DELETE',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({
+      deletedLists: deletedSchedule
+    })
+  }
+  return fetch(process.env.REACT_APP_BACKEND_URL + '/deleteservantschedule', requestOptions).then(handleHttpResponse)
+
+}
+
+export function callAddSongSchedAPI(songSchedule) {
 
   const requestOptions = {
     method: 'POST',
@@ -411,5 +423,74 @@ export function callAddSongSchedAPI(songSchedule)
   }
 
   return fetch(process.env.REACT_APP_BACKEND_URL + '/addsongschedule', requestOptions).then(handleHttpResponse)
+  
+}
+
+export function callDeleteSongSchedAPI(deletedLists) {
+    
+  const requestOptions = {
+    method: 'DELETE',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({
+      deletedLists: deletedLists
+    })
+  }
+
+  return fetch(process.env.REACT_APP_BACKEND_URL + '/deletesongschedule', requestOptions).then(handleHttpResponse)
+
+}
+
+export function callGetServantScheduleAPI(periodid) {
+
+  const requestOptions = {
+    method: 'GET',
+    headers: {'Content-Type': 'application/json'}
+  }
+
+  return fetch(process.env.REACT_APP_BACKEND_URL + '/getservantschedule/'+periodid, requestOptions).then(handleHttpResponse)
+ 
+}
+
+export function callGetSongScheduleAPI(periodid) {
+  
+  const requestOptions = {
+    method: 'GET',
+    headers: {'Content-Type': 'application/json'}
+  }
+
+  return fetch(process.env.REACT_APP_BACKEND_URL + '/getsongschedule/'+periodid, requestOptions).then(handleHttpResponse)
+
+}
+
+export function callGetServantByDateAPI(dateid) {
+
+  const requestOptions = {
+    method: 'GET',
+    headers: {'Content-Type': 'application/json'}
+  }
+
+  return fetch(process.env.REACT_APP_BACKEND_URL + '/getservantbydate/'+dateid, requestOptions).then(handleHttpResponse)
+
+}
+
+export function callGetSongByDateAPI(dateid) {
+  
+  const requestOptions = {
+    method: 'GET',
+    headers: {'Content-Type': 'application/json'}
+  }
+
+  return fetch(process.env.REACT_APP_BACKEND_URL + '/getsongbydate/'+dateid, requestOptions).then(handleHttpResponse)
+
+}
+
+export function callGetSongSelectedByDateAPI(dateid) {
+
+  const requestOptions = {
+    method: 'GET',
+    headers: {'Content-Type': 'application/json'}
+  }
+
+  return fetch(process.env.REACT_APP_BACKEND_URL + '/getsongselectedbydate/'+dateid, requestOptions).then(handleHttpResponse)
   
 }

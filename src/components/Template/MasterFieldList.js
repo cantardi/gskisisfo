@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Container, Alert, Button, Modal, InputGroup, FormControl, Row, Col } from 'react-bootstrap';
+import { Container, Alert, Spinner, Button, Modal, InputGroup, FormControl, Row, Col } from 'react-bootstrap';
 import { MdClose, MdAddCircleOutline } from 'react-icons/md';
 import { callGetMasterFieldAPI, callAddFieldAPI, callDeleteFieldAPI } from '../../helpers/apicall';
 import { history } from '../../helpers/function'
@@ -154,79 +154,95 @@ class MasterFieldList extends Component {
     
     return (
       <Container className="pa2">
-          
-        <h1>Setup Master Field List</h1>
-
-        <Row>
-          <Col className="tr">
-            <Button className="ma1" 
-                    onClick={ this.saveField }
-                    disabled={ this.state.btnSaveDisabled }
-                    bsPrefix="btn-custom"
-            >  
-              Save
-            </Button> 
-            <Button className="ma1" 
-                    bsPrefix="btn-custom" 
-                    onClick={ ()=>history.push('Administration') }>  
-              Cancel
-            </Button> 
-          </Col>
-        </Row>
 
         {
-          this.state.masterFields.length > 0 &&
-          this.state.masterFields.map((field, i) => {
-            return (
-              <div 
-                key={ i }
-                className="tc v-top dib br3 pa3 ma2 bw2 shadow-2"
-              >
-              { field.fieldname }
-                <MdClose 
-                  className="ml2 pointer dim"
-                  onClick={ ()=>this.removeField(field.id) }
+          (this.state.masterFields.length > 0)? 
+          ( 
+            <div>
+                        
+              <h1>Setup Master Field List</h1>
+
+              <Row>
+                <Col className="tr">
+                  <Button className="ma1" 
+                          onClick={ this.saveField }
+                          disabled={ this.state.btnSaveDisabled }
+                          bsPrefix="btn-custom"
+                  >  
+                    Save
+                  </Button> 
+                  <Button className="ma1" 
+                          bsPrefix="btn-custom" 
+                          onClick={ ()=>history.push('Administration') }>  
+                    Cancel
+                  </Button> 
+                </Col>
+              </Row>
+
+              {
+                this.state.masterFields.length > 0 &&
+                this.state.masterFields.map((field, i) => {
+                  return (
+                    <div 
+                      key={ i }
+                      className="tc v-top dib br3 pa3 ma2 bw2 shadow-2"
+                    >
+                    { field.fieldname }
+                      <MdClose 
+                        className="ml2 pointer dim"
+                        onClick={ ()=>this.removeField(field.id) }
+                      />
+                    </div>
+                  )
+                })
+              }
+
+              <div className="tc v-top dib br3 pa3 ma2 bw2 shadow-2">
+                <MdAddCircleOutline 
+                  size={20} 
+                  className="pointer dim" 
+                  onClick={ ()=>this.setState({ fieldModalShow: true }) }
                 />
               </div>
-            )
-          })
-        }
 
-        <div className="tc v-top dib br3 pa3 ma2 bw2 shadow-2">
-          <MdAddCircleOutline 
-            size={20} 
-            className="pointer dim" 
-            onClick={ ()=>this.setState({ fieldModalShow: true }) }
-          />
-        </div>
+              <Modal show={this.state.fieldModalShow} onHide={this.fieldModalClose} size="lg">
+                <Modal.Header closeButton><h4>Input New Field</h4></Modal.Header>
+                <Modal.Body className="tc">
+                  <InputGroup className="mb-3">
+                    <InputGroup.Prepend>
+                      <InputGroup.Text>Field Name</InputGroup.Text>
+                    </InputGroup.Prepend>
+                    <FormControl
+                      placeholder="Enter field name here"
+                      name="newFieldName"
+                      onChange={ this.handleChange } 
+                    />
+                  </InputGroup>
+                  <Alert variant={this.state.variant}>{ this.state.errorText }</Alert>
+                </Modal.Body>
+                <Modal.Footer>
+                  <Button bsPrefix="btn-custom" onClick={ this.addField }>OK</Button>
+                </Modal.Footer>
+              </Modal>
 
-        <Modal show={this.state.fieldModalShow} onHide={this.fieldModalClose} size="lg">
-          <Modal.Header closeButton><h4>Input New Field</h4></Modal.Header>
-          <Modal.Body className="tc">
-            <InputGroup className="mb-3">
-              <InputGroup.Prepend>
-                <InputGroup.Text>Field Name</InputGroup.Text>
-              </InputGroup.Prepend>
-              <FormControl
-                placeholder="Enter field name here"
-                name="newFieldName"
-								onChange={ this.handleChange } 
+              <MessageModal
+                show={ this.state.msgModalShow }
+                onHide={ this.msgModalClose }
+                headerText={ this.state.msgModalHeader }
+                contentText1={ this.state.msgModalContent }
               />
-            </InputGroup>
-            <Alert variant={this.state.variant}>{ this.state.errorText }</Alert>
-          </Modal.Body>
-          <Modal.Footer>
-            <Button bsPrefix="btn-custom" onClick={ this.addField }>OK</Button>
-          </Modal.Footer>
-        </Modal>
-
-        <MessageModal
-          show={ this.state.msgModalShow }
-          onHide={ this.msgModalClose }
-          headerText={ this.state.msgModalHeader }
-          contentText1={ this.state.msgModalContent }
-        />
-
+            </div>
+          ):
+          (
+            <div className="tc pa4">
+              <Spinner animation="grow" variant="primary" role="status">
+                <span className="sr-only">Loading...</span>
+              </Spinner> 
+              <div>Loading...</div>
+            </div>
+          )
+        }
+        
       </Container>
     )
   }

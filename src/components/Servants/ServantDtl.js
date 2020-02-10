@@ -110,7 +110,7 @@ class ServantDtl extends Component {
         callAddServantAPI(servant)
         .then(
           data => this.setState({ msgModalShow: true , msgModalHeader: 'Information', msgModalContent: data }),
-          error => this.setState({ msgModalShow: true , msgModalHeader: 'Error', msgModalContent: error.message })
+          error => this.setState({ msgModalShow: true , msgModalHeader: 'Error', msgModalContent: error })
         )
         .catch(err => console.log("Fail to call API due to: " + err))
       }
@@ -118,7 +118,7 @@ class ServantDtl extends Component {
         callUpdateServantAPI(servant, servantid)
         .then(
           data => this.setState({ msgModalShow: true , msgModalHeader: 'Information', msgModalContent: data }),
-          error => this.setState({ msgModalShow: true , msgModalHeader: 'Error', msgModalContent: error.message })
+          error => this.setState({ msgModalShow: true , msgModalHeader: 'Error', msgModalContent: error })
         )
         .catch(err => console.log("Fail to call API due to: " + err))
       }

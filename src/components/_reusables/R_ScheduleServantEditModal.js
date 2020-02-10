@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Table, FormControl, Modal, Button } from 'react-bootstrap';
 import { DateConvert } from '../../helpers/function';
+import { callAddServantSchedAPI, callDeleteServantSchedAPI } from '../../helpers/apicall';
 import MessageModal from '../MessageModal';
 
 class ServantScheduleEditModal extends Component {
@@ -57,70 +58,37 @@ class ServantScheduleEditModal extends Component {
     const { addedSchedule, deletedSchedule } = this.state
 
     if (addedSchedule.length > 0){
-      this.callAddServantSchedAPI();
+            
+      const finalAddLists = this.state.addedSchedule.map(servant =>
+        ({
+          periodid: this.props.periodid,
+          dateid: servant.dateid,
+          roleid: servant.roleid,
+          servantid: servant.servantid
+        })
+      )
+      
+      callAddServantSchedAPI(finalAddLists)
+      .then(
+        data => this.setState({ msgModalShow: true , msgModalHeader: 'Information', msgModalContent: data }),
+        error => this.setState({ msgModalShow: true , msgModalHeader: 'Error', msgModalContent: error.message })
+      )
+      .catch(err => console.log("Fail to call API due to: " + err))
+
     }
 
     if (deletedSchedule.length > 0){
-      this.callDeleteServantSchedAPI();
+      
+      callDeleteServantSchedAPI(deletedSchedule)
+      .then(
+        data => this.setState({ msgModalShow: true , msgModalHeader: 'Information', msgModalContent: data }),
+        error => this.setState({ msgModalShow: true , msgModalHeader: 'Error', msgModalContent: error.message })
+      )
+      .catch(err => console.log("Fail to call API due to: " + err))
+
     }
     
     this.props.reloadData(this.props.periodid)
-  }
-
-  callAddServantSchedAPI = () => {
-    
-    const finalAddLists = this.state.addedSchedule.map(servant =>
-      ({
-        periodid: this.props.periodid,
-        dateid: servant.dateid,
-        roleid: servant.roleid,
-        servantid: servant.servantid
-      })
-    )
-    
-    fetch(process.env.REACT_APP_BACKEND_URL + '/addservantschedule', {
-      method: 'post',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({
-        servantSchedule: finalAddLists
-      })
-    })
-    .then (response => {
-      if (response.status === 200){
-        return response.json()
-        .then(data => this.setState({ msgModalShow: true , msgModalHeader: 'Information', msgModalContent: data, addedSchedule: [] }, this.props.onHide()))
-      }
-      else { 
-        return response.json()
-        .then(data => this.setState({ msgModalShow: true , msgModalHeader: 'Error', msgModalContent: data, addedSchedule: [] }, this.props.onHide()))
-      }
-    }) 
-    .catch(err => console.log('Fail to call addservantschedule API --- ' + err))
-
-  }
-
-  callDeleteServantSchedAPI = () => {
-    
-    const { deletedSchedule } = this.state
-
-    fetch(process.env.REACT_APP_BACKEND_URL + '/deleteservantschedule', {
-      method: 'delete',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({
-        deletedLists: deletedSchedule
-      })
-    })
-      .then (response => {
-        if (response.status === 200){
-          return response.json()
-          .then(data => this.setState({ msgModalShow: true , msgModalHeader: 'Information', msgModalContent: data, deletedSchedule: [] }, this.props.onHide()))
-        }
-        else { 
-          return response.json()
-          .then(data => this.setState({ msgModalShow: true , msgModalHeader: 'Error', msgModalContent: data, deletedSchedule: [] }, this.props.onHide()))
-        }
-      }) 
-      .catch(err => console.log('Fail to call deleteservantschedule API --- ' + err))
   }
 
   validateServant(servant) {
@@ -231,8 +199,8 @@ class ServantScheduleEditModal extends Component {
         </Modal.Body>
 
         <Modal.Footer>
-          <Button onClick={ this.saveEditedSchedule } disabled={ this.disableSaveButton() }>Save</Button>
-          <Button onClick={ this.props.onHide }>Cancel</Button>
+          <Button bsPrefix="btn-custom" onClick={ this.saveEditedSchedule } disabled={ this.disableSaveButton() }>Save</Button>
+          <Button bsPrefix="btn-custom" onClick={ this.props.onHide }>Cancel</Button>
         </Modal.Footer>
         
       </Modal>	

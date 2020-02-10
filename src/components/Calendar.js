@@ -1,10 +1,11 @@
 import React from "react";
 import { Calendar, momentLocalizer } from 'react-big-calendar';
-import moment from 'moment';
-import 'react-big-calendar/lib/css/react-big-calendar.css';
-import MessageModal from './MessageModal';
+import { Spinner } from 'react-bootstrap';
 import { DateConvert } from '../helpers/function';
-import {authenticationService} from '../services/authenticationService';
+import { authenticationService } from '../services/authenticationService';
+import moment from 'moment';
+import MessageModal from './MessageModal';
+import 'react-big-calendar/lib/css/react-big-calendar.css';
 
 const localizer = momentLocalizer(moment)
 
@@ -92,29 +93,46 @@ class MyCalendar extends React.Component {
 
 	render() {
 
-		return (
+		return(
 			<div>
-				<Calendar
-					 style={{height: 500}}
-					 eventPropGetter={(this.eventStyleGetter)}
-					 culture='en-GB'
-					 localizer={localizer}
-					 events={this.state.schedule}
-					 titleAccessor={this.assessSize}
-					 views={['month']}
-					 startAccessor="startDate"
-					 endAccessor="endDate"
-					 onSelectEvent={this.selectEvent}
-			 	/>
+				{
+					(this.state.schedule.length > 0)?
+					(
+						<div>
+							<Calendar
+								style={{height: 500}}
+								eventPropGetter={(this.eventStyleGetter)}
+								culture='en-GB'
+								localizer={localizer}
+								events={this.state.schedule}
+								titleAccessor={this.assessSize}
+								views={['month']}
+								startAccessor="startDate"
+								endAccessor="endDate"
+								onSelectEvent={this.selectEvent}
+							/>
 
-				<MessageModal
-          show={ this.state.msgModalShow }
-          onHide={ this.msgModalClose }
-          headerText={ this.state.msgModalHeader }
-          contentText1={ this.state.msgModalContent }
-        />
+							<MessageModal
+								show={ this.state.msgModalShow }
+								onHide={ this.msgModalClose }
+								headerText={ this.state.msgModalHeader }
+								contentText1={ this.state.msgModalContent }
+							/>
+						</div>
+					):
+					(
+						<div className="tc pa4">
+							<Spinner animation="grow" variant="primary" role="status">
+								<span className="sr-only">Loading...</span>
+							</Spinner> 
+							<div>Loading...</div>
+						</div>
+					)
+				}
 			</div>
 		)
+		
+
 	}
   
 }
