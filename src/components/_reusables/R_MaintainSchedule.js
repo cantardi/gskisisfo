@@ -118,10 +118,10 @@ class MaintainSchedule extends Component {
             <Col sm={3}>
               <Nav variant="pills" className="flex-column">
                 <Nav.Item>
-                  <Nav.Link eventKey="first">Song Schedule</Nav.Link>
+                  <Nav.Link eventKey="first">Servant Schedule</Nav.Link>
                 </Nav.Item>
                 <Nav.Item>
-                  <Nav.Link eventKey="second">Servant Schedule</Nav.Link>
+                  <Nav.Link eventKey="second">Song Schedule</Nav.Link>
                 </Nav.Item>
                 <Nav.Item>
                   <Nav.Link eventKey="third" onClick={()=>history.push(this.state.PAGE_PARENT)}>Back</Nav.Link>
@@ -130,41 +130,8 @@ class MaintainSchedule extends Component {
             </Col>
             <Col sm={9}>
               <Tab.Content>
-                <Tab.Pane eventKey="first"> 
-                  {
-                    this.state.songSpinnerShow === false ?
-                    ( 
-                      this.state.songSchedule.length > 0?
-                      (
-                        <ScheduleSong
-                          songSchedule = { this.state.songSchedule }
-                          periodid = { this.state.periodid }
-                          periodDates = { this.state.periodDates }
-                          periodName = { this.state.periodname }
-                          periodDescr = { this.state.perioddescr }
-                          editDisplayFlag = { this.state.editDisplayFlag }
-                          reloadData = { this.callGetSongScheduleAPI }
-                          PAGE_PARENT = { this.state.PAGE_PARENT }
-                        /> 
-                      ):
-                      (
-                        <div className="alert alert-info" role="alert">
-                          Song has not been scheduled for this period.
-                        </div>
-                      )
-                    ): 
-                    (
-                      <div className="tc pa4">
-                        <Spinner animation="grow" variant="primary" role="status">
-                          <span className="sr-only">Loading...</span>
-                        </Spinner> 
-                        <div>Loading...</div>
-                      </div>
-                    )
-                  } 
- 
-                </Tab.Pane>
-                <Tab.Pane eventKey="second">
+                
+                <Tab.Pane eventKey="first">
                   {
                     this.state.servantSpinnerShow === false ?
                     ( 
@@ -197,6 +164,41 @@ class MaintainSchedule extends Component {
                       </div>
                     )
                   }
+                </Tab.Pane>
+                
+                <Tab.Pane eventKey="second"> 
+                  {
+                    this.state.songSpinnerShow === false ?
+                    ( 
+                      this.state.songSchedule.length > 0?
+                      (
+                        <ScheduleSong
+                          songSchedule = { this.state.songSchedule }
+                          periodid = { this.state.periodid }
+                          periodDates = { this.state.periodDates }
+                          periodName = { this.state.periodname }
+                          periodDescr = { this.state.perioddescr }
+                          editDisplayFlag = { this.state.editDisplayFlag }
+                          reloadData = { this.callGetSongScheduleAPI }
+                          PAGE_PARENT = { this.state.PAGE_PARENT }
+                        /> 
+                      ):
+                      (
+                        <div className="alert alert-info" role="alert">
+                          Song has not been scheduled for this period.
+                        </div>
+                      )
+                    ): 
+                    (
+                      <div className="tc pa4">
+                        <Spinner animation="grow" variant="primary" role="status">
+                          <span className="sr-only">Loading...</span>
+                        </Spinner> 
+                        <div>Loading...</div>
+                      </div>
+                    )
+                  } 
+ 
                 </Tab.Pane>
                 
               </Tab.Content>

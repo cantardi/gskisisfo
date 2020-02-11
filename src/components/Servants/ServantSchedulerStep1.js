@@ -24,7 +24,7 @@ class ServantSchedulerStep1 extends Component {
             {
               this.props.periodList.map((period) => 
                 <option key={ period.id } value={ period.id }>
-                  { period.periodname }
+                  { period.description }
                 </option>
               )
             }

@@ -336,6 +336,17 @@ export function callSearchSongAPI(songname, songtype, composer, maxline) {
     
 }
 
+export function callGetSongFullLyrics(songid) {
+    
+  const requestOptions = {
+    method: 'GET',
+    headers: {'Content-Type': 'application/json'},
+  }
+
+  return fetch(process.env.REACT_APP_BACKEND_URL + '/getsongfulllyrics/' + songid, requestOptions).then(handleHttpResponse)
+    
+}
+
 export function callAddSongAPI(song) {
 
   const requestOptions = {
