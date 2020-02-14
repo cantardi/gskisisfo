@@ -22,6 +22,7 @@ import ServantDtl from "./components/Servants/ServantDtl";
 import ServantSchedulerMstr from "./components/Servants/ServantSchedulerMstr";
 import ScheduleLP from "./components/Schedule/ScheduleLP";
 import MaintainSchedule from "./components/_reusables/R_MaintainSchedule";
+import ViewScheduleById from "./components/_reusables/R_ViewScheduleById";
 import ServiceLP from "./components/Service/ServiceLP";
 import ServiceMstr from "./components/Service/ServiceMstr";
 import {PrivateRoute} from './components/PrivateRoute';
@@ -101,6 +102,7 @@ class App extends Component {
             <PrivateRoute path="/SelfService" component={SelfService}/>
             <PrivateRoute path="/ViewSchedule" component={ViewSchedule}/>
             <PrivateRoute path="/MaintainSchedule" component={MaintainSchedule}/>
+            <PrivateRoute path="/ViewScheduleById/:id" component={ViewScheduleById}/>
             <PrivateRoute path="/SelectSong" component={SelectSong}/>
             <PrivateRoute path="/ReqSubstitution" component={ReqSubstitution}/>
             <PrivateRoute path="/AccountSetup" component={AccountSetup}/>
