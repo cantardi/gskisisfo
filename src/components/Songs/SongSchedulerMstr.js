@@ -169,7 +169,7 @@ class SongSchedulerMstr extends Component {
 
   componentDidMount(){
 
-    callGetSchedulingPeriodAPI()
+    callGetSchedulingPeriodAPI("song")
     .then(
       data => this.setState({ periodList: data }),
       error => this.setState({ periodList: [], msgModalShow: true , msgModalHeader: 'Information', msgModalContent: error.message })

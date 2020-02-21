@@ -183,7 +183,7 @@ class ServantSchedulerMstr extends Component {
 
   componentDidMount(){
 
-    callGetSchedulingPeriodAPI()
+    callGetSchedulingPeriodAPI("servant")
     .then(
       data => this.setState({ periodList: data }),
       error => this.setState({ periodList: [], msgModalShow: true , msgModalHeader: 'Information', msgModalContent: error.message })
