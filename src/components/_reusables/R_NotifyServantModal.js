@@ -8,7 +8,7 @@ class NotifyServantModal extends Component {
       <Modal show={ this.props.show } onHide={ this.props.onHide }>
         <Modal.Header closeButton><h4>Notification</h4></Modal.Header>
         <Modal.Body>
-          Select Servant to Notify <br/><br/>
+          Customize Servant List to Notify <br/><br/>
           <Table>
             <thead>
               <tr>

@@ -25,6 +25,7 @@ import MaintainSchedule from "./components/_reusables/R_MaintainSchedule";
 import ViewScheduleById from "./components/_reusables/R_ViewScheduleById";
 import ServiceLP from "./components/Service/ServiceLP";
 import ServiceMstr from "./components/Service/ServiceMstr";
+import NotificationCenter from "./components/Notification/NotificationCenter";
 import {PrivateRoute} from './components/PrivateRoute';
 import {authenticationService} from './services/authenticationService';
 import {history} from './helpers/function';
@@ -107,6 +108,8 @@ class App extends Component {
             <PrivateRoute path="/ReqSubstitution" component={ReqSubstitution}/>
             <PrivateRoute path="/AccountSetup" component={AccountSetup}/>
             <PrivateRoute path="/Administration" roles="Admin" component={Administration} />
+            <PrivateRoute path="/MasterDataLP" roles="Admin" component={MasterDataLP}/>
+            <PrivateRoute path="/MasterFieldList" roles="Admin" component={MasterFieldList}/>
             <PrivateRoute path="/PeriodLP" roles="Admin" component={PeriodLP}/>
             <PrivateRoute path="/PeriodDtl" roles="Admin" component={PeriodDtl}/>
             <PrivateRoute path="/SongLP" roles="Admin" component={SongLP}/>
@@ -115,11 +118,10 @@ class App extends Component {
             <PrivateRoute path="/ServantLP" roles="Admin" component={ServantLP}/>
             <PrivateRoute path="/ServantDtl" roles="Admin" component={ServantDtl}/>
             <PrivateRoute path="/ServantSchedulerMstr" roles="Admin" component={ServantSchedulerMstr}/>
-            <PrivateRoute path="/MasterFieldList" roles="Admin" component={MasterFieldList}/>
             <PrivateRoute path="/ScheduleLP" roles="Admin" component={ScheduleLP}/>
             <PrivateRoute path="/ServiceLP" roles="Admin" component={ServiceLP}/>
             <PrivateRoute path="/ServiceMstr" roles="Admin" component={ServiceMstr}/>
-            <PrivateRoute path="/MasterDataLP" roles="Admin" component={MasterDataLP}/>
+            <PrivateRoute path="/NotificationCenter" roles="Admin" component={NotificationCenter}/>
 
             <Route path="/Login" component={Login} />
           </div>

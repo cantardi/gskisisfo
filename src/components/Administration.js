@@ -64,6 +64,14 @@ class Administration extends Component {
 					</div>
 				</Button>
 
+				<Button onClick={()=> history.push('/NotificationCenter')} 
+								className='tc v-top pa3 ma2 w5 h5 shadow-3' bsPrefix='btn-custom' >
+					<div>
+						<h4>Notification Center</h4>
+						<p className='normal f5 mt3'>Manage the notification generated from the system.</p>
+					</div>
+				</Button>
+
 			</Container>
 		)
 		

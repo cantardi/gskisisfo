@@ -141,6 +141,16 @@ export function callGetPeriodAPI() {
   return fetch(process.env.REACT_APP_BACKEND_URL + '/getperiod', requestOptions).then(handleHttpResponse)
 }
 
+export function callGetPeriodDtlAPI(dateId) {
+  
+  const requestOptions = {
+    method: 'GET',
+    headers: {'Content-Type': 'application/json'}
+  }
+
+  return fetch(process.env.REACT_APP_BACKEND_URL + '/getperioddtl/' + dateId, requestOptions).then(handleHttpResponse)
+}
+
 export function callGetPeriodDateAPI(periodId) {
   
   const requestOptions = {
@@ -151,6 +161,16 @@ export function callGetPeriodDateAPI(periodId) {
   return fetch(process.env.REACT_APP_BACKEND_URL + '/getperioddate/' + periodId, requestOptions).then(handleHttpResponse)
 }
 
+export function callGetPeriodDateDtlAPI(dateId) {
+  
+  const requestOptions = {
+    method: 'GET',
+    headers: {'Content-Type': 'application/json'}
+  }
+
+  return fetch(process.env.REACT_APP_BACKEND_URL + '/getperioddatedtl/' + dateId, requestOptions).then(handleHttpResponse)
+}
+
 export function callGetSSPeriodDateAPI(periodId) {
   
   const requestOptions = {
@@ -159,6 +179,16 @@ export function callGetSSPeriodDateAPI(periodId) {
   }
 
   return fetch(process.env.REACT_APP_BACKEND_URL + '/getperioddateforss/' + periodId, requestOptions).then(handleHttpResponse)
+}
+
+export function callGetNotifPeriodDateAPI() {
+  
+  const requestOptions = {
+    method: 'GET',
+    headers: {'Content-Type': 'application/json'}
+  }
+
+  return fetch(process.env.REACT_APP_BACKEND_URL + '/getperioddatefornotif', requestOptions).then(handleHttpResponse)
 }
 
 export function callAddPeriodAPI(period, convertedDays) {
@@ -503,5 +533,33 @@ export function callGetSongSelectedByDateAPI(dateid) {
   }
 
   return fetch(process.env.REACT_APP_BACKEND_URL + '/getsongselectedbydate/'+dateid, requestOptions).then(handleHttpResponse)
+  
+}
+
+export function callGetServantEmailAPI(servantIdArray) {
+ 
+  const requestOptions = {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({
+      servantids: servantIdArray
+    })
+  }
+
+  fetch(process.env.REACT_APP_BACKEND_URL + '/getservantemail', requestOptions).then(handleHttpResponse)
+  
+}
+
+export function callGetServantEmailByDateAPI(servicedate) {
+ 
+  const requestOptions = {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({
+      servicedate: servicedate
+    })
+  }
+
+  return fetch(process.env.REACT_APP_BACKEND_URL + '/getservantemailbydate', requestOptions).then(handleHttpResponse)
   
 }
