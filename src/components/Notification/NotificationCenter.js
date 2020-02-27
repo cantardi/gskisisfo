@@ -31,7 +31,7 @@ class NotificationCenter extends Component {
   }
 
   handleTypeChange = (e) => {
-    this.setState({ [e.target.name]: e.target.value, variant: '', formErrorMsg: '' });
+    this.setState({ notifType: Number(e.target.value), selectedDate: '', variant: '', formErrorMsg: '' });
     
     callGetNotifPeriodDateAPI()
     .then(
@@ -40,19 +40,22 @@ class NotificationCenter extends Component {
         data.map(dateList => result.push(new Date(dateList.predefineddate)) )
         this.setState({ displayedDates: result })
       },
-      error => this.setState({ selectedPeriod: '', displayedDates: [], msgModalShow: true , msgModalHeader: 'Information', msgModalContent: error.message })
+      error => this.setState({ selectedDate: '', displayedDates: [], msgModalShow: true , msgModalHeader: 'Information', msgModalContent: error.message })
     )
     .catch(err => console.log("Fail to call API due to: " + err))
 
   }
  
   handleDateChange = (e) => {
-    this.setState({ [e.target.name]: e.target.value, variant: '', formErrorMsg: '' });
+    this.setState({ selectedDate: e.target.value, variant: '', formErrorMsg: '' });
   } 
 
   loadServantToNotify = () => {    
 
-    callGetServantEmailByDateAPI(this.state.selectedDate)
+    const emailtype = this.state.notifType
+    const selectedDate = this.state.selectedDate
+
+    callGetServantEmailByDateAPI(emailtype, selectedDate)
     .then(
       data => this.setState({ notifyServantList: data, notifyModalShow: true }),
       error => console.log(error.message)
@@ -108,12 +111,13 @@ class NotificationCenter extends Component {
     .filter(servant => (servant.notifyflag === true || servant.notifyflag === '1'))
     .map(servant => finalnotifylist.push(servant))
   
-    fetch(process.env.REACT_APP_BACKEND_URL + '/sendupcomingservice', {
-      method: 'post',
+    fetch(process.env.REACT_APP_BACKEND_URL + '/sendreminderemail', {
+      method: 'POST',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({
         servicedate: this.state.selectedDate,
-        recipientList: finalnotifylist
+        recipientList: finalnotifylist,
+        emailtype: Number(this.state.notifType)
       })
     })
     .then (response => {
