@@ -4,6 +4,7 @@ import { callGetPeriodDtlAPI, callGetPeriodDateDtlAPI, callGetSongByDateAPI, cal
 import { authenticationService } from '../../services/authenticationService';
 import ScheduleSong from './R_ScheduleSong';
 import ScheduleServant from './R_ScheduleServant';
+import SelectedSong from './R_SelectedSong';
 import MessageModal from '../MessageModal';
 
 class ViewScheduleById extends Component {
@@ -192,8 +193,8 @@ class ViewScheduleById extends Component {
                     ( 
                       this.state.selectedSongs.length > 0?
                       (
-                        <ScheduleSong
-                          songSchedule = { this.state.songSchedule }
+                        <SelectedSong
+                          selectedSongs = { this.state.selectedSongs }
                           periodid = { this.state.periodid }
                           periodDates = { this.state.periodDates }
                           periodName = { this.state.periodName }
